@@ -1,6 +1,6 @@
 # Pro-Toolbox: Virtual Process Consultant
 
-**Role:** Lead AI Engineer  
+**Role:** AI Engineer / Data Scientist  
 **Duration:** <2 weeks to production  
 **Domain:** Organisational Process Knowledge  Process Improvement  
 

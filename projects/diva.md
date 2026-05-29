@@ -3,7 +3,7 @@
 ← [Back to Portfolio](../README.md)
 
 **Timeline:** ~1 year  
-**Role:** Lead AI Engineer — LLM extraction pipeline, rule engine design, ABBYY integration  
+**Role:** AI Engineer / Data Scientist — LLM extraction pipeline, rule engine design, ABBYY integration  
 **Repos:** `diva` / `invoicevouching`
 
 ---

@@ -1,6 +1,6 @@
 # CODEC  ClaireGPT: Logistics Knowledge Retrieval System
 
-**Role:** Lead AI Engineer  
+**Role:** AI Engineer / Data Scientist  
 **Duration:** ~3 years (3 generations)  
 **Domain:** Logistics  Process Knowledge  Contract Clauses  
 

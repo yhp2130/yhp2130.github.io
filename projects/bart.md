@@ -3,7 +3,7 @@
  [Back to Portfolio](../README.md)  [See also: ClaireGPT](clairegpt.md)
 
 **Timeline:** ~3 years (takeover → BART Pipeline → ClaireGPT integration)  
-**Role:** Lead AI Engineer  model design, training, production pipeline, integration
+**Role:** AI Engineer / Data Scientist  model design, training, production pipeline, integration
 
 ---
 
