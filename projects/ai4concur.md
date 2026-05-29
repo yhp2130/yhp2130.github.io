@@ -46,13 +46,13 @@ physical receipts from digital e-receipts and handling multi-receipt scans:
 
 | Class | Meaning |
 |-------|---------|
-| `digital_need` | Digital e-receipt with required fields visible |
-| `digital_no_need` | Digital doc, no expense-relevant fields |
-| `receipt_single` | Single scanned physical receipt |
-| `receipt_2` | 2 receipts on one scanned page |
-| `receipt_3` | 3 receipts on one scanned page |
-| `receipt_multiple` | 4+ receipts on one page |
-| `vaccination` | Vaccination cert — out-of-scope, exclude |
+| `digital_need` | Digital page that **contains** required expense information |
+| `digital_no_need` | Digital page that **does not contain** required information |
+| `receipt_single` | Scanned copy with a single receipt |
+| `receipt_2` | Scanned copy with 1 row, 2 receipts side by side |
+| `receipt_3` | Scanned copy with 1 row, 3 receipts side by side |
+| `receipt_multiple` | Scanned copy with multiple rows of multiple receipts |
+| `vaccination` | Vaccination certificate — out-of-scope, exclude from pipeline |
 
 ---
 
@@ -121,19 +121,24 @@ Redesigned from batch CSV processing to **event-driven**:
 Hotel folios are structurally different — multi-row itemized charges, table layouts, multi-page.
 Repeated the Label Studio annotation process for table region bounding boxes.
 
-Evaluated three document understanding models:
+Evaluated two document understanding models:
 
 | Model | Approach | Outcome |
 |-------|---------|---------|
-| LayoutLM | Layout-aware transformer for key-value extraction | Struggled with wide multi-column hotel formats |
-| Donut | End-to-end document understanding (no OCR) | Training converged but generalisation poor |
-| Nougat | Document parsing model | Did not converge on training data |
+| LayoutLM | Layout-aware transformer for key-value extraction | Did not meet expected performance — hotel formats too wide and varied |
+| Donut | End-to-end document understanding (no OCR stage) | Training converged but generalisation poor — format variability too high |
 
-**Final approach:** DETR (`detr-doc-table-detection`) for table region detection + SetFit for
-few-shot line item classification.
+Neither model achieved the extraction quality needed. **Project concluded at this stage** — POC overall accuracy settled at **70%**.
 
-**Root cause of 70% ceiling:** Hotel invoice formats vary significantly across hotel chains —
-column widths, item naming conventions, multi-currency rows. Per-vendor templates would not scale.
+**Root cause:** Hotel invoice layouts differ significantly across hotel chains — column widths, item naming conventions, multi-currency rows, page count. Fine-tuned specialist models without sufficient per-format training data could not generalise.
+
+---
+
+### Retrospective Learning
+
+After the project concluded, a similar hotel invoice extraction experiment was conducted using **GPT-4.1 with multimodal (vision) input**. Performance was markedly better — the model handled varied hotel formats without per-vendor fine-tuning.
+
+Key takeaway: **multimodal LLMs are the pragmatic first choice for structured document extraction where layout varies widely**, and specialist fine-tuned models are better reserved for high-volume, narrow-format tasks with sufficient labelled data.
 
 ---
 
@@ -146,9 +151,7 @@ column widths, item naming conventions, multi-currency rows. Per-vendor template
 | Receipt segmentation | PyTorch Faster RCNN (ResNet50) |
 | OCR | EasyOCR (custom fine-tuned weights) |
 | Field extraction | Regex NER (date + amount) |
-| Hotel table detection | DETR (`detr-doc-table-detection`) |
-| Hotel classification | SetFit (few-shot) |
-| Evaluated (hotel) | LayoutLM · Donut · Nougat |
+| Evaluated (hotel) | LayoutLM · Donut |
 | Webhook/API | FastAPI · SAP Concur v4 REST API (OAuth2) |
 | Deployment | SAP BTP |
 | Training | On-prem GPU · Image augmentation |

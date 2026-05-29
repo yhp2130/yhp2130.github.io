@@ -136,7 +136,7 @@
       </div>
       <div class="metric-card">
         <div class="metric-value">2</div>
-        <div class="metric-label">Hotel extraction models attempted (Donut, Nougat)</div>
+        <div class="metric-label">Hotel extraction models evaluated (LayoutLM, Donut)</div>
       </div>
     </div>
 
@@ -164,13 +164,13 @@
         </p>
         <table>
           <tr><th>Class</th><th>Meaning</th></tr>
-          <tr><td>digital_need</td><td>Digital e-receipt with required fields visible</td></tr>
-          <tr><td>digital_no_need</td><td>Digital doc, no expense-relevant fields</td></tr>
-          <tr><td>receipt_single</td><td>Single scanned physical receipt</td></tr>
-          <tr><td>receipt_2</td><td>2 receipts on one scanned page</td></tr>
-          <tr><td>receipt_3</td><td>3 receipts on one scanned page</td></tr>
-          <tr><td>receipt_multiple</td><td>4+ receipts on one page</td></tr>
-          <tr><td>vaccination</td><td>Vaccination cert (out-of-scope, exclude)</td></tr>
+          <tr><td>digital_need</td><td>Digital page that <strong>contains</strong> required expense information</td></tr>
+          <tr><td>digital_no_need</td><td>Digital page that <strong>does not contain</strong> required information</td></tr>
+          <tr><td>receipt_single</td><td>Scanned copy with a single receipt</td></tr>
+          <tr><td>receipt_2</td><td>Scanned copy with 1 row, 2 receipts side by side</td></tr>
+          <tr><td>receipt_3</td><td>Scanned copy with 1 row, 3 receipts side by side</td></tr>
+          <tr><td>receipt_multiple</td><td>Scanned copy with multiple rows of multiple receipts</td></tr>
+          <tr><td>vaccination</td><td>Vaccination certificate — out-of-scope, exclude from pipeline</td></tr>
         </table>
         <div class="finding"><strong>Key decision:</strong> Separating digital from scanned early avoids running OCR on already-structured digital PDFs unnecessarily.</div>
       </div>
@@ -238,25 +238,36 @@
 
       <div class="phase" data-n="7">
         <div class="phase-title">Hotel Invoice Extension — Information Extraction Models</div>
-        <div class="phase-meta">attempted: LayoutLM · Donut · Nougat · final: DETR + SetFit</div>
+        <div class="phase-meta">evaluated: LayoutLM · Donut — project concluded</div>
         <p>
           Hotel folios are structurally different — multi-row itemized charges, table layouts,
-          multi-page — requiring a document understanding model, not just OCR + regex.
+          multi-page — requiring a document understanding model beyond OCR + regex.
         </p>
-        <p>Repeated the Label Studio annotation process (document-level bounding boxes for table regions) and evaluated three approaches:</p>
+        <p>Repeated the Label Studio annotation process (bounding boxes for table regions) and evaluated two document understanding models:</p>
         <table>
           <tr><th>Model</th><th>Approach</th><th>Outcome</th></tr>
-          <tr><td>LayoutLM</td><td>Layout-aware transformer for key-value extraction</td><td>Struggled with wide multi-column hotel formats</td></tr>
-          <tr><td>Donut</td><td>End-to-end document understanding (no OCR)</td><td>Training converged but generalisation poor — hotel format too varied</td></tr>
-          <tr><td>Nougat</td><td>Document parsing model for structured docs</td><td>Did not converge on training data</td></tr>
+          <tr><td>LayoutLM</td><td>Layout-aware transformer for key-value extraction</td><td>Did not meet expected extraction performance — hotel formats too wide and varied</td></tr>
+          <tr><td>Donut</td><td>End-to-end document understanding (no OCR stage)</td><td>Training converged but generalisation poor — hotel format variability too high</td></tr>
         </table>
         <p>
-          Final approach: <strong>DETR</strong> (<code>detr-doc-table-detection</code>) for table region
-          detection + <strong>SetFit</strong> for few-shot classification of extracted line items.
-          POC overall accuracy settled at <strong>70%</strong> — hotel folios remained the hard case
-          due to wide format variability across hotel chains.
+          Neither model achieved the extraction quality needed. <strong>Project concluded at this stage</strong>
+          — POC overall accuracy settled at <strong>70%</strong> (travel receipts performed better; hotel folios
+          remained the hard case due to wide format variability across hotel chains).
         </p>
-        <div class="finding"><strong>Root cause:</strong> Hotel invoice formats vary significantly across hotel chains — column widths, item naming, multi-currency rows. A rule-based approach would require per-vendor templates, which didn't scale.</div>
+        <div class="finding"><strong>Root cause:</strong> Hotel invoice layouts differ significantly across hotel chains — column widths, item naming, multi-currency rows, page count. Fine-tuned specialist models without sufficient per-format training data could not generalise.</div>
+
+        <div class="postmortem" style="margin-top:16px;">
+          <h3>💡 Retrospective Learning</h3>
+          <p style="font-size:13px;color:var(--muted);">
+            After the project concluded, a similar hotel invoice extraction experiment was conducted using
+            <strong style="color:var(--text);">GPT-4.1 with multimodal (vision) input</strong>.
+            Performance was markedly better — the model handled varied hotel formats without per-vendor
+            fine-tuning. Key takeaway: <strong style="color:var(--text);">multimodal LLMs are now the
+            pragmatic first choice for structured document extraction where layout varies widely</strong>,
+            and specialist fine-tuned models are better reserved for high-volume, narrow-format tasks
+            with sufficient labelled data.
+          </p>
+        </div>
       </div>
 
     </div>
@@ -278,9 +289,7 @@
       <span class="badge blue">Faster RCNN (ResNet50)</span>
       <span class="badge green">EasyOCR</span>
       <span class="badge green">Regex NER</span>
-      <span class="badge orange">DETR (table detection)</span>
-      <span class="badge orange">SetFit</span>
-      <span class="badge muted">LayoutLM · Donut · Nougat (evaluated)</span>
+      <span class="badge muted">LayoutLM · Donut (evaluated)</span>
       <span class="badge purple">SAP Concur v4 API</span>
       <span class="badge purple">FastAPI webhook</span>
       <span class="badge purple">SAP BTP</span>
