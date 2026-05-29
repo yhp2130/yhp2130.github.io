@@ -105,6 +105,15 @@
       border-radius: var(--radius); padding: 16px 20px; margin: 24px 0;
     }
     .postmortem h3 { font-size: 13px; font-weight: 600; color: var(--orange); margin-bottom: 8px; }
+    table { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    @media (max-width: 640px) {
+      .container { padding: 32px 16px 60px; }
+      h1 { font-size: 20px; }
+      .phases { padding-left: 20px; }
+      .phase { padding: 14px 12px; }
+      .metrics { flex-direction: column; }
+      .metric-card { min-width: unset; }
+    }
   </style>
 </head>
 <body>
