@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro-Toolbox — Yap Hong Ping</title>
+  <title>Pro-Toolbox  Virtual Process Consultant  Yap Hong Ping</title>
   <style>
     :root {
       --bg: #0d1117; --surface: #161b22; --border: #30363d;
@@ -43,7 +43,7 @@
     p strong { color: var(--text); }
     ul { padding-left: 0; list-style: none; margin-bottom: 16px; }
     ul li { font-size: 14px; color: var(--muted); padding: 3px 0; }
-    ul li::before { content: "▸ "; color: var(--green); }
+    ul li::before { content: " "; color: var(--green); }
     .badge {
       display: inline-block; font-size: 11px; font-family: var(--font-mono);
       padding: 3px 10px; border-radius: 20px; border: 1px solid; margin: 3px 3px 3px 0;
@@ -63,112 +63,261 @@
          color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
     td { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid rgba(48,54,61,0.5); }
     td:first-child { color: var(--text); }
+    code {
+      font-family: var(--font-mono); font-size: 12px; background: var(--surface);
+      border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; color: var(--orange);
+    }
+    .metrics { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
+    .metric-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px 20px; flex: 1; min-width: 140px;
+    }
+    .metric-value { font-size: 28px; font-weight: 700; color: var(--green); font-family: var(--font-mono); }
+    .metric-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .phases { position: relative; padding-left: 32px; margin: 24px 0; }
+    .phases::before {
+      content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+      width: 2px; background: var(--border);
+    }
+    .phase {
+      position: relative; margin-bottom: 32px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+    }
+    .phase::before {
+      content: attr(data-n); position: absolute; left: -32px; top: 18px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--bg); border: 2px solid var(--blue);
+      color: var(--blue); font-family: var(--font-mono); font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phase-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .phase-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+    .finding {
+      background: rgba(63,185,80,0.06); border-left: 3px solid var(--green);
+      padding: 8px 12px; border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 13px; color: var(--muted); margin-top: 12px;
+    }
+    .finding strong { color: var(--text); }
+    .arch-box {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; font-family: var(--font-mono); font-size: 12px;
+      color: var(--muted); margin: 12px 0; white-space: pre; overflow-x: auto;
+    }
   </style>
 </head>
 <body>
   <nav>
-    <a href="../index.html#projects" class="back">← back</a>
-    <span class="title">Pro-Toolbox — Process Consultant RAG</span>
+    <a href="../index.html#projects" class="back">&#8592; back</a>
+    <span class="title">Pro-Toolbox &#8212; Virtual Process Consultant</span>
     <span class="seq">1 / 5</span>
     <div class="nav-pager">
-      <a href="clairegpt.html">next →</a>
+      <a href="clairegpt.html">next &#8594;</a>
     </div>
   </nav>
 
   <div class="container">
     <h1>Pro-Toolbox</h1>
     <div class="meta">
-      Process Improvement / Consultants · <span>Infineon Technologies</span> · AI Engineer
+      Virtual Process Consultant &#183; <span>Lead AI Engineer</span> &#183; &lt;2 weeks to production
     </div>
 
     <div class="internal-note">
-      ⚿ Internal project — proprietary code not published. Case study describes architecture and decisions.
+      &#10239; Internal project &#8212; proprietary code not published. Case study covers open-source tools, model decisions, and pipeline design only.
     </div>
 
-    <h2>$ cat problem.md</h2>
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-value">&lt;2wk</div>
+        <div class="metric-label">Concept to production (GitHub Copilot SpecKit)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">2</div>
+        <div class="metric-label">Knowledge sources: Confluence &#183; ARIS (BPMN)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">3</div>
+        <div class="metric-label">Execution paths: direct &#183; fast &#183; ReAct (deep thinking)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">5</div>
+        <div class="metric-label">Process phase sub-agents (Initiation &#8594; Monitoring)</div>
+      </div>
+    </div>
+
+    <h2>$ cat overview.md</h2>
     <p>
-      Process improvement consultants work across multiple business units, referencing SOPs,
-      benchmarks, improvement reports, and standards. Finding relevant past work required
-      manually searching through shared drives. <strong>Consultants were re-solving problems
-      already documented elsewhere.</strong>
+      A <strong>virtual process consultant</strong> that helps process owners and users understand
+      organisational processes in depth and receive actionable improvement guidance. Given a natural
+      language query, the system retrieves relevant process knowledge from <strong>Confluence</strong>
+      and <strong>ARIS</strong> (the organisation's BPMN process modelling software), then synthesises
+      a cited consultant-quality answer with recommendations and rationale.
     </p>
-    <p><strong>Goal:</strong> A RAG chatbot for cross-document synthesis — not just retrieval.</p>
-    <p><strong>Delivery:</strong> Production-ready MVP delivered in <strong>2 weeks</strong> using spec-driven development (GitHub Copilot SpecKit) — from concept to deployed application with API gateway configuration.</p>
 
-    <h2>$ diff clairegpt pro-toolbox</h2>
-    <table>
-      <tr><th>Dimension</th><th>ClaireGPT (CLM)</th><th>Pro-Toolbox (Consulting)</th></tr>
-      <tr><td>User objective</td><td>Factual lookup — "what does policy X say?"</td><td>Synthesis — "what approaches work for Y?"</td></tr>
-      <tr><td>Query pattern</td><td>Specific answer in one document</td><td>Answer synthesized across multiple sources</td></tr>
-      <tr><td>Response style</td><td>Factual answer + source citation</td><td>Recommendation + rationale + comparable examples</td></tr>
-      <tr><td>Key challenge</td><td>Data sovereignty, exact identifier recall</td><td>Cross-project synthesis, source attribution</td></tr>
-    </table>
+    <h2>$ cat phases.md</h2>
+    <div class="phases">
 
-    <h2>$ cat chunking_strategy.md</h2>
-    <table>
-      <tr><th>Document Type</th><th>Challenge</th><th>Strategy</th></tr>
-      <tr><td>SOP</td><td>Numbered steps must stay together — splitting mid-procedure breaks logical context</td><td>Section-aware chunking: each procedure section as a unit</td></tr>
-      <tr><td>Improvement report</td><td>Problem → Approach → Result narrative spans paragraphs</td><td>Paragraph grouping with overlap</td></tr>
-      <tr><td>Benchmark / Framework</td><td>Table rows must not be split</td><td>Table-aware chunking: entire table as one chunk</td></tr>
-    </table>
+      <div class="phase" data-n="1">
+        <div class="phase-title">Design &#8212; Data Sources and Knowledge Architecture</div>
+        <div class="phase-meta">sources: Confluence (process docs) &#183; ARIS (BPMN process metadata)</div>
+        <p>
+          Two complementary knowledge sources were identified:
+        </p>
+        <table>
+          <tr><th>Source</th><th>Content</th><th>Access</th></tr>
+          <tr><td><strong>ARIS</strong></td><td>Process metadata: names, IP codes, ownership, scope, mission, hierarchy, goals</td><td>REST API  Excel workbook  CSV; auto-fetched on startup and refreshed hourly</td></tr>
+          <tr><td><strong>Confluence</strong></td><td>Process documentation, SOPs, improvement guidelines, intranet articles</td><td>Internal semantic search platform (reusable component)</td></tr>
+        </table>
+        <p>
+          ARIS metadata is auto-provisioned at startup: the system downloads the Excel workbook from
+          the ARIS REST API, extracts the relevant sheet with <strong>openpyxl</strong>, and writes an
+          atomic CSV to disk. A background task refreshes this every hour. On fetch failure, the
+          existing CSV is preserved &#8212; the system continues with stale data rather than going down.
+        </p>
+        <div class="finding"><strong>Design decision:</strong> ARIS metadata kept as a local CSV rather than live API calls  decouples the query path from ARIS REST availability and allows fuzzy + exact scoring without network latency per query.</div>
+      </div>
 
-    <h2>$ cat metadata.md</h2>
-    <p>Metadata injected per document at ingestion to enable <strong>filtered retrieval</strong>:</p>
-    <ul>
-      <li><strong>doc_type</strong> — SOP / benchmark / improvement_report / standard</li>
-      <li><strong>department</strong> — Finance / Logistics / Manufacturing / etc.</li>
-      <li><strong>project_id</strong> — internal project reference</li>
-      <li><strong>date_updated</strong> — ISO date (recency filtering)</li>
-      <li><strong>process_area</strong> — order-to-cash / procure-to-pay / etc.</li>
-    </ul>
+      <div class="phase" data-n="2">
+        <div class="phase-title">Internal Platform Integration &#8212; Semantic Search as Reusable Component</div>
+        <div class="phase-meta">principle: reuse over reinvent &#183; constraints: rate limits &#183; source update frequency &#183; on-prem</div>
+        <p>
+          Rather than building a custom embedding + vector store pipeline, the system integrates with
+          an <strong>internal semantic search platform</strong> already maintained by another team. This
+          platform handles document indexing, embedding, and retrieval across Confluence and intranet
+          sources, with built-in <strong>rate limiting</strong>, <strong>source update frequency</strong>
+          management, and access control.
+        </p>
+        <p>
+          A thin <strong>search_engine</strong> adapter calls the platform's REST API
+          (<code>POST /search</code>) with per-agent project scoping and mode configuration
+          (<code>llm</code> / <code>vector</code> / <code>context</code>). Each agent can override
+          the search mode and target project IDs independently via its YAML config file.
+        </p>
+        <div class="finding"><strong>Why reuse:</strong> The platform already manages update frequency, rate limiting, and TLS cert handling on-prem  building equivalent infrastructure would have doubled the scope with no user-visible benefit.</div>
+      </div>
 
-    <h2>$ cat architecture.md — ExecutionPlan ReAct</h2>
-    <p>
-      Pro-Toolbox uses a <strong>plan-then-execute ReAct loop</strong> rather than step-by-step chain-of-thought.
-      The planner produces a complete <code>ExecutionPlan</code> (list of <code>SubGoal</code> objects with dependency graph)
-      before any tool is called — enabling parallel sub-goal execution via asyncio.
-      Spans <strong>4 knowledge sources</strong>: ARIS, Intranet, Confluence, and PRIMA.
-    </p>
-    <ul>
-      <li><strong>Planner</strong> → LLM function-calling generates full <code>ExecutionPlan</code> with dependencies</li>
-      <li><strong>ReactLoop</strong> → asyncio executes independent sub-goals in parallel; <code>WorkingMemory</code> tracks observations</li>
-      <li><strong>SufficiencyEvaluator</strong> → custom LLM judge: enough context? yes → finalize / no → re-plan</li>
-      <li><strong>CheckerAgent</strong> → post-generation citation gate before response returned</li>
-    </ul>
+      <div class="phase" data-n="3">
+        <div class="phase-title">Agent Architecture &#8212; Planner &#8594; Phase Agents &#8594; Checker</div>
+        <div class="phase-meta">library: OpenAI native (AsyncOpenAI) &#183; on-prem endpoint &#183; per-agent YAML config</div>
+        <p>
+          Built with <strong>OpenAI's native Python SDK</strong> (<code>openai.AsyncOpenAI</code>)
+          pointed at an on-premise OpenAI-compatible endpoint &#8212; no LangChain orchestration layer.
+          Each agent is independently configured via a YAML file (model, temperature, max_tokens,
+          tool permissions, search engine overrides).
+        </p>
+        <div class="arch-box">User Query
+    
+    
+Planner Agent LLM routing ARIS Agent          Checker Agent 
+                              IFX Process Mgmt    Checker Agent 
+                                                                       
+                             phase routing                    Planner consolidate
+                                                                       
+                                      Final Cited Response
+                         Initiation/Planning 
+                         Execution/Stabilize 
+                         Project Management  
+                         Change/Communicate  
+                         Monitoring/Control  │
+                        </div>
+        <ul>
+          <li><strong>Planner Agent:</strong> LLM routing  classifies query as <code>aris</code>, <code>ifx_process_mgmt</code>, or <code>direct</code>; expands process abbreviations; reconstructs vague queries into precise search phrases</li>
+          <li><strong>ARIS Agent:</strong> fuzzy + exact search on the local CSV  phrase matching, acronym detection, token coverage scoring, hierarchy-depth weighting; top-10 results</li>
+          <li><strong>IFX Process Mgmt Agent:</strong> second-level routing into 5 process phase sub-agents (Initiation &amp; Planning, Execution &amp; Stabilization, Project Management, Change &amp; Communication, Monitoring &amp; Control) or a general search path</li>
+          <li><strong>Checker Agent:</strong> mandatory gate after every sub-agent run  cross-references results against the search engine, filters citations to only those directly used in the answer; blocks responses with no citations</li>
+        </ul>
+        <div class="finding"><strong>Citation policy:</strong> Every response must surface at least one traceable citation. The Checker Agent filters to only records referenced in the composed answer. Responses without citations are never shown to the user.</div>
+      </div>
 
-    <h2>$ cat sub_agents.md — IFXProcessMgmtAgent</h2>
-    <p>For process improvement queries, the <strong>IFXProcessMgmtAgent</strong> dispatches to 5 domain sub-agents:</p>
-    <table>
-      <tr><th>Sub-Agent</th><th>Covers</th></tr>
-      <tr><td>change_communication_agent</td><td>Stakeholder communication for process changes</td></tr>
-      <tr><td>execution_stabilization_agent</td><td>Stabilizing processes in execution phase</td></tr>
-      <tr><td>initiation_planning_agent</td><td>Project initiation and planning activities</td></tr>
-      <tr><td>monitoring_control_agent</td><td>KPI tracking, performance gates</td></tr>
-      <tr><td>project_mgmt_agent</td><td>General project management guidance</td></tr>
-    </table>
-    <p>
-      The <strong>ARISAgent</strong> handles process model lookup with abbreviation expansion:
-      queries like "who owns the DTC process" are pre-processed to "demand to cash" before
-      searching ARIS — covering 12 Infineon process abbreviations (DTC, OTC, MTB, STP, P2P, RTR…).
-    </p>
+      <div class="phase" data-n="4">
+        <div class="phase-title">Execution Paths &#8212; Fast Path and ReAct Deep Thinking</div>
+        <div class="phase-meta">fast path: sequential &#183; ReAct: plan &#8594; SubGoal execute &#8594; observe &#8594; decide &#183; user-triggered</div>
+        <p>
+          Two execution modes are supported, selected per request:
+        </p>
+        <table>
+          <tr><th>Path</th><th>When</th><th>Mechanism</th></tr>
+          <tr><td><strong>Direct</strong></td><td>Conversational / utility task (greeting, translate, summarise)</td><td>Planner answers directly; no sub-agents; no citation required</td></tr>
+          <tr><td><strong>Fast path</strong></td><td>Standard knowledge queries</td><td>Sequential: ARIS Agent  IFX Agent  Checker  Planner consolidation</td></tr>
+          <tr><td><strong>ReAct loop</strong></td><td>User explicitly requests deep thinking</td><td>Iterative: plan ExecutionPlan (SubGoals with dependency graph)  execute tools in parallel (asyncio)  observe  sufficiency check  re-plan if needed</td></tr>
+        </table>
+        <p>
+          The <strong>ReAct loop</strong> uses an <code>ExecutionPlan</code> &#8212; a structured
+          decomposition into <code>SubGoal</code> objects, each with a tool, parameters, and
+          <code>depends_on</code> dependency list. Parallel sub-goals are executed concurrently with
+          asyncio. A <code>SufficiencyEvaluator</code> decides whether to finalise or re-plan after
+          each iteration, up to a configurable <code>REACT_MAX_ITERATIONS</code> limit.
+        </p>
+        <div class="finding"><strong>Fast path default:</strong> The ReAct loop adds latency and is only activated when the user explicitly enables deep thinking mode. Standard queries always take the fast path to stay under the 25-second agent timeout.</div>
+      </div>
+
+      <div class="phase" data-n="5">
+        <div class="phase-title">Frontend &#8212; React.js with Feedback Loop</div>
+        <div class="phase-meta">framework: React.js (TypeScript) &#183; SSE streaming &#183; per-message rating + comment</div>
+        <p>
+          Built a <strong>React.js + TypeScript</strong> frontend with an SSE streaming hook
+          (<code>useChat</code>) for real-time response rendering as the agent pipeline produces
+          output. Components include <code>ChatWindow</code>, <code>MessageBubble</code>,
+          <code>CitationPanel</code>, and <code>ThinkingPanel</code> (shows agent steps in real time).
+        </p>
+        <p>
+          A <strong>feedback loop</strong> is integrated at the message level: users submit a
+          rating (<code>thumbs_up</code> / <code>thumbs_down</code>) and optional comment per
+          assistant response via <code>PUT /feedback/{message_id}</code>. Feedback is stored inline
+          in the conversation's SQLite record and owned by the conversation author &#8212; other
+          users cannot modify ratings they don't own.
+        </p>
+        <div class="finding"><strong>Feedback use:</strong> QnA pairs with ratings are stored persistently for future evaluation, fine-tuning, and identifying which query types the system handles poorly.</div>
+      </div>
+
+      <div class="phase" data-n="6">
+        <div class="phase-title">CI/CD &#8212; Build &#183; Dev &#183; Staging &#183; Prod</div>
+        <div class="phase-meta">GitLab CI/CD &#183; ArgoCD &#183; Helm &#183; OpenShift &#183; Artifactory</div>
+        <p>
+          Full GitOps pipeline with branch-to-environment mapping:
+        </p>
+        <table>
+          <tr><th>Branch / Tag</th><th>Environment</th><th>Trigger</th></tr>
+          <tr><td><code>feature/*</code> MR</td><td>&#8212;</td><td>Test + lint only</td></tr>
+          <tr><td><code>develop</code></td><td>Dev</td><td>Test + lint + build + deploy (ArgoCD auto-sync)</td></tr>
+          <tr><td><code>main</code></td><td>Staging</td><td>Test + lint + build + deploy (ArgoCD auto-sync)</td></tr>
+          <tr><td><code>v*</code> tag</td><td>Prod</td><td>Test + lint + build + deploy (manual gate)</td></tr>
+        </table>
+        <p>
+          Pipeline stages: <strong>build-ci</strong> (pre-built CI image with Python deps, only
+          rebuilds on <code>requirements.txt</code> change) &#8594; <strong>test</strong> (pytest +
+          frontend tests) &#8594; <strong>lint</strong> (ruff + ESLint) &#8594; <strong>build</strong>
+          (OpenShift BuildConfig  Artifactory Docker registry) &#8594;
+          <strong>update-manifests</strong> (commit new image tags to Helm values with
+          <code>[skip ci]</code>) &#8594; <strong>rotate-token</strong> (monthly scheduled service
+          account token renewal).
+        </p>
+        <p>
+          All Python and npm packages are proxied through <strong>Artifactory</strong> (direct internet
+          access to PyPI / npmjs.org blocked on-prem). The CI image is cached in Artifactory and
+          reused across runs to avoid redundant installs.
+        </p>
+        <div class="finding"><strong>Outcome:</strong> Full CI/CD pipeline shipped within the &lt;2-week delivery window alongside the application itself, using GitHub Copilot SpecKit spec-driven development.</div>
+      </div>
+
+    </div>
 
     <h2>$ cat stack.txt</h2>
     <div>
-      <span class="badge purple">Custom ReAct loop (asyncio)</span>
-      <span class="badge purple">OpenAI function-calling</span>
-      <span class="badge blue">Docling</span>
+      <span class="badge blue">Python</span>
+      <span class="badge blue">OpenAI SDK (AsyncOpenAI)</span>
       <span class="badge green">FastAPI</span>
-      <span class="badge blue">React.js</span>
+      <span class="badge blue">React.js (TypeScript)</span>
+      <span class="badge muted">On-prem LLM endpoint</span>
+      <span class="badge muted">Internal Semantic Search API</span>
       <span class="badge muted">ARIS REST API</span>
-      <span class="badge muted">On-prem LLM (gpt4ifx)</span>
-      <span class="badge muted">On-prem Embedding</span>
-      <span class="badge blue">Elasticsearch kNN HNSW</span>
+      <span class="badge orange">SQLite (conversation + feedback)</span>
+      <span class="badge purple">GitLab CI/CD</span>
       <span class="badge purple">ArgoCD</span>
+      <span class="badge purple">Helm</span>
       <span class="badge purple">OpenShift</span>
-      <span class="badge muted">GitLab CI/CD</span>
-      <span class="badge purple">Artifactory</span>
+      <span class="badge muted">Artifactory</span>
       <span class="badge green">GitHub Copilot SpecKit</span>
-      <span class="badge muted">Nginx</span>
     </div>
   </div>
 </body>

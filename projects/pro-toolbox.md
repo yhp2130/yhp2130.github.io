@@ -1,268 +1,164 @@
-# Pro-Toolbox — Process Consultant RAG
+# Pro-Toolbox: Virtual Process Consultant
 
-← [Back to Portfolio](../README.md) · [Compare with: ClaireGPT](clairegpt.md)
-
-**Team:** Process Improvement / Consultants · Infineon Technologies  
-**Role:** AI Engineer — RAG pipeline design, ingestion, deployment  
-**Repo:** `pro-toolbox`
+**Role:** Lead AI Engineer  
+**Duration:** <2 weeks to production  
+**Domain:** Organisational Process Knowledge  Process Improvement  
 
 ---
 
-## Problem
+## Summary
 
-Process improvement consultants work across multiple business units, referencing:
-- Standard Operating Procedures (SOPs)
-- Process benchmarks and maturity frameworks
-- Past project improvement reports and outcomes
-- Industry standards and compliance requirements
-
-**Pain point:** Finding relevant past work and applicable standards required manually
-searching through shared drives and document repositories. Consultants were re-solving
-problems that had already been documented elsewhere.
-
-**Goal:** A RAG chatbot that lets consultants query across all process documentation
-with synthesis — not just retrieval.
-
-**Delivery:** Production-ready MVP delivered in **2 weeks** using spec-driven development
-(**GitHub Copilot SpecKit**) — from concept to deployed application with API gateway
-configuration. Knowledge sources: **ARIS, Intranet, Confluence, PRIMA**.
-
----
-
-## How This Differs from ClaireGPT
-
-Both systems use RAG, but the user objective drives different design choices:
-
-| Dimension | ClaireGPT (CLM) | Pro-Toolbox (Consulting) |
-|-----------|-----------------|--------------------------|
-| **User objective** | Factual retrieval — "what does policy X say?" | Synthesis — "what approaches work for Y?" |
-| **Document types** | Policies, contracts, SOPs | SOPs, improvement reports, benchmarks, standards |
-| **Query pattern** | Lookup: specific answer exists in one doc | Analytical: answer synthesized across multiple sources |
-| **Response style** | Factual answer + source citation | Recommendation + rationale + comparable examples |
-| **Key challenge** | Data sovereignty, exact identifier recall | Cross-project synthesis, source attribution |
-| **Agent tools** | BART clause extraction | Process comparison, gap analysis |
-
----
-
-## Architecture — ReAct with Structured Execution Planning
-
-Pro-Toolbox uses a **plan-then-execute** ReAct loop rather than step-by-step chain-of-thought.
-The planner produces a complete `ExecutionPlan` (list of `SubGoal` objects with dependencies)
-before any tool is called — this reduces back-and-forth and allows parallel sub-goal execution.
-
-```mermaid
-flowchart TD
-    Q["👤 Consultant Query"]
-    PLAN["🧠 Planner\nLLM function-calling\n→ ExecutionPlan"]
-    SUBGOALS["📋 SubGoal Dependency Graph\nstrategy_description\n+ list of SubGoals\n(tool, params, depends_on)"]
-    REACT["⚙️ ReactLoop\nasyncio execution\nobserve → decide → iterate"]
-    MEM["🧠 WorkingMemory\nobservation scratchpad\nacross iterations"]
-    SUFFIX["✅ SufficiencyEvaluator\nenough context?\nyes → finalize / no → re-plan"]
-    TOOLS["🔧 Tool Registry"]
-    ARIS["🗄️ ARISAgent\nprocess model lookup\nabbrev expansion"]
-    IFXPM["🏭 IFXProcessMgmtAgent\n5 process sub-agents"]
-    SEARCH["🔍 SearchEngineAgent\ndocument retrieval"]
-    CHECKER["🔍 CheckerAgent\npost-generation validation"]
-    ANS["💬 Response + Citations"]
-
-    Q --> PLAN --> SUBGOALS --> REACT
-    REACT <--> MEM
-    REACT --> TOOLS
-    TOOLS --> ARIS
-    TOOLS --> IFXPM
-    TOOLS --> SEARCH
-    REACT --> SUFFIX
-    SUFFIX -->|sufficient| CHECKER --> ANS
-    SUFFIX -->|insufficient| REACT
-
-    style PLAN fill:#21262d,stroke:#d2a8ff,color:#e6edf3
-    style REACT fill:#21262d,stroke:#ffa657,color:#e6edf3
-    style CHECKER fill:#21262d,stroke:#3fb950,color:#e6edf3
-    style ARIS fill:#21262d,stroke:#58a6ff,color:#e6edf3
-    style IFXPM fill:#21262d,stroke:#58a6ff,color:#e6edf3
-```
-
-### Planner Intelligence — Process Abbreviation Expansion
-
-Infineon consultants use process abbreviations. The planner pre-processes queries before
-routing to ARIS:
-
-```python
-# Before ARIS search: expand known abbreviations + strip noise words
-"who is the owner of dtc process"  →  "demand to cash"
-"how to improve my p2p"            →  "purchase to pay"
-"what is plan under demand to cash" →  "plan demand to cash"
-```
-
-Known mappings (12 Infineon processes): DTC, OTC, MTB, STP, PTP/P2P, RTR, HTR, FTD, I2D, D2M, M2B
-
-### IFX Process Management Sub-Agents
-
-For process improvement queries, the IFXProcessMgmtAgent dispatches to 5 domain sub-agents:
-
-| Sub-Agent | Covers |
+| Dimension | Detail |
 |-----------|--------|
-| `change_communication_agent` | Stakeholder communication for process changes |
-| `execution_stabilization_agent` | Stabilizing processes in execution phase |
-| `initiation_planning_agent` | Project initiation and planning activities |
-| `monitoring_control_agent` | KPI tracking, performance gates |
-| `project_mgmt_agent` | General project management guidance |
-
-### Exception Handling
-
-| Error Type | Handling |
-|------------|---------|
-| Planning failure | `PlanningError` exception → fast-path fallback (direct retrieval, no planning) |
-| Tool unavailable | `ToolUnavailableError` → skip sub-goal, continue with remaining |
-| Citation gate fail | `CitationGateError` → re-query with citation requirement |
-| Timeout | `ReactResult.timed_out=True` → return partial results |
+| Delivery | <2 weeks concept to production (GitHub Copilot SpecKit) |
+| Knowledge sources | Confluence (process docs)  ARIS (BPMN process metadata) |
+| Execution paths | Direct  Fast path  ReAct deep thinking |
+| Phase sub-agents | 5: Initiation/Planning, Execution/Stabilization, Project Management, Change/Communication, Monitoring/Control |
+| Frontend | React.js (TypeScript)  SSE streaming  per-message feedback loop |
+| CI/CD | GitLab CI/CD  ArgoCD  Helm  OpenShift  Artifactory |
 
 ---
 
-## Ingestion Pipeline
+## Overview
 
-Process documents have distinct structural characteristics that required a tailored
-ingestion approach:
-
-```mermaid
-flowchart LR
-    RAW["📄 Raw Docs\nPDF · DOCX · PPT"]
-    PARSE["🔧 Parser\nDocling\npreserve headings + tables"]
-    META["🏷️ Metadata Tagger\ndoc_type · department\nproject_id · date"]
-    CHUNK["✂️ Semantic Chunker\nsection-aware\npreserve procedure steps"]
-    EMBED["🔢 Embedding Model\non-prem"]
-    IDX["📦 Vector Store\nhybrid index"]
-
-    RAW --> PARSE --> META --> CHUNK --> EMBED --> IDX
-```
-
-### Metadata Tagging Strategy
-
-Metadata is injected per document at ingestion to enable **filtered retrieval**:
-
-| Metadata Field | Values | Used For |
-|----------------|--------|----------|
-| `doc_type` | SOP / benchmark / improvement_report / standard | Filter by source type |
-| `department` | Finance / Logistics / Manufacturing / etc. | Department-scoped queries |
-| `project_id` | Internal project reference | "Find similar to project X" |
-| `date_updated` | ISO date | Recency filtering |
-| `process_area` | Order-to-cash / Procure-to-pay / etc. | Process domain filtering |
-
-Filtered retrieval example: "Show me only improvement reports from Logistics in the
-last 2 years related to cycle time reduction" — metadata filters applied pre-retrieval
-to narrow the search space.
-
-### Chunking for Process Documents
-
-Process documents have unique structure challenges:
-
-| Document Type | Challenge | Strategy |
-|---------------|-----------|----------|
-| **SOP** | Numbered steps must stay together — splitting mid-procedure breaks logical context | Section-aware chunking: each procedure section (Scope, Steps, Exceptions) as a unit |
-| **Improvement report** | Problem → Approach → Result narrative spans multiple paragraphs | Paragraph-grouping with overlap to preserve narrative continuity |
-| **Benchmark / Framework** | Tabular maturity criteria — table rows must not be split | Table-aware chunking: entire table as one chunk with header repeated |
+A virtual process consultant that helps process owners and users understand organisational processes and receive actionable improvement guidance. Given a natural language query, the system retrieves relevant knowledge from Confluence and ARIS (the organisation's BPMN process modelling software), then synthesises a cited consultant-quality answer with recommendations and rationale.
 
 ---
 
-## Query Synthesis Design
+## Phase 1  Design: Data Sources and Knowledge Architecture
 
-Process consultant queries require **cross-document synthesis**, not single-doc lookup:
+**Sources:** Confluence (process documentation)  ARIS (BPMN process metadata)
+
+Two complementary knowledge sources were identified:
+
+| Source | Content | Access |
+|--------|---------|--------|
+| **ARIS** | Process names, IP codes, ownership, scope, mission, hierarchy, goals | REST API  Excel workbook  CSV; auto-fetched on startup, refreshed hourly |
+| **Confluence** | Process documentation, SOPs, improvement guidelines, intranet articles | Internal semantic search platform |
+
+ARIS metadata is auto-provisioned at startup: the system downloads the Excel workbook from the ARIS REST API, extracts the relevant sheet with openpyxl, and writes an atomic CSV. A background task refreshes this every hour. On failure, the existing CSV is preserved  the system continues with stale data rather than going down.
+
+**Design decision:** ARIS metadata kept as local CSV rather than live API calls  decouples the query path from ARIS REST availability and enables fuzzy + exact scoring without network latency per query.
+
+---
+
+## Phase 2  Internal Platform Integration: Semantic Search as Reusable Component
+
+**Principle:** Reuse over reinvent  constraints: rate limits, source update frequency, on-prem
+
+Rather than building a custom embedding and vector store pipeline, the system integrates with an **internal semantic search platform** already maintained by another team. This platform handles document indexing, embedding, and retrieval across Confluence and intranet sources, with built-in rate limiting, source update frequency management, and access control.
+
+A thin `search_engine` adapter calls the platform's REST API (`POST /search`) with per-agent project scoping and mode configuration (`llm` / `vector` / `context`). Each agent can override the search mode and target project IDs independently via its YAML config file.
+
+**Why reuse:** The platform already manages update frequency, rate limiting, and TLS cert handling on-prem  building equivalent infrastructure would have doubled scope with no user-visible benefit.
+
+---
+
+## Phase 3  Agent Architecture: Planner  Phase Agents  Checker
+
+**Library:** OpenAI native SDK (AsyncOpenAI)  on-prem endpoint  per-agent YAML config
+
+Built with OpenAI's native Python SDK (`openai.AsyncOpenAI`) pointed at an on-premise OpenAI-compatible endpoint  no additional orchestration layer. Each agent is independently configured via a YAML file (model, temperature, max_tokens, tool permissions, search engine overrides).
 
 ```
-Query: "What cycle time reduction approaches have worked in logistics processes?"
-
-Retrieval: 
-  - Chunk from Report_2022_CLM_Improvement: "Eliminated manual PO matching → 40% cycle time reduction"
-  - Chunk from SOP_[ProcessName]_v3: "Automated matching rules applied to orders above approval threshold"
-  - Chunk from Benchmark_ProcessMaturity: "L3 automation: system-initiated matching for routine orders"
-
-Synthesis prompt structure:
-  "Given the following process documents, synthesize the key approaches used for 
-   cycle time reduction, their results, and applicable conditions..."
-
-Response: Synthesized recommendation with 3 approaches, results, and when each applies.
+User Query
+    
+    
+Planner Agent LLM routing ARIS Agent         ─ Checker Agent 
+                              IFX Process Mgmt    Checker Agent 
+                                                                       
+                             phase routing                    Planner consolidate
+                                                                       
+                                      Final Cited Response
+                         Initiation/Planning 
+                         Execution/Stabilize 
+                         Project Management  
+                         Change/Communicate  
+                         Monitoring/Control  
+                        
 ```
 
-**Key prompt design choice:** The synthesis prompt explicitly asks the LLM to:
-1. Group findings by approach type
-2. Include measurable results where available
-3. Note applicability conditions (when does this approach work?)
-4. Cite source documents per finding
+- **Planner Agent:** LLM routing  classifies query as `aris`, `ifx_process_mgmt`, or `direct`; expands process abbreviations; reconstructs vague queries into precise search phrases
+- **ARIS Agent:** fuzzy + exact search on the local CSV  phrase matching, acronym detection, token coverage scoring, hierarchy-depth weighting; top-10 results
+- **IFX Process Mgmt Agent:** second-level routing into 5 process phase sub-agents or a general search path
+- **Checker Agent:** mandatory gate after every sub-agent run  cross-references results, filters citations to only those used in the final answer; blocks responses with no citations
 
-This structure produces consultant-grade output, not just a literature summary.
-
----
-
-## Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Agent orchestration | Custom ReAct loop (asyncio, OpenAI function-calling) |
-| Execution model | ExecutionPlan + SubGoal dependency graph |
-| LLM | On-prem OpenAI-compatible endpoint (gpt4ifx) |
-| Embedding | On-prem embedding model |
-| Vector store | Elasticsearch (dense_vector kNN HNSW) |
-| Process model | ARIS (process management system, REST API) |
-| Sufficiency check | SufficiencyEvaluator (custom LLM judge) |
-| Document parsing | Docling (structure-preserving headings + tables) |
-| Backend | FastAPI |
-| Docker registry | Artifactory |
-| CI/CD | GitLab CI/CD → ArgoCD → OpenShift (dev/staging/prod) with Helm overlays |
-| Dev tooling | GitHub Copilot SpecKit (spec-driven development) |
+**Citation policy:** Every response must surface at least one traceable citation. Responses without citations are never shown to the user.
 
 ---
 
-## Outcome
+## Phase 4  Execution Paths: Fast Path and ReAct Deep Thinking
 
-- Production-ready MVP deployed in **2 weeks** via spec-driven development (GitHub Copilot SpecKit)
-- Deployed for Process Consulting team
-- GitOps CI/CD pipeline explored (dev/staging/prod environments) for production-readiness
-- Covers SOPs, benchmark frameworks, and historical improvement reports
-- Consultant queries return synthesized recommendations with source attribution
+**Paths:** direct  fast (sequential)  ReAct loop (iterative, user-triggered)
+
+| Path | When | Mechanism |
+|------|------|-----------|
+| **Direct** | Conversational / utility task (greeting, translate, summarise) | Planner answers directly; no sub-agents; no citation required |
+| **Fast path** | Standard knowledge queries | Sequential: ARIS Agent  IFX Agent  Checker  Planner consolidation |
+| **ReAct loop** | User explicitly requests deep thinking | Iterative: plan ExecutionPlan (SubGoals with dependency graph)  execute tools in parallel (asyncio)  observe  sufficiency check  re-plan if needed |
+
+The **ReAct loop** uses an `ExecutionPlan`  a structured decomposition into `SubGoal` objects, each with a tool, parameters, and `depends_on` dependency list. Parallel sub-goals are executed concurrently with asyncio. A `SufficiencyEvaluator` decides whether to finalise or re-plan after each iteration, up to a configurable `REACT_MAX_ITERATIONS` limit.
+
+**Fast path default:** The ReAct loop adds latency and is only activated when the user explicitly enables deep thinking mode. Standard queries always take the fast path to stay under the 25-second agent timeout.
 
 ---
 
-## Interview Talking Points
+## Phase 5  Frontend: React.js with Feedback Loop
 
-<details>
-<summary>💬 "How is this different from ClaireGPT if both use RAG?"</summary>
+**Framework:** React.js (TypeScript)  SSE streaming  per-message rating + comment
 
-> "Same RAG foundation, very different user objective. ClaireGPT serves CLM staff doing
-> factual lookups — the answer exists in a specific document and you need to find it.
-> Pro-Toolbox serves consultants who need to synthesize across many sources to form a
-> recommendation. A CLM user asks 'what does our contract say about liability?' — one
-> right answer. A consultant asks 'what approaches have worked for reducing cycle time
-> in logistics?' — the answer needs to be assembled from 5 past project reports and
-> 2 benchmarks. The architecture also differs: ClaireGPT uses LangChain ReAct tools,
-> Pro-Toolbox uses a structured ExecutionPlan where the planner produces a full dependency
-> graph of sub-goals upfront — this allows parallel tool execution instead of sequential
-> step-by-step."
+Built a React.js + TypeScript frontend with an SSE streaming hook (`useChat`) for real-time response rendering as the agent pipeline produces output. Components: `ChatWindow`, `MessageBubble`, `CitationPanel`, `ThinkingPanel` (shows live agent steps).
 
-</details>
+**Feedback loop:** Users submit a rating (thumbs up / thumbs down) and optional comment per assistant response via `PUT /feedback/{message_id}`. Feedback is stored inline in the conversation's SQLite record  only the conversation owner can update their feedback.
 
-<details>
-<summary>💬 "What is the ExecutionPlan pattern and why did you use it?"</summary>
+**Feedback use:** QnA pairs with ratings are stored persistently for future evaluation, fine-tuning, and identifying which query types the system handles poorly.
 
-> "Standard ReAct loops are step-by-step: think → act → observe → think again. This works
-> but is slow for multi-part consultant queries. Instead, our planner generates a complete
-> ExecutionPlan upfront — a list of SubGoals each with a tool, parameters, and a depends_on
-> list. Sub-goals without dependencies can execute in parallel. For a query like 'find the
-> DTC process owner and any recent improvements', the plan generates two parallel sub-goals:
-> ARIS lookup for process owner, and document retrieval for improvements. They run
-> simultaneously in the asyncio loop. The SufficiencyEvaluator then decides if the
-> observations are enough to answer, or if we need another planning round."
+---
 
-</details>
+## Phase 6  CI/CD: Build  Dev  Staging  Prod
 
-<details>
-<summary>💬 "How did you handle Infineon-specific process abbreviations?"</summary>
+**Stack:** GitLab CI/CD  ArgoCD  Helm  OpenShift  Artifactory
 
-> "Infineon has 12+ internal process abbreviations (DTC=demand-to-cash, P2P=purchase-to-pay,
-> etc.) that ARIS uses as process names. If a consultant asks 'who owns the DTC process',
-> a naive search for 'DTC' fails. We built a pre-processing step in the planner that
-> expands known abbreviations and strips question/noise words before building the ARIS
-> search query. 'who is the owner of DTC process' becomes 'demand to cash' — which
-> matches ARIS correctly. This was a simple but high-impact fix that came from watching
-> consultants use the system in user testing."
+Branch-to-environment mapping:
 
-</details>
+| Branch / Tag | Environment | Trigger |
+|-------------|-------------|---------|
+| `feature/*` MR |  | Test + lint only |
+| `develop` | Dev | Test + lint + build + deploy (ArgoCD auto-sync) |
+| `main` | Staging | Test + lint + build + deploy (ArgoCD auto-sync) |
+| `v*` tag | Prod | Test + lint + build + deploy (manual gate) |
+
+Pipeline stages:
+- **build-ci**  pre-built CI image with Python deps; only rebuilds on `requirements.txt` change
+- **test**  pytest (backend) + frontend tests
+- **lint**  ruff + ESLint
+- **build**  OpenShift BuildConfig  Artifactory Docker registry
+- **update-manifests**  commit new image tags to Helm values with `[skip ci]`
+- **rotate-token**  monthly scheduled service account token renewal
+
+All Python and npm packages are proxied through Artifactory (direct internet access to PyPI / npmjs.org blocked on-prem).
+
+**Outcome:** Full CI/CD pipeline shipped within the <2-week delivery window alongside the application itself, using GitHub Copilot SpecKit spec-driven development.
+
+---
+
+## Retrospective Learning
+
+- Per-agent YAML config files (model, temperature, tool permissions, search overrides) proved essential for tuning agent behaviour without code changes  this pattern scales well as more agents are added
+- The sufficiency evaluator in the ReAct loop avoids wasted iterations but requires careful threshold tuning: too aggressive and it exits early on sparse results; too lenient and latency grows
+- Routing the ARIS Agent separately from the semantic search agent keeps ARIS metadata fresh without coupling to the search platform's update cycle
+
+---
+
+## Stack
+
+| Category | Tools |
+|----------|-------|
+| LLM SDK | OpenAI (AsyncOpenAI, on-prem endpoint) |
+| API | FastAPI |
+| Frontend | React.js (TypeScript)  Vite |
+| Knowledge retrieval | Internal Semantic Search API  ARIS REST API |
+| Data | SQLite (conversations + feedback) |
+| Infrastructure | Docker  OpenShift |
+| CI/CD | GitLab CI/CD  ArgoCD  Helm  Artifactory |
+| Dev tooling | GitHub Copilot SpecKit |
