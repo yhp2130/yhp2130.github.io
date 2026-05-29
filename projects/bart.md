@@ -56,7 +56,7 @@ Results were poor due to:
 
 ### Phase 3 — Data Labelling: 200 Contracts (BSA + CAA)
 
-Manually labelled 200 contracts using Label Studio. Two contract types:
+Manually labelled **200 contracts** at the sentence level — each sentence tagged with one or more of the 8 clause topics. Two contract types:
 
 | Type | Description | Challenge |
 |------|-------------|-----------|
@@ -145,7 +145,7 @@ Results were comparable to the fine-tuned pipeline.
 
 | Component | Technology |
 |-----------|-----------|
-| Annotation | Label Studio |
+| Annotation | Sentence-level classification (manual labelling) |
 | Transcription | Nougat |
 | Table detection | DETR (detr-doc-table-detection) |
 | Classification | RoBERTa-large-MNLI (fine-tuned) |
