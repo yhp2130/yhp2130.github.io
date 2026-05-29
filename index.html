@@ -6,14 +6,550 @@
   <meta name="description" content="Yap Hong Ping — Applied AI Engineer. Agentic AI, RAG, Production LLM Systems, MLOps. Singapore.">
   <title>Yap Hong Ping | Applied AI Engineer</title>
   <style>
-    /* CSS will be added in Task 2 */
+    /* ── Design Tokens ── */
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --border:    #30363d;
+      --blue:      #58a6ff;
+      --green:     #3fb950;
+      --purple:    #d2a8ff;
+      --orange:    #ffa657;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      --radius:    6px;
+      --section-pad: 72px 24px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Navbar ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+    }
+    nav .logo { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--blue); }
+    nav .logo span { color: var(--green); }
+    nav ul { list-style: none; display: flex; gap: 20px; }
+    nav ul li a { font-size: 13px; color: var(--muted); transition: color 0.2s; }
+    nav ul li a:hover,
+    nav ul li a.active { color: var(--blue); text-decoration: none; }
+
+    /* ── Section base ── */
+    section { padding: var(--section-pad); max-width: 900px; margin: 0 auto; }
+    .section-cmd {
+      font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+      margin-bottom: 28px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .section-cmd span { color: var(--green); }
+
+    /* ── Terminal Hero ── */
+    #hero {
+      padding: 60px 24px; max-width: 900px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 32px;
+    }
+    .terminal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden; max-width: 600px;
+    }
+    .terminal-titlebar {
+      background: #21262d; padding: 10px 14px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .terminal-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .terminal-dot.red    { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green  { background: #28c840; }
+    .terminal-title {
+      color: var(--muted); font-size: 11px; font-family: var(--font-mono);
+      margin-left: 8px; flex: 1; text-align: center;
+    }
+    .terminal-body {
+      padding: 20px; font-family: var(--font-mono); font-size: 13px;
+      line-height: 2.0; min-height: 160px;
+    }
+    .t-prompt { color: var(--text); }
+    .t-prompt .t-user { color: var(--green); }
+    .t-prompt .t-host { color: var(--muted); }
+    .t-output { color: var(--blue); padding-left: 0; }
+    .t-output.green  { color: var(--green); }
+    .t-output.purple { color: var(--purple); }
+    .t-output.orange { color: var(--orange); }
+    .t-cursor {
+      display: inline-block; width: 8px; height: 14px;
+      background: var(--text); vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      background: #238636; color: #fff; padding: 9px 18px;
+      border-radius: var(--radius); font-size: 13px; font-weight: 600;
+      border: none; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #2ea043; text-decoration: none; color: #fff; }
+    .btn-outline {
+      border: 1px solid var(--border); color: var(--text); padding: 9px 18px;
+      border-radius: var(--radius); font-size: 13px; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--blue); background: rgba(88,166,255,0.06); text-decoration: none; color: var(--text); }
+
+    /* ── About ── */
+    .about-bio { font-size: 15px; line-height: 1.8; color: var(--text); max-width: 680px; }
+    .about-links { display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+    .about-links a {
+      font-size: 13px; color: var(--muted); border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: var(--radius); transition: border-color 0.2s, color 0.2s;
+    }
+    .about-links a:hover { border-color: var(--blue); color: var(--blue); text-decoration: none; }
+    .about-badges { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .badge {
+      font-size: 11px; font-family: var(--font-mono); padding: 3px 10px;
+      border-radius: 20px; border: 1px solid;
+    }
+    .badge.blue   { color: var(--blue);   background: rgba(88,166,255,0.1);  border-color: rgba(88,166,255,0.3); }
+    .badge.green  { color: var(--green);  background: rgba(63,185,80,0.1);   border-color: rgba(63,185,80,0.3); }
+    .badge.purple { color: var(--purple); background: rgba(210,168,255,0.1); border-color: rgba(210,168,255,0.3); }
+    .badge.orange { color: var(--orange); background: rgba(255,166,87,0.1);  border-color: rgba(255,166,87,0.3); }
+    .badge.muted  { color: var(--muted);  background: rgba(139,148,158,0.1); border-color: rgba(139,148,158,0.3); }
+
+    /* ── Projects ── */
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; display: flex;
+      flex-direction: column; gap: 10px; transition: border-color 0.2s;
+    }
+    .project-card:hover { border-color: var(--blue); }
+    .project-name { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--orange); }
+    .project-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .project-points { list-style: none; padding: 0; }
+    .project-points li { font-size: 12px; color: var(--text); padding: 2px 0; }
+    .project-points li::before { content: "▸ "; color: var(--green); }
+    .project-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+    .project-link {
+      margin-top: auto; font-size: 12px; color: var(--blue);
+      font-family: var(--font-mono);
+    }
+
+    /* ── Skills ── */
+    .skills-groups { display: flex; flex-direction: column; gap: 20px; }
+    .skill-group-label {
+      font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .skill-badges { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    /* ── Experience Timeline ── */
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px;
+      bottom: 0; width: 2px; background: var(--border);
+    }
+    .timeline-item { position: relative; margin-bottom: 36px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -21px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--green); border: 2px solid var(--bg);
+    }
+    .timeline-company { font-size: 15px; font-weight: 600; color: var(--text); }
+    .timeline-role { font-size: 13px; color: var(--blue); margin-top: 2px; }
+    .timeline-period { font-size: 11px; color: var(--muted); font-family: var(--font-mono); margin-top: 2px; }
+    .timeline-points { list-style: none; padding: 0; margin-top: 10px; }
+    .timeline-points li { font-size: 13px; color: var(--muted); padding: 3px 0; }
+    .timeline-points li::before { content: "▸ "; color: var(--green); }
+
+    /* ── Learning ── */
+    .learning-items { display: flex; flex-direction: column; gap: 16px; max-width: 560px; }
+    .learning-item { display: flex; align-items: center; gap: 16px; }
+    .learning-label { font-family: var(--font-mono); font-size: 13px; color: var(--text); min-width: 160px; }
+    .learning-bar-wrap { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; height: 8px; overflow: hidden; }
+    .learning-bar { height: 100%; border-radius: 4px; background: var(--green); }
+    .learning-status { font-size: 11px; color: var(--muted); font-family: var(--font-mono); min-width: 110px; }
+    .learning-note { margin-top: 20px; font-size: 13px; color: var(--muted); font-style: italic; }
+
+    /* ── Contact ── */
+    #contact { border-top: 1px solid var(--border); }
+    .contact-status {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3);
+      padding: 6px 14px; border-radius: 20px; font-size: 13px; color: var(--green);
+      margin-bottom: 20px;
+    }
+    .contact-status::before { content: '●'; font-size: 8px; }
+    .contact-links { display: flex; gap: 14px; flex-wrap: wrap; }
+    .contact-links a {
+      font-size: 13px; color: var(--muted); border: 1px solid var(--border);
+      padding: 8px 16px; border-radius: var(--radius); transition: border-color 0.2s, color 0.2s;
+    }
+    .contact-links a:hover { border-color: var(--blue); color: var(--blue); text-decoration: none; }
+    .copyright { margin-top: 32px; font-size: 11px; color: var(--muted); font-family: var(--font-mono); }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      nav ul { gap: 10px; }
+      nav ul li a { font-size: 11px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      #hero { padding: 32px 16px; }
+      section { padding: 48px 16px; }
+    }
   </style>
 </head>
 <body>
-  <!-- Sections added in Tasks 3–10 -->
-  <p style="color:white;background:#0d1117;padding:20px;">Scaffold working ✓</p>
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="logo">yhp2130 <span>~</span></div>
+    <ul>
+      <li><a href="#about">#about</a></li>
+      <li><a href="#projects">#projects</a></li>
+      <li><a href="#skills">#skills</a></li>
+      <li><a href="#experience">#experience</a></li>
+      <li><a href="#learning">#learning</a></li>
+      <li><a href="#contact">#contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="terminal">
+      <div class="terminal-titlebar">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+        <span class="terminal-title">bash — portfolio</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <!-- Typewriter JS fills this -->
+      </div>
+    </div>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="assets/resume.pdf" download class="btn-outline">Download Resume</a>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="section-cmd">$ cat about.md <span># applied ai engineer</span></div>
+    <p class="about-bio">
+      Applied AI Engineer with 10+ years building and shipping production-grade AI systems end-to-end —
+      from agentic pipelines and RAG systems to full-stack deployment with CI/CD and GitOps.
+      Currently at Infineon Technologies, delivering LLM-powered tools that serve real users daily.
+      Singapore PR — open to AI Engineer and Data Scientist roles in Singapore.
+    </p>
+    <div class="about-links">
+      <a href="https://github.com/yhp2130" target="_blank">⌥ github.com/yhp2130</a>
+      <a href="https://www.linkedin.com/in/yaphongping/" target="_blank">in LinkedIn</a>
+      <a href="mailto:your-email@example.com">✉ Email</a>
+    </div>
+    <div class="about-badges">
+      <span class="badge blue">NUS-ISS MTech (Knowledge Engineering)</span>
+      <span class="badge muted">NTU BEng (Mechatronic) · 2nd Class Upper</span>
+      <span class="badge green">Singapore PR</span>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="section-cmd">$ ls projects/ <span># 3 items</span></div>
+    <div class="projects-grid">
+
+      <div class="project-card">
+        <div class="project-name">📦 receipt-ai</div>
+        <div class="project-desc">OCR + Computer Vision model serving endpoint</div>
+        <ul class="project-points">
+          <li>Image classification + segmentation + OCR pipeline</li>
+          <li>Model serving endpoint on AWS SageMaker</li>
+          <li>Event-trigger integration with SAP BTP</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge orange">AWS SageMaker</span>
+          <span class="badge blue">PyTorch</span>
+          <span class="badge muted">EasyOCR</span>
+        </div>
+        <a class="project-link" href="https://github.com/yhp2130/receipt-ai" target="_blank">→ github.com/yhp2130/receipt-ai</a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">📦 rag-chatbot</div>
+        <div class="project-desc">RAG + agentic tool-use with open-source LLMs</div>
+        <ul class="project-points">
+          <li>Multi-step agent pipeline with tool-calling</li>
+          <li>RAG over 1,000+ documents (5 formats)</li>
+          <li>Open-source LLMs (Llama/Mistral) on Azure</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge purple">Azure</span>
+          <span class="badge blue">LangChain</span>
+          <span class="badge green">FastAPI</span>
+        </div>
+        <a class="project-link" href="https://github.com/yhp2130/rag-chatbot" target="_blank">→ github.com/yhp2130/rag-chatbot</a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">📦 contract-clause-extractor</div>
+        <div class="project-desc">Legal NLP clause extraction with Streamlit demo</div>
+        <ul class="project-points">
+          <li>Fine-tuned transformer, 11-class classification (F1=0.8)</li>
+          <li>OCR + layout understanding pipeline</li>
+          <li>Streamlit interactive demo app</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge green">HuggingFace</span>
+          <span class="badge blue">Streamlit</span>
+          <span class="badge muted">PyTorch</span>
+        </div>
+        <a class="project-link" href="https://github.com/yhp2130/contract-clause-extractor" target="_blank">→ github.com/yhp2130/contract-clause-extractor</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills">
+    <div class="section-cmd">$ cat skills.txt <span># grouped by domain</span></div>
+    <div class="skills-groups">
+
+      <div>
+        <div class="skill-group-label">AI / ML</div>
+        <div class="skill-badges">
+          <span class="badge blue">Python</span>
+          <span class="badge blue">PyTorch</span>
+          <span class="badge blue">Scikit-learn</span>
+          <span class="badge blue">HuggingFace</span>
+          <span class="badge blue">LangChain</span>
+          <span class="badge blue">RAG</span>
+          <span class="badge blue">Agentic AI</span>
+          <span class="badge blue">NLP</span>
+          <span class="badge blue">Computer Vision</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label">Backend</div>
+        <div class="skill-badges">
+          <span class="badge green">FastAPI</span>
+          <span class="badge green">REST APIs</span>
+          <span class="badge green">Microservices</span>
+          <span class="badge green">Streamlit</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label">MLOps / DevOps</div>
+        <div class="skill-badges">
+          <span class="badge purple">Docker</span>
+          <span class="badge purple">Kubernetes</span>
+          <span class="badge purple">GitLab CI/CD</span>
+          <span class="badge purple">ArgoCD</span>
+          <span class="badge purple">Helm</span>
+          <span class="badge purple">GitOps</span>
+          <span class="badge purple">GitHub Actions</span>
+          <span class="badge purple">OpenShift</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label">Cloud &amp; Data</div>
+        <div class="skill-badges">
+          <span class="badge orange">AWS (SageMaker)</span>
+          <span class="badge orange">GCP (Vertex AI)</span>
+          <span class="badge orange">Azure</span>
+          <span class="badge orange">Elasticsearch</span>
+          <span class="badge orange">PostgreSQL</span>
+          <span class="badge orange">Hadoop</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="skill-group-label">AI Dev Tools</div>
+        <div class="skill-badges">
+          <span class="badge green">GitHub Copilot</span>
+          <span class="badge green">Copilot Studio</span>
+          <span class="badge green">Spec-driven dev</span>
+          <span class="badge green">M365 Copilot</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience">
+    <div class="section-cmd">$ git log --oneline experience <span># 3 roles</span></div>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-company">Infineon Technologies Asia Pacific</div>
+        <div class="timeline-role">Staff Analyst, Data Scientist</div>
+        <div class="timeline-period">Nov 2021 – Present · Singapore</div>
+        <ul class="timeline-points">
+          <li>Shipped production multi-agent AI system (FastAPI + LangChain + GitOps) in 2 weeks — ~100 queries/day adoption</li>
+          <li>Built enterprise RAG platform over 1,000+ documents — reduced search time by 96% (2hr → 5min)</li>
+          <li>Fine-tuned NLP classifier for 11-class contract analysis (F1=0.8) with full CI/CD pipeline</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-company">PSA Corporation</div>
+        <div class="timeline-role">Principal Engineer, Smart Systems Solutions</div>
+        <div class="timeline-period">Jul 2018 – Nov 2021 · Singapore</div>
+        <ul class="timeline-points">
+          <li>Deployed predictive maintenance ML system for 20+ machines (0.5s sampling) — saved 8 man-hours/week</li>
+          <li>Built object detection pipelines (YOLO) for equipment monitoring, production deployment on edge</li>
+          <li>Designed Cloudera Hadoop data pipelines for large-scale industrial sensor processing</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-company">PSA Corporation</div>
+        <div class="timeline-role">Senior Mechanical Engineer</div>
+        <div class="timeline-period">Jul 2013 – Jul 2018 · Singapore</div>
+        <ul class="timeline-points">
+          <li>Developed automated component life tracking systems</li>
+          <li>Translated mechanical failure patterns into rule-based predictive monitoring criteria</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Learning -->
+  <section id="learning">
+    <div class="section-cmd">$ tail -f learning.log <span># live progress</span></div>
+    <div class="learning-items">
+
+      <div class="learning-item">
+        <span class="learning-label">GitHub Copilot</span>
+        <div class="learning-bar-wrap"><div class="learning-bar" style="width:100%;background:var(--green);"></div></div>
+        <span class="learning-status" style="color:var(--green);">Daily use ✓</span>
+      </div>
+
+      <div class="learning-item">
+        <span class="learning-label">AWS (SageMaker)</span>
+        <div class="learning-bar-wrap"><div class="learning-bar" style="width:60%;"></div></div>
+        <span class="learning-status">In progress</span>
+      </div>
+
+      <div class="learning-item">
+        <span class="learning-label">GCP (Vertex AI)</span>
+        <div class="learning-bar-wrap"><div class="learning-bar" style="width:60%;"></div></div>
+        <span class="learning-status">In progress</span>
+      </div>
+
+      <div class="learning-item">
+        <span class="learning-label">Claude Code</span>
+        <div class="learning-bar-wrap"><div class="learning-bar" style="width:40%;background:var(--blue);"></div></div>
+        <span class="learning-status">Exploring</span>
+      </div>
+
+      <div class="learning-item">
+        <span class="learning-label">M365 Copilot</span>
+        <div class="learning-bar-wrap"><div class="learning-bar" style="width:40%;background:var(--purple);"></div></div>
+        <span class="learning-status">Familiar</span>
+      </div>
+
+    </div>
+    <p class="learning-note">Converting YouTube knowledge to hands-on projects — AWS + GCP sprint underway.</p>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="section-cmd">$ echo $CONTACT</div>
+    <div class="contact-status">Open to AI Engineer roles · Singapore</div>
+    <div class="contact-links">
+      <a href="https://github.com/yhp2130" target="_blank">⌥ GitHub</a>
+      <a href="https://www.linkedin.com/in/yaphongping/" target="_blank">in LinkedIn</a>
+      <a href="mailto:your-email@example.com">✉ Email</a>
+      <a href="assets/resume.pdf" download>↓ Resume PDF</a>
+    </div>
+    <p class="copyright">© 2026 Yap Hong Ping · yhp2130.github.io</p>
+  </section>
+
   <script>
-    // JS added in Task 11
+    // ── Typewriter Animation ──
+    const lines = [
+      { prompt: true,  text: 'whoami' },
+      { prompt: false, text: 'Yap Hong Ping \u2014 Applied AI Engineer', cls: '' },
+      { prompt: true,  text: 'cat focus.txt' },
+      { prompt: false, text: 'Agentic AI \u00b7 RAG \u00b7 Production LLM Systems \u00b7 MLOps', cls: 'purple' },
+      { prompt: true,  text: 'ls projects/' },
+      { prompt: false, text: 'receipt-ai/\u00a0\u00a0rag-chatbot/\u00a0\u00a0contract-clause-extractor/', cls: 'orange' },
+    ];
+
+    const PROMPT_HTML = '<span class="t-user">yhp2130</span><span class="t-host">@github</span>:~$ ';
+    const CHAR_DELAY = 45;
+    const LINE_PAUSE = 400;
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function typeWriter() {
+      const body = document.getElementById('terminal-body');
+      body.innerHTML = '';
+
+      for (const line of lines) {
+        const div = document.createElement('div');
+        if (line.prompt) {
+          div.innerHTML = '<span class="t-prompt">' + PROMPT_HTML + '</span>';
+          body.appendChild(div);
+          const textSpan = document.createElement('span');
+          div.appendChild(textSpan);
+          for (const ch of line.text) {
+            textSpan.textContent += ch;
+            await sleep(CHAR_DELAY);
+          }
+        } else {
+          div.className = 't-output' + (line.cls ? ' ' + line.cls : '');
+          body.appendChild(div);
+          for (const ch of line.text) {
+            div.textContent += ch;
+            await sleep(CHAR_DELAY / 2);
+          }
+        }
+        await sleep(LINE_PAUSE);
+      }
+
+      // Final prompt with blinking cursor
+      const finalDiv = document.createElement('div');
+      finalDiv.innerHTML = '<span class="t-prompt">' + PROMPT_HTML + '</span><span class="t-cursor"></span>';
+      body.appendChild(finalDiv);
+    }
+
+    // ── Active Nav Highlight ──
+    function initActiveNav() {
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('nav ul li a');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navLinks.forEach(a => a.classList.remove('active'));
+            const active = document.querySelector('nav ul li a[href="#' + entry.target.id + '"]');
+            if (active) active.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-40% 0px -55% 0px' });
+
+      sections.forEach(s => observer.observe(s));
+    }
+
+    // ── Init ──
+    window.addEventListener('DOMContentLoaded', () => {
+      typeWriter();
+      initActiveNav();
+    });
   </script>
 </body>
 </html>
