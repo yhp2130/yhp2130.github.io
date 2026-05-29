@@ -121,16 +121,15 @@ Redesigned from batch CSV processing to **event-driven**:
 Hotel folios are structurally different — multi-row itemized charges, table layouts, multi-page.
 Repeated the Label Studio annotation process for table region bounding boxes.
 
-Evaluated two document understanding models:
+Ran a series of experiments on hotel invoice extraction:
 
 | Model | Approach | Outcome |
 |-------|---------|---------|
 | LayoutLM | Layout-aware transformer for key-value extraction | Did not meet expected performance — hotel formats too wide and varied |
 | Donut | End-to-end document understanding (no OCR stage) | Training converged but generalisation poor — format variability too high |
+| DETR + SetFit | DETR for table region detection + SetFit for few-shot line-item classification | Better than LayoutLM/Donut but still limited — 70% overall POC accuracy |
 
-Neither model achieved the extraction quality needed. **Project concluded at this stage** — POC overall accuracy settled at **70%**.
-
-**Root cause:** Hotel invoice layouts differ significantly across hotel chains — column widths, item naming conventions, multi-currency rows, page count. Fine-tuned specialist models without sufficient per-format training data could not generalise.
+**Root cause:** Hotel invoice layouts differ significantly across hotel chains — column widths, item naming conventions, multi-currency rows, page count. All fine-tuned specialist models struggled to generalise without sufficient per-format training data.
 
 ---
 
@@ -151,7 +150,7 @@ Key takeaway: **multimodal LLMs are the pragmatic first choice for structured do
 | Receipt segmentation | PyTorch Faster RCNN (ResNet50) |
 | OCR | EasyOCR (custom fine-tuned weights) |
 | Field extraction | Regex NER (date + amount) |
-| Evaluated (hotel) | LayoutLM · Donut |
+| Evaluated (hotel) | LayoutLM · Donut · DETR + SetFit (experiments) |
 | Webhook/API | FastAPI · SAP Concur v4 REST API (OAuth2) |
 | Deployment | SAP BTP |
 | Training | On-prem GPU · Image augmentation |
