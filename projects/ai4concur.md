@@ -2,7 +2,7 @@
 
 ← [Back to Portfolio](../README.md)
 
-**Role:** AI Engineer — model design, OCR pipeline, Concur API integration  
+**Role:** Lead AI Engineer — model design, OCR pipeline, Concur API integration  
 **Timeline:** ~6 months  
 **Type:** POC → Build-vs-Buy evaluation
 
