@@ -76,7 +76,7 @@ Two models trained in parallel:
 **Receipt Detector:**
 - **Faster RCNN with ResNet50 backbone** — detects individual receipt bounding boxes in multi-receipt scans
 
-> Verified from codebase: `squeezenet1_0_Adam_Aug1` (classifier) + `resnet50_070822` (Faster RCNN)
+`squeezenet1_0_Adam_Aug1` (classifier) + `resnet50_070822` (Faster RCNN)
 
 ---
 
