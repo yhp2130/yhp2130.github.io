@@ -1,8 +1,8 @@
-# ICC  BART  Contract Clause Extraction
+# BART — Contract Clause Extraction
 
  [Back to Portfolio](../README.md)  [See also: ClaireGPT](clairegpt.md)
 
-**Timeline:** ~3 years (ICC  BART  BART Pipeline  ClaireGPT integration)  
+**Timeline:** ~3 years (takeover → BART Pipeline → ClaireGPT integration)  
 **Role:** Lead AI Engineer  model design, training, production pipeline, integration
 
 ---
@@ -120,7 +120,7 @@ CAA handling: amendment contracts overwrite prior BSA clauses  missing topics fa
 
 Deployed with a human-in-the-loop admin interface (Vue.js + Django REST): admins review, amend, and approve AI-extracted clause data before downstream use.
 
-**Outcome:** F1 = 0.8 across 8 topics. Project renamed ICC  BART.
+**Outcome:** F1 = 0.8 across 8 topics. Contract review cycle reduced from days to minutes.
 
 ---
 

@@ -33,9 +33,9 @@ merchant, tax, currency). High volume, repetitive, error-prone.
 
 ### Phase 1 — Ideation & Scope
 
-Scoped the POC to **Singapore travel receipts** (taxi, Grab, meals) to bound the labeling effort.
-Singapore receipts share common format patterns, making them a tractable starting point before
-extending to hotel folios.
+Scoped the POC to **Singapore travel receipts** (taxi, Grab, meals) and **hotel folios** — explicitly
+excluding meeting and entertainment receipts. Singapore travel receipts share common format patterns,
+making them a tractable starting point before extending to hotel folios.
 
 ---
 
