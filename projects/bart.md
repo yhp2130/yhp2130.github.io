@@ -22,7 +22,7 @@ liability caps, penalty terms, SLA obligations, and payment conditions.
 | Clause classifier weighted F1 | 0.8 |
 | Contracts manually labelled | 200 (BSA + CAA) |
 | Contracts processed per cycle | 100+ |
-| MLOps | GitOps  zero manual deployments |
+| MLOps | GitLab CI/CD  OpenShift deployment |
 
 ---
 
@@ -120,8 +120,6 @@ CAA handling: amendment contracts overwrite prior BSA clauses  missing topics fa
 
 Deployed with a human-in-the-loop admin interface (Vue.js + Django REST): admins review, amend, and approve AI-extracted clause data before downstream use.
 
-Full GitOps CI/CD: every merge to main triggers tests  linting  Docker build  push to Artifactory. ArgoCD syncs Helm chart through dev  staging  prod on OpenShift. Manual approval gate at staging  prod.
-
 **Outcome:** F1 = 0.8 across 8 topics. Project renamed ICC  BART.
 
 ---
@@ -132,7 +130,7 @@ BART wrapped as a **LangChain tool** within the ClaireGPT agent. Users can ask n
 
 ---
 
-### Phase 9  GPT-4.1 Retrospective
+## Retrospective Learning  GPT-4.1 Experiment
 
 Post-deployment experiment using GPT-4.1 for clause extraction on the same contract set.
 Results were comparable to the fine-tuned pipeline.
@@ -155,5 +153,6 @@ Results were comparable to the fine-tuned pipeline.
 | Frontend | Vue.js |
 | Agent integration | LangChain |
 | Database | Oracle DB |
-| CI/CD | GitLab CI  Artifactory  ArgoCD  Helm  OpenShift |
+| CI/CD | GitLab CI/CD  OpenShift |
 | Training | On-prem GPU · PyTorch |
+

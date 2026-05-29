@@ -155,8 +155,8 @@
         <div class="metric-label">Contracts processed per cycle</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">0</div>
-        <div class="metric-label">Manual deployments (full GitOps)</div>
+        <div class="metric-value">8</div>
+        <div class="metric-label">Logistics clause topics</div>
       </div>
     </div>
 
@@ -264,17 +264,11 @@
 
       <div class="phase" data-n="7">
         <div class="phase-title">Production Deployment — Human-in-the-Loop</div>
-        <div class="phase-meta">renamed ICC → BART · GitOps: GitLab CI → Artifactory → ArgoCD → OpenShift</div>
+        <div class="phase-meta">renamed ICC → BART · deployed to OpenShift</div>
         <p>
           Results shared with business users. Deployed to production with a
           <strong>human-in-the-loop admin interface</strong> (Vue.js + Django REST):
           admins can review, amend, and approve AI-extracted clause data before it is used downstream.
-        </p>
-        <p>
-          Full GitOps CI/CD: every merge to <code>main</code> triggers unit tests → linting →
-          Docker build → push to Artifactory. ArgoCD detects the new image tag and syncs the
-          Helm chart through dev → staging → prod on OpenShift. Manual approval gate at staging → prod.
-          Zero manual deployments.
         </p>
         <div class="finding"><strong>Outcome:</strong> F1 = 0.8 weighted across 8 topics. Contract review cycle reduced from days to minutes. Project renamed from ICC to BART to reflect the core model.</div>
       </div>
@@ -290,25 +284,17 @@
         </p>
       </div>
 
-      <div class="phase" data-n="9">
-        <div class="phase-title">GPT-4.1 Retrospective</div>
-        <div class="phase-meta">experiment post-deployment</div>
-        <p>
-          After deployment, ran a comparative experiment using <strong>GPT-4.1</strong> for clause
-          extraction on the same contract set. Results were comparable to the fine-tuned pipeline.
-        </p>
-        <div class="postmortem" style="margin-top:12px;">
-          <h3>💡 Retrospective Learning</h3>
-          <p style="font-size:13px;color:var(--muted);">
-            GPT-4.1 achieved comparable extraction quality without the labelling, training, and pipeline
-            infrastructure effort. Key takeaway: <strong style="color:var(--text);">for low-volume structured
-            extraction from varied document formats, multimodal LLMs are now the pragmatic first choice</strong>.
-            The fine-tuned pipeline remains valuable for high-volume, latency-sensitive, on-prem deployments
-            where API cost and data privacy are constraints.
-          </p>
-        </div>
-      </div>
+    </div>
 
+    <div class="postmortem">
+      <h3>💡 Retrospective Learning — GPT-4.1 Experiment</h3>
+      <p style="font-size:13px;color:var(--muted);">
+        After deployment, ran a comparative experiment using <strong style="color:var(--text);">GPT-4.1</strong>
+        for clause extraction on the same contract set. Results were comparable to the fine-tuned pipeline.
+        Key takeaway: <strong style="color:var(--text);">for low-volume structured extraction from varied
+        document formats, multimodal LLMs are now the pragmatic first choice</strong>. The fine-tuned pipeline
+        remains valuable for high-volume, on-prem deployments where API cost and data privacy are constraints.
+      </p>
     </div>
 
     <h2>$ cat stack.txt</h2>
@@ -323,8 +309,8 @@
       <span class="badge green">FastAPI</span>
       <span class="badge blue">Vue.js</span>
       <span class="badge purple">LangChain</span>
-      <span class="badge purple">ArgoCD · Helm · OpenShift</span>
-      <span class="badge muted">GitLab CI/CD · Artifactory</span>
+      <span class="badge purple">OpenShift</span>
+      <span class="badge muted">GitLab CI/CD</span>
       <span class="badge blue">Docker</span>
       <span class="badge green">Oracle DB</span>
     </div>
