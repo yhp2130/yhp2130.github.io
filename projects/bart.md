@@ -22,7 +22,6 @@ liability caps, penalty terms, SLA obligations, and payment conditions.
 | Clause classifier weighted F1 | 0.8 |
 | Contracts manually labelled | 200 (BSA + CAA) |
 | Contracts processed per cycle | 100+ |
-| MLOps | GitLab CI/CD  OpenShift deployment |
 
 ---
 
