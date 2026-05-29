@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DIVA — Yap Hong Ping</title>
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b22; --border: #30363d;
+      --blue: #58a6ff; --green: #3fb950; --purple: #d2a8ff; --orange: #ffa657;
+      --text: #e6edf3; --muted: #8b949e;
+      --font-body: 'Segoe UI', system-ui, sans-serif;
+      --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      --radius: 6px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.7; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 24px; display: flex; align-items: center; gap: 16px;
+    }
+    nav .back { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+    nav .back:hover { color: var(--blue); text-decoration: none; }
+    nav .title { font-family: var(--font-mono); font-size: 13px; color: var(--green); }
+    .container { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+    h1 { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 32px; }
+    .meta span { color: var(--orange); }
+    h2 { font-size: 16px; font-weight: 600; color: var(--blue); font-family: var(--font-mono);
+         margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+    p strong { color: var(--text); }
+    ul { padding-left: 0; list-style: none; margin-bottom: 16px; }
+    ul li { font-size: 14px; color: var(--muted); padding: 3px 0; }
+    ul li::before { content: "▸ "; color: var(--green); }
+    .badge {
+      display: inline-block; font-size: 11px; font-family: var(--font-mono);
+      padding: 3px 10px; border-radius: 20px; border: 1px solid; margin: 3px 3px 3px 0;
+    }
+    .badge.blue   { color: var(--blue);   background: rgba(88,166,255,0.1);  border-color: rgba(88,166,255,0.3); }
+    .badge.green  { color: var(--green);  background: rgba(63,185,80,0.1);   border-color: rgba(63,185,80,0.3); }
+    .badge.purple { color: var(--purple); background: rgba(210,168,255,0.1); border-color: rgba(210,168,255,0.3); }
+    .badge.orange { color: var(--orange); background: rgba(255,166,87,0.1);  border-color: rgba(255,166,87,0.3); }
+    .badge.muted  { color: var(--muted);  background: rgba(139,148,158,0.1); border-color: rgba(139,148,158,0.3); }
+    .internal-note {
+      background: rgba(88,166,255,0.06); border: 1px solid rgba(88,166,255,0.2);
+      border-radius: var(--radius); padding: 12px 16px; font-size: 13px;
+      color: var(--muted); margin: 20px 0;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    th { text-align: left; padding: 8px 12px; font-family: var(--font-mono); font-size: 11px;
+         color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    td { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid rgba(48,54,61,0.5); }
+    td:first-child { color: var(--text); }
+    code {
+      font-family: var(--font-mono); font-size: 12px; background: var(--surface);
+      border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; color: var(--orange);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html#projects" class="back">← back</a>
+    <span class="title">DIVA — Invoice Vouching Rule Engine</span>
+  </nav>
+
+  <div class="container">
+    <h1>DIVA</h1>
+    <div class="meta">
+      Finance (Accounts Payable) · <span>Infineon Technologies</span> · Backend Developer
+    </div>
+
+    <div class="internal-note">
+      ⚿ Internal project — proprietary code not published. Case study describes architecture and decisions.
+    </div>
+
+    <h2>$ cat problem.md</h2>
+    <p>
+      The AP team manually vouched invoices against purchase orders before releasing payment —
+      verifying amounts, supplier details, dates, line items, and tax calculations.
+      <strong>Hundreds of invoices per month.</strong> Manual, time-consuming, and a payment
+      processing bottleneck.
+    </p>
+
+    <h2>$ cat rule_categories.md</h2>
+    <table>
+      <tr><th>Category</th><th>Type</th><th>Configurable?</th></tr>
+      <tr><td>Amount matching</td><td>Invoice total vs PO within tolerance</td><td>✅ threshold %</td></tr>
+      <tr><td>Line item matching</td><td>Each invoice line maps to a PO line</td><td>✅ per-category tolerance</td></tr>
+      <tr><td>Supplier validation</td><td>Supplier ID on approved vendor register</td><td>❌ hard check</td></tr>
+      <tr><td>Date validation</td><td>Invoice date within PO validity window</td><td>✅ grace period days</td></tr>
+      <tr><td>Tax validation</td><td>GST/VAT calculated correctly per jurisdiction</td><td>✅ rate per jurisdiction</td></tr>
+      <tr><td>Duplicate detection</td><td>Invoice reference not already processed</td><td>❌ hard check</td></tr>
+      <tr><td>Currency check</td><td>Invoice currency matches PO currency</td><td>❌ hard check</td></tr>
+      <tr><td>Mandatory fields</td><td>All required fields present</td><td>❌ hard check</td></tr>
+    </table>
+
+    <h2>$ cat rule_design.md</h2>
+    <p>
+      <strong>Hard rules</strong> (supplier fraud, duplicate payment) cause immediate rejection
+      without evaluating remaining rules.
+      <strong>Soft rules</strong> (amount tolerance, date grace period) are all evaluated and
+      bundled into a single structured exception report.
+    </p>
+    <p>
+      Finance team adjusts thresholds via <code>YAML config</code> without code deployment —
+      critical for seasonal needs (e.g., higher tolerance during Q4 budget close).
+    </p>
+
+    <h2>$ cat why_rule_based.md</h2>
+    <ul>
+      <li><strong>Auditability:</strong> Finance auditors require explainable decisions — "rule X failed with value Y" vs. "model confidence 0.73"</li>
+      <li><strong>Data volume:</strong> Limited labeled invoice-PO pairs at launch — insufficient for reliable ML classifier</li>
+      <li><strong>Configurability:</strong> Finance can adjust tolerances without ML retraining</li>
+      <li><strong>Early ML baseline underperformed</strong> the rule engine by 15 percentage points</li>
+      <li><strong>Future ML ready:</strong> rule abstraction layer designed so ML could replace line-item matching later</li>
+    </ul>
+
+    <h2>$ cat stack.txt</h2>
+    <div>
+      <span class="badge blue">Python</span>
+      <span class="badge green">FastAPI</span>
+      <span class="badge orange">Streamlit</span>
+      <span class="badge muted">ERP REST API</span>
+      <span class="badge muted">YAML config</span>
+      <span class="badge muted">pdfplumber</span>
+    </div>
+  </div>
+</body>
+</html>

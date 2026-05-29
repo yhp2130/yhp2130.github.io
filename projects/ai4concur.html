@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI4Concur — Yap Hong Ping</title>
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b22; --border: #30363d;
+      --blue: #58a6ff; --green: #3fb950; --purple: #d2a8ff; --orange: #ffa657;
+      --text: #e6edf3; --muted: #8b949e;
+      --font-body: 'Segoe UI', system-ui, sans-serif;
+      --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      --radius: 6px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.7; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 24px; display: flex; align-items: center; gap: 16px;
+    }
+    nav .back { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+    nav .back:hover { color: var(--blue); text-decoration: none; }
+    nav .title { font-family: var(--font-mono); font-size: 13px; color: var(--green); }
+    .container { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+    h1 { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 32px; }
+    .meta span { color: var(--orange); }
+    h2 { font-size: 16px; font-weight: 600; color: var(--blue); font-family: var(--font-mono);
+         margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+    p strong { color: var(--text); }
+    ul { padding-left: 0; list-style: none; margin-bottom: 16px; }
+    ul li { font-size: 14px; color: var(--muted); padding: 3px 0; }
+    ul li::before { content: "▸ "; color: var(--green); }
+    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; }
+    .metric-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+    }
+    .metric-value { font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--green); }
+    .metric-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .badge {
+      display: inline-block; font-size: 11px; font-family: var(--font-mono);
+      padding: 3px 10px; border-radius: 20px; border: 1px solid; margin: 3px 3px 3px 0;
+    }
+    .badge.blue   { color: var(--blue);   background: rgba(88,166,255,0.1);  border-color: rgba(88,166,255,0.3); }
+    .badge.green  { color: var(--green);  background: rgba(63,185,80,0.1);   border-color: rgba(63,185,80,0.3); }
+    .badge.purple { color: var(--purple); background: rgba(210,168,255,0.1); border-color: rgba(210,168,255,0.3); }
+    .badge.orange { color: var(--orange); background: rgba(255,166,87,0.1);  border-color: rgba(255,166,87,0.3); }
+    .badge.muted  { color: var(--muted);  background: rgba(139,148,158,0.1); border-color: rgba(139,148,158,0.3); }
+    .internal-note {
+      background: rgba(88,166,255,0.06); border: 1px solid rgba(88,166,255,0.2);
+      border-radius: var(--radius); padding: 12px 16px; font-size: 13px;
+      color: var(--muted); margin: 20px 0;
+    }
+    .postmortem {
+      background: rgba(255,166,87,0.06); border: 1px solid rgba(255,166,87,0.2);
+      border-radius: var(--radius); padding: 16px; margin: 20px 0;
+    }
+    .postmortem h3 { font-size: 13px; color: var(--orange); font-family: var(--font-mono); margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    th { text-align: left; padding: 8px 12px; font-family: var(--font-mono); font-size: 11px;
+         color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    td { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid rgba(48,54,61,0.5); }
+    td:first-child { color: var(--text); }
+    @media (max-width: 640px) { .metrics-grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html#projects" class="back">← back</a>
+    <span class="title">AI4Concur — Receipt Intelligence</span>
+  </nav>
+
+  <div class="container">
+    <h1>AI4Concur</h1>
+    <div class="meta">
+      Finance · <span>Infineon Technologies</span> · ~6 months · AI Engineer
+    </div>
+
+    <div class="internal-note">
+      ⚿ Internal project — proprietary code not published. Case study describes architecture and decisions.
+    </div>
+
+    <h2>$ cat problem.md</h2>
+    <p>
+      Finance staff processed hundreds of expense receipts monthly for SAP Concur.
+      Each receipt required <strong>manual reading, category assignment, and field entry</strong>
+      (date, amount, merchant, tax, currency). High volume, repetitive, error-prone.
+    </p>
+    <p><strong>Goal:</strong> Automate receipt → SAP Concur data entry end-to-end.</p>
+
+    <h2>$ cat metrics.json</h2>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">~90%</div>
+        <div class="metric-label">Travel receipt accuracy</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">~85%</div>
+        <div class="metric-label">Hotel folio accuracy</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">5</div>
+        <div class="metric-label">Iteration versions to reach target</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">0</div>
+        <div class="metric-label">Manual entry for auto-approved receipts</div>
+      </div>
+    </div>
+
+    <h2>$ cat pipeline.md</h2>
+    <p>The pipeline has 4 stages in sequence:</p>
+    <ul>
+      <li><strong>Stage 1 — CNN Classifier:</strong> lightweight CNN classifies receipt image as <code>travel</code> / <code>hotel</code> / <code>unknown</code>. ~1,000 labelled images, augmented for real-world photo conditions.</li>
+      <li><strong>Stage 2 — OCR (EasyOCR):</strong> text detection + recognition, returns flat list of (text, bounding_box) pairs.</li>
+      <li><strong>Stage 3 — Type-specific Extraction:</strong> travel → regex + spatial rules; hotel → bounding-box table reconstruction to aggregate itemized rows.</li>
+      <li><strong>Stage 4 — Validator:</strong> business rules (amount threshold, date validity, currency support, mandatory fields, OCR confidence). Failures → manual review queue.</li>
+    </ul>
+
+    <h2>$ cat why_classify_first.md</h2>
+    <p>
+      Hotel folios and travel receipts have <strong>fundamentally different layouts</strong>.
+      A single model trained on mixed data achieved ~45% on hotel folios — it confused
+      itemized room rate lines with the total. Separating by type first and using
+      type-specific extraction logic pushed hotel accuracy to ~85%.
+    </p>
+
+    <h2>$ cat iterations.md</h2>
+    <table>
+      <tr><th>Version</th><th>Change</th><th>Result</th></tr>
+      <tr><td>v1</td><td>Single model for all receipt types</td><td>Hotel folio accuracy ~45%</td></tr>
+      <tr><td>v2</td><td>Added CNN type classifier</td><td>Hotel → ~70%; travel maintained</td></tr>
+      <tr><td>v3</td><td>Spatial table reconstruction for hotel</td><td>Hotel → ~85%</td></tr>
+      <tr><td>v4</td><td>OCR confidence threshold + manual queue</td><td>Removed low-confidence auto-submissions</td></tr>
+      <tr><td>v5</td><td>Hotel multi-page folio handling</td><td>Edge case fix for long folios</td></tr>
+    </table>
+
+    <div class="postmortem">
+      <h3>⚡ Build-vs-Buy Post-Mortem</h3>
+      <p style="font-size:13px;color:var(--muted);">
+        Finance chose a commercial SaaS for receipt processing. Our POC had tangible value:
+        we defined the accuracy benchmarks used to evaluate SaaS vendors, and the eventual
+        vendor selection was informed by our field extraction tests.
+        <strong style="color:var(--text);">The technical work shaped the buy decision.</strong>
+      </p>
+    </div>
+
+    <h2>$ cat stack.txt</h2>
+    <div>
+      <span class="badge blue">PyTorch CNN</span>
+      <span class="badge green">EasyOCR</span>
+      <span class="badge orange">SAP Concur API</span>
+      <span class="badge green">FastAPI</span>
+      <span class="badge muted">Python (regex, spatial rules)</span>
+    </div>
+  </div>
+</body>
+</html>

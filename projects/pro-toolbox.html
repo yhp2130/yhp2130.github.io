@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pro-Toolbox — Yap Hong Ping</title>
+  <style>
+    :root {
+      --bg: #0d1117; --surface: #161b22; --border: #30363d;
+      --blue: #58a6ff; --green: #3fb950; --purple: #d2a8ff; --orange: #ffa657;
+      --text: #e6edf3; --muted: #8b949e;
+      --font-body: 'Segoe UI', system-ui, sans-serif;
+      --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      --radius: 6px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.7; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 24px; display: flex; align-items: center; gap: 16px;
+    }
+    nav .back { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+    nav .back:hover { color: var(--blue); text-decoration: none; }
+    nav .title { font-family: var(--font-mono); font-size: 13px; color: var(--green); }
+    .container { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+    h1 { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 32px; }
+    .meta span { color: var(--orange); }
+    h2 { font-size: 16px; font-weight: 600; color: var(--blue); font-family: var(--font-mono);
+         margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    p { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+    p strong { color: var(--text); }
+    ul { padding-left: 0; list-style: none; margin-bottom: 16px; }
+    ul li { font-size: 14px; color: var(--muted); padding: 3px 0; }
+    ul li::before { content: "▸ "; color: var(--green); }
+    .badge {
+      display: inline-block; font-size: 11px; font-family: var(--font-mono);
+      padding: 3px 10px; border-radius: 20px; border: 1px solid; margin: 3px 3px 3px 0;
+    }
+    .badge.blue   { color: var(--blue);   background: rgba(88,166,255,0.1);  border-color: rgba(88,166,255,0.3); }
+    .badge.green  { color: var(--green);  background: rgba(63,185,80,0.1);   border-color: rgba(63,185,80,0.3); }
+    .badge.purple { color: var(--purple); background: rgba(210,168,255,0.1); border-color: rgba(210,168,255,0.3); }
+    .badge.orange { color: var(--orange); background: rgba(255,166,87,0.1);  border-color: rgba(255,166,87,0.3); }
+    .badge.muted  { color: var(--muted);  background: rgba(139,148,158,0.1); border-color: rgba(139,148,158,0.3); }
+    .internal-note {
+      background: rgba(88,166,255,0.06); border: 1px solid rgba(88,166,255,0.2);
+      border-radius: var(--radius); padding: 12px 16px; font-size: 13px;
+      color: var(--muted); margin: 20px 0;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    th { text-align: left; padding: 8px 12px; font-family: var(--font-mono); font-size: 11px;
+         color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    td { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid rgba(48,54,61,0.5); }
+    td:first-child { color: var(--text); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html#projects" class="back">← back</a>
+    <span class="title">Pro-Toolbox — Process Consultant RAG</span>
+  </nav>
+
+  <div class="container">
+    <h1>Pro-Toolbox</h1>
+    <div class="meta">
+      Process Improvement / Consultants · <span>Infineon Technologies</span> · AI Engineer
+    </div>
+
+    <div class="internal-note">
+      ⚿ Internal project — proprietary code not published. Case study describes architecture and decisions.
+    </div>
+
+    <h2>$ cat problem.md</h2>
+    <p>
+      Process improvement consultants work across multiple business units, referencing SOPs,
+      benchmarks, improvement reports, and standards. Finding relevant past work required
+      manually searching through shared drives. <strong>Consultants were re-solving problems
+      already documented elsewhere.</strong>
+    </p>
+    <p><strong>Goal:</strong> A RAG chatbot for cross-document synthesis — not just retrieval.</p>
+
+    <h2>$ diff clairegpt pro-toolbox</h2>
+    <table>
+      <tr><th>Dimension</th><th>ClaireGPT (CLM)</th><th>Pro-Toolbox (Consulting)</th></tr>
+      <tr><td>User objective</td><td>Factual lookup — "what does policy X say?"</td><td>Synthesis — "what approaches work for Y?"</td></tr>
+      <tr><td>Query pattern</td><td>Specific answer in one document</td><td>Answer synthesized across multiple sources</td></tr>
+      <tr><td>Response style</td><td>Factual answer + source citation</td><td>Recommendation + rationale + comparable examples</td></tr>
+      <tr><td>Key challenge</td><td>Data sovereignty, exact identifier recall</td><td>Cross-project synthesis, source attribution</td></tr>
+    </table>
+
+    <h2>$ cat chunking_strategy.md</h2>
+    <table>
+      <tr><th>Document Type</th><th>Challenge</th><th>Strategy</th></tr>
+      <tr><td>SOP</td><td>Numbered steps must stay together — splitting mid-procedure breaks logical context</td><td>Section-aware chunking: each procedure section as a unit</td></tr>
+      <tr><td>Improvement report</td><td>Problem → Approach → Result narrative spans paragraphs</td><td>Paragraph grouping with overlap</td></tr>
+      <tr><td>Benchmark / Framework</td><td>Table rows must not be split</td><td>Table-aware chunking: entire table as one chunk</td></tr>
+    </table>
+
+    <h2>$ cat metadata.md</h2>
+    <p>Metadata injected per document at ingestion to enable <strong>filtered retrieval</strong>:</p>
+    <ul>
+      <li><strong>doc_type</strong> — SOP / benchmark / improvement_report / standard</li>
+      <li><strong>department</strong> — Finance / Logistics / Manufacturing / etc.</li>
+      <li><strong>project_id</strong> — internal project reference</li>
+      <li><strong>date_updated</strong> — ISO date (recency filtering)</li>
+      <li><strong>process_area</strong> — order-to-cash / procure-to-pay / etc.</li>
+    </ul>
+
+    <h2>$ cat synthesis_design.md</h2>
+    <p>
+      Synthesis prompts explicitly ask the LLM to: group findings by approach type,
+      include measurable results where available, note applicability conditions,
+      and cite source documents per finding.
+      This produces <strong>consultant-grade output</strong>, not just a literature summary.
+    </p>
+
+    <h2>$ cat stack.txt</h2>
+    <div>
+      <span class="badge purple">LangChain</span>
+      <span class="badge blue">Docling</span>
+      <span class="badge green">FastAPI</span>
+      <span class="badge muted">On-prem LLM</span>
+      <span class="badge muted">On-prem Embedding</span>
+      <span class="badge purple">ArgoCD</span>
+      <span class="badge purple">OpenShift</span>
+      <span class="badge muted">GitLab CI/CD</span>
+    </div>
+  </div>
+</body>
+</html>

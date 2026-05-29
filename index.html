@@ -263,55 +263,97 @@
 
   <!-- Projects -->
   <section id="projects">
-    <div class="section-cmd">$ ls projects/ <span># 3 items</span></div>
+    <div class="section-cmd">$ ls projects/ <span># 5 items</span></div>
     <div class="projects-grid">
 
       <div class="project-card">
-        <div class="project-name">📦 receipt-ai</div>
-        <div class="project-desc">OCR + Computer Vision model serving endpoint</div>
+        <div class="project-name">🤖 ClaireGPT</div>
+        <div class="project-desc">Agentic RAG — CLM Knowledge Retrieval System</div>
         <ul class="project-points">
-          <li>Image classification + segmentation + OCR pipeline</li>
-          <li>Model serving endpoint on AWS SageMaker</li>
-          <li>Event-trigger integration with SAP BTP</li>
+          <li>Multi-agent ReAct pipeline (Planner + Checker)</li>
+          <li>1,000+ docs · 5 formats · hybrid BM25 + dense retrieval</li>
+          <li>96% query time reduction: 2hr → 5min · ~100 queries/day</li>
+          <li>On-prem LLM + GitOps (GitLab → ArgoCD → OpenShift)</li>
         </ul>
         <div class="project-badges">
-          <span class="badge orange">AWS SageMaker</span>
-          <span class="badge blue">PyTorch</span>
-          <span class="badge muted">EasyOCR</span>
-        </div>
-        <a class="project-link" href="https://github.com/yhp2130/receipt-ai" target="_blank">→ github.com/yhp2130/receipt-ai</a>
-      </div>
-
-      <div class="project-card">
-        <div class="project-name">📦 rag-chatbot</div>
-        <div class="project-desc">RAG + agentic tool-use with open-source LLMs</div>
-        <ul class="project-points">
-          <li>Multi-step agent pipeline with tool-calling</li>
-          <li>RAG over 1,000+ documents (5 formats)</li>
-          <li>Open-source LLMs (Llama/Mistral) on Azure</li>
-        </ul>
-        <div class="project-badges">
-          <span class="badge purple">Azure</span>
-          <span class="badge blue">LangChain</span>
+          <span class="badge purple">LangChain</span>
+          <span class="badge blue">Elasticsearch</span>
           <span class="badge green">FastAPI</span>
+          <span class="badge orange">GitOps</span>
         </div>
-        <a class="project-link" href="https://github.com/yhp2130/rag-chatbot" target="_blank">→ github.com/yhp2130/rag-chatbot</a>
+        <a class="project-link" href="projects/clairegpt.html">→ View Case Study</a>
       </div>
 
       <div class="project-card">
-        <div class="project-name">📦 contract-clause-extractor</div>
-        <div class="project-desc">Legal NLP clause extraction with Streamlit demo</div>
+        <div class="project-name">📋 ICC → BART</div>
+        <div class="project-desc">Contract Clause Extraction — NLP Pipeline</div>
         <ul class="project-points">
-          <li>Fine-tuned transformer, 11-class classification (F1=0.8)</li>
-          <li>OCR + layout understanding pipeline</li>
-          <li>Streamlit interactive demo app</li>
+          <li>Fine-tuned BART seq2seq · 11-class · weighted F1 = 0.8</li>
+          <li>100+ contracts/cycle · &lt;30s on-demand latency</li>
+          <li>Evolved rule-based → transformer → LangChain agent tool</li>
+          <li>Full MLOps: GitLab CI/CD · Docker · ArgoCD · OpenShift</li>
         </ul>
         <div class="project-badges">
-          <span class="badge green">HuggingFace</span>
-          <span class="badge blue">Streamlit</span>
-          <span class="badge muted">PyTorch</span>
+          <span class="badge orange">HuggingFace BART</span>
+          <span class="badge blue">PyTorch</span>
+          <span class="badge green">FastAPI</span>
+          <span class="badge purple">GitOps</span>
         </div>
-        <a class="project-link" href="https://github.com/yhp2130/contract-clause-extractor" target="_blank">→ github.com/yhp2130/contract-clause-extractor</a>
+        <a class="project-link" href="projects/bart.html">→ View Case Study</a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">📸 AI4Concur</div>
+        <div class="project-desc">Receipt Intelligence — OCR + CV Pipeline</div>
+        <ul class="project-points">
+          <li>CNN classifier (travel vs hotel) → type-specific OCR extraction</li>
+          <li>~90% travel / ~85% hotel folio accuracy</li>
+          <li>Auto-populated SAP Concur expense entries</li>
+          <li>Validator + manual review fallback queue</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge blue">PyTorch CNN</span>
+          <span class="badge green">EasyOCR</span>
+          <span class="badge orange">SAP Concur API</span>
+          <span class="badge muted">FastAPI</span>
+        </div>
+        <a class="project-link" href="projects/ai4concur.html">→ View Case Study</a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">🔧 Pro-Toolbox</div>
+        <div class="project-desc">Process Consultant RAG — Synthesis Chatbot</div>
+        <ul class="project-points">
+          <li>RAG over SOPs, benchmarks, improvement reports</li>
+          <li>Semantic + type-aware chunking per document type</li>
+          <li>Metadata-filtered retrieval (dept · date · process area)</li>
+          <li>Consultant-grade synthesis: recommendation + rationale + citations</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge purple">LangChain</span>
+          <span class="badge blue">Docling</span>
+          <span class="badge green">FastAPI</span>
+          <span class="badge muted">On-prem LLM</span>
+        </div>
+        <a class="project-link" href="projects/pro-toolbox.html">→ View Case Study</a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">💼 DIVA</div>
+        <div class="project-desc">Invoice Vouching — Configurable Rule Engine</div>
+        <ul class="project-points">
+          <li>8-category rule engine: amount · tax · supplier · duplicate detection</li>
+          <li>Hard/soft rule separation with structured exception reports</li>
+          <li>YAML-configurable thresholds · full audit trail</li>
+          <li>Auto-approve standard invoices → payment queue</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge blue">Python</span>
+          <span class="badge green">FastAPI</span>
+          <span class="badge orange">Streamlit</span>
+          <span class="badge muted">ERP Integration</span>
+        </div>
+        <a class="project-link" href="projects/diva.html">→ View Case Study</a>
       </div>
 
     </div>
