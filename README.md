@@ -15,15 +15,15 @@
 
 ## Projects
 
-| # | Project | Team | Stack | Key Result | Deep Dive |
-|---|---------|------|-------|------------|----------|
-| 1 | **CODEC → ClaireGPT** | CLM | LangChain · Elasticsearch · On-prem LLM | 2hr → 5min (96% ↓) · 100 queries/day | [→ clairegpt.md](projects/clairegpt.md) |
-| 2 | **ICC → BART** | CLM | HuggingFace · BART · FastAPI · OpenShift | F1=0.8 · 8-class logistics · 100+ contracts/cycle | [→ bart.md](projects/bart.md) |
-| 3 | **AI4Concur** | Finance | PyTorch · EasyOCR · SAP Concur API | Full pipeline built · SaaS adopted by org | [→ ai4concur.md](projects/ai4concur.md) |
-| 4 | **DIVA** | Finance | Python · Rule Engine · FastAPI · LLM | 8-category rule engine · LLM extraction for multilingual invoices | [→ diva.md](projects/diva.md) |
-| 5 | **Pro-Toolbox** | Process Consulting | Custom asyncio ReAct · Docling · FastAPI | Cross-document process RAG · agentic tool-use loop | [→ pro-toolbox.md](projects/pro-toolbox.md) |
+| # | Project | Description | Stack | Key Result | Deep Dive |
+|---|---------|-------------|-------|------------|-----------|
+| 1 | **Agentic RAG Knowledge System** | Multi-agent enterprise knowledge retrieval (LangChain ReAct) | LangChain · Elasticsearch · On-prem LLM · GitOps | 96% query time reduction: 2hr → 5min · ~100 queries/day | [→ clairegpt.md](projects/clairegpt.md) |
+| 2 | **NLP Contract Clause Extraction** | Fine-tuned BART seq2seq pipeline — 8-class logistics clause analysis | HuggingFace BART · PyTorch · FastAPI · GitOps | weighted F1=0.8 · 8 logistics clauses · 100+ contracts/cycle | [→ bart.md](projects/bart.md) |
+| 3 | **Receipt OCR & Expense Automation** | Computer vision pipeline for automated expense processing | PyTorch CNN · EasyOCR · SAP Concur API · FastAPI | ~90% travel / ~85% hotel accuracy · full SAP Concur integration | [→ ai4concur.md](projects/ai4concur.md) |
+| 4 | **Process Knowledge RAG Chatbot** | Synthesis-focused RAG for cross-document process intelligence | Custom asyncio ReAct · Docling · FastAPI · On-prem LLM | Metadata-filtered retrieval · consultant-grade synthesis | [→ pro-toolbox.md](projects/pro-toolbox.md) |
+| 5 | **Invoice Vouching Automation** | Configurable rule engine for AP invoice processing & compliance | Python · FastAPI · Streamlit · ERP Integration | 8-category rules · LLM extraction for multilingual invoices (Chinese/German) | [→ diva.md](projects/diva.md) |
 
-> **Architecture thread:** ICC/BART clause extraction (Project 2) was later integrated as an agent tool inside ClaireGPT (Project 1).
+> **Architecture thread:** NLP Contract Clause Extraction (Project 2) was later integrated as an agent tool inside the Agentic RAG Knowledge System (Project 1).
 
 ---
 
