@@ -82,6 +82,7 @@
       already documented elsewhere.</strong>
     </p>
     <p><strong>Goal:</strong> A RAG chatbot for cross-document synthesis — not just retrieval.</p>
+    <p><strong>Delivery:</strong> Production-ready MVP delivered in <strong>2 weeks</strong> using spec-driven development (GitHub Copilot SpecKit) — from concept to deployed application with API gateway configuration.</p>
 
     <h2>$ diff clairegpt pro-toolbox</h2>
     <table>
@@ -115,6 +116,7 @@
       Pro-Toolbox uses a <strong>plan-then-execute ReAct loop</strong> rather than step-by-step chain-of-thought.
       The planner produces a complete <code>ExecutionPlan</code> (list of <code>SubGoal</code> objects with dependency graph)
       before any tool is called — enabling parallel sub-goal execution via asyncio.
+      Spans <strong>4 knowledge sources</strong>: ARIS, Intranet, Confluence, and PRIMA.
     </p>
     <ul>
       <li><strong>Planner</strong> → LLM function-calling generates full <code>ExecutionPlan</code> with dependencies</li>
@@ -152,6 +154,8 @@
       <span class="badge purple">ArgoCD</span>
       <span class="badge purple">OpenShift</span>
       <span class="badge muted">GitLab CI/CD</span>
+      <span class="badge purple">Artifactory</span>
+      <span class="badge green">GitHub Copilot SpecKit</span>
     </div>
   </div>
 </body>

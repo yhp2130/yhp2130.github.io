@@ -223,7 +223,7 @@ BART tool first, then the retrieval tool for surrounding context.
 | Metric | Value |
 |--------|-------|
 | Clause classifier weighted F1 | 0.8 |
-| Clause classes | 11 |
+| Clause classes | 8 |
 | Contracts processed per cycle | 100+ |
 | Pipeline latency (on-demand) | < 30s per contract |
 | MLOps: deployment method | GitOps (zero manual deploys) |

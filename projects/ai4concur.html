@@ -98,16 +98,16 @@
     <h2>$ cat metrics.json</h2>
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-value">~90%</div>
-        <div class="metric-label">Travel receipt accuracy</div>
+        <div class="metric-value">70%</div>
+        <div class="metric-label">Accuracy on test samples (POC)</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">~85%</div>
-        <div class="metric-label">Hotel folio accuracy</div>
+        <div class="metric-value">~1 hr</div>
+        <div class="metric-label">Estimated manual validation effort saved</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">5</div>
-        <div class="metric-label">Iteration versions to reach target</div>
+        <div class="metric-value">7</div>
+        <div class="metric-label">Rule-based validation flags</div>
       </div>
       <div class="metric-card">
         <div class="metric-value">0</div>
@@ -118,10 +118,10 @@
     <h2>$ cat pipeline.md</h2>
     <p>The pipeline has 4 stages in sequence:</p>
     <ul>
-      <li><strong>Stage 1 — CNN Classifier:</strong> lightweight CNN classifies receipt image as <code>travel</code> / <code>hotel</code> / <code>unknown</code>. ~1,000 labelled images, augmented for real-world photo conditions.</li>
-      <li><strong>Stage 2 — OCR (EasyOCR):</strong> text detection + recognition, returns flat list of (text, bounding_box) pairs.</li>
+      <li><strong>Stage 1 — CNN Classifier + Faster RCNN Detection:</strong> lightweight CNN classifies receipt image as <code>travel</code> / <code>hotel</code> / <code>unknown</code>; Faster RCNN used for receipt region detection. ~1,000 labelled images, augmented for real-world photo conditions.</li>
+      <li><strong>Stage 2 — OCR + NER (EasyOCR):</strong> text detection + recognition; NER entity extraction for key fields (date, amount, merchant, currency).</li>
       <li><strong>Stage 3 — Type-specific Extraction:</strong> travel → regex + spatial rules; hotel → bounding-box table reconstruction to aggregate itemized rows.</li>
-      <li><strong>Stage 4 — Validator:</strong> business rules (amount threshold, date validity, currency support, mandatory fields, OCR confidence). Failures → manual review queue.</li>
+      <li><strong>Stage 4 — Validator (7 flags):</strong> business rules (amount threshold, date validity, currency support, mandatory fields, OCR confidence, duplicate check, tax check). Failures → manual review queue.</li>
     </ul>
 
     <h2>$ cat why_classify_first.md</h2>
@@ -155,8 +155,11 @@
     <h2>$ cat stack.txt</h2>
     <div>
       <span class="badge blue">PyTorch CNN</span>
+      <span class="badge blue">Faster RCNN</span>
       <span class="badge green">EasyOCR</span>
+      <span class="badge green">NER</span>
       <span class="badge orange">SAP Concur API</span>
+      <span class="badge orange">SAP BTP</span>
       <span class="badge green">FastAPI</span>
       <span class="badge muted">Python (regex, spatial rules)</span>
     </div>

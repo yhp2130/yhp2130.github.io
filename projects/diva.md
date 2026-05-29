@@ -198,6 +198,7 @@ structured to become ML training data once volume was sufficient.
 | Rule engine | Python (diva_rules.apply_rules) |
 | Reference data | ERP integration (purchasing/vendor records) |
 | Backend | FastAPI |
+| Containerisation | Docker |
 | Audit log | Database (append-only match decisions) |
 | Frontend | Streamlit (exception review UI) |
 

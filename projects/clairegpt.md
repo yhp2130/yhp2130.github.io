@@ -203,6 +203,7 @@ Ingestion is idempotent: checks if `doc_id` exists before re-indexing.
 | Ingestion | Logstash + cron processor | Idempotent, doc-change triggered |
 | Document parsing | Docling | Preserves headings, tables |
 | Backend | FastAPI | Async, streaming |
+| MCP server | FastMCP | MCP protocol for tool integration |
 | Frontend | Streamlit | Internal UI |
 | CI/CD | GitLab CI | test -> lint -> build -> push |
 | Deployment | ArgoCD + Helm + OpenShift | GitOps, env-specific Helm overlays |

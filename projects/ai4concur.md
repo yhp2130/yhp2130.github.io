@@ -15,7 +15,7 @@ required manual reading, category assignment, and field entry (date, amount, mer
 tax amount, currency). High volume, repetitive, and error-prone.
 
 **Goal:** Automate receipt → SAP Concur data entry end-to-end — zero manual key entry
-for standard receipt types.
+for standard receipt types. Deployed via **SAP BTP**.
 
 ---
 
@@ -47,7 +47,12 @@ flowchart LR
 
 ---
 
-## Stage 1 — Receipt Type Classifier
+## Stage 1 — Receipt Detection & Type Classifier
+
+### Receipt Region Detection
+
+**Faster RCNN** used for receipt region detection before classification — isolates the receipt
+from background clutter in mobile photos before passing to the CNN classifier.
 
 ### Why Classification First
 
@@ -77,7 +82,8 @@ type-specific extraction models.
 
 ### OCR Approach
 
-**EasyOCR** used for text detection + recognition. Raw OCR output is unstructured —
+**EasyOCR** used for text detection + recognition, followed by **NER entity extraction**
+for key fields (date, amount, merchant name, currency). Raw OCR output is unstructured —
 a flat list of (text, bounding_box) pairs. Two post-processing approaches by type:
 
 ```mermaid
@@ -116,17 +122,19 @@ flowchart TD
 
 ---
 
-## Stage 3 — Validator
+## Stage 3 — Validator (7 Flags)
 
-Business rule validation before Concur API write:
+Business rule validation (7 flags) before Concur API write:
 
-| Rule | Check |
-|------|-------|
-| Amount threshold | Amount > 0 and < configurable max (prevent OCR errors) |
-| Date validity | Date is within current expense period (not future, not > 90 days old) |
-| Currency supported | Currency code in Concur-supported list |
-| Mandatory fields | All required Concur fields present (date, amount, merchant, category) |
-| Confidence threshold | OCR confidence score for key fields above threshold |
+| Flag | Rule | Check |
+|------|------|-------|
+| 1 | Amount threshold | Amount > 0 and < configurable max (prevent OCR errors) |
+| 2 | Date validity | Date is within current expense period (not future, not > 90 days old) |
+| 3 | Currency supported | Currency code in Concur-supported list |
+| 4 | Mandatory fields | All required Concur fields present (date, amount, merchant, category) |
+| 5 | Confidence threshold | OCR confidence score for key fields above threshold |
+| 6 | Duplicate check | Invoice not already submitted in the same period |
+| 7 | Tax check | Tax amount consistent with total and applicable rate |
 
 Receipts failing any rule route to a **manual review queue** rather than silently failing.
 
@@ -137,10 +145,12 @@ Receipts failing any rule route to a **manual review queue** rather than silentl
 | Iteration | Change | Result |
 |-----------|--------|--------|
 | v1 | Single model for all receipt types | Hotel folio accuracy ~45% — itemized table confused with total |
-| v2 | Added type classifier | Hotel accuracy → ~70%; travel accuracy maintained |
-| v3 | Added spatial table reconstruction for hotel | Hotel accuracy → ~85% |
+| v2 | Added CNN type classifier | Hotel accuracy → ~70%; travel accuracy maintained |
+| v3 | Tried Nougat/Donut model for hotel folios | Failed to converge/generalize — did not improve hotel accuracy |
 | v4 | Added OCR confidence threshold + manual queue | Removed low-confidence auto-submissions; user trust improved |
 | v5 | Added hotel multi-page handling | Edge case fix for long folios spanning 2+ pages |
+
+**POC result: 70% accuracy on test samples** (overall, after all iterations).
 
 ---
 
@@ -148,11 +158,14 @@ Receipts failing any rule route to a **manual review queue** rather than silentl
 
 | Component | Technology |
 |-----------|-----------|
+| Receipt region detection | PyTorch Faster RCNN |
 | Image classification | PyTorch CNN |
 | OCR | EasyOCR |
+| NER extraction | Python NER (key field extraction) |
 | Field extraction | Python (regex, spatial rules, table reconstruction) |
-| Validator | Python business rules |
+| Validator | Python business rules (7 flags) |
 | API integration | SAP Concur REST API |
+| Deployment | SAP BTP |
 | Backend | FastAPI |
 | Training infra | On-prem GPU |
 
@@ -161,7 +174,8 @@ Receipts failing any rule route to a **manual review queue** rather than silentl
 ## Outcome & Post-Mortem
 
 **Technical outcome:** Working end-to-end pipeline covering travel and hotel receipts
-with configurable validation and manual review fallback.
+with configurable validation and manual review fallback. **Achieved 70% accuracy on test
+samples** (POC). Estimated ~1 man-hour saved per manual validation cycle.
 
 **Business outcome:** Finance org chose to purchase a **commercial SaaS solution** for
 receipt processing. Project discontinued.

@@ -244,7 +244,7 @@
   <section id="about">
     <div class="section-cmd">$ cat about.md <span># applied ai engineer</span></div>
     <p class="about-bio">
-      Applied AI Engineer with 10+ years building and shipping production-grade AI systems end-to-end ·
+      Data Scientist with 8+ years building and shipping production-grade AI systems end-to-end ·
       from agentic pipelines and RAG systems to full-stack deployment with CI/CD and GitOps.
       Currently at Infineon Technologies, delivering LLM-powered tools that serve real users daily.
       Singapore PR · open to AI Engineer and Data Scientist roles in Singapore.
@@ -306,15 +306,17 @@
         <div class="project-name">Receipt OCR & Expense Automation</div>
         <div class="project-desc">Computer vision pipeline for automated expense processing</div>
         <ul class="project-points">
-          <li>CNN classifier (travel vs hotel) → type-specific OCR extraction</li>
-          <li>~90% travel / ~85% hotel folio accuracy</li>
-          <li>Auto-populated SAP Concur expense entries</li>
-          <li>Validator + manual review fallback queue</li>
+          <li>CNN classifier + Faster RCNN detection + EasyOCR + NER entity extraction</li>
+          <li>70% accuracy on test samples (POC)</li>
+          <li>Rule-based validation (7 flags) + manual review fallback queue</li>
+          <li>Auto-populated SAP Concur expense entries via SAP BTP</li>
         </ul>
         <div class="project-badges">
           <span class="badge blue">PyTorch CNN</span>
+          <span class="badge blue">Faster RCNN</span>
           <span class="badge green">EasyOCR</span>
           <span class="badge orange">SAP Concur API</span>
+          <span class="badge orange">SAP BTP</span>
           <span class="badge muted">FastAPI</span>
         </div>
         <a class="project-link" href="projects/ai4concur.html">→ View Case Study</a>
@@ -324,9 +326,10 @@
         <div class="project-name">Process Knowledge RAG Chatbot</div>
         <div class="project-desc">Synthesis-focused RAG for cross-document process intelligence</div>
         <ul class="project-points">
-          <li>RAG over SOPs, benchmarks, improvement reports</li>
-          <li>Semantic + type-aware chunking per document type</li>
-          <li>Metadata-filtered retrieval (dept · date · process area)</li>
+          <li>Production-ready MVP delivered in 2 weeks via spec-driven dev (GitHub Copilot SpecKit)</li>
+          <li>4 knowledge sources: ARIS, Intranet, Confluence, PRIMA</li>
+          <li>ExecutionPlan + SubGoal dependency graph · asyncio parallel execution</li>
+          <li>Metadata-filtered retrieval (dept · date · process area) + API gateway</li>
           <li>Consultant-grade synthesis: recommendation + rationale + citations</li>
         </ul>
         <div class="project-badges">
@@ -334,6 +337,8 @@
           <span class="badge blue">Docling</span>
           <span class="badge green">FastAPI</span>
           <span class="badge muted">On-prem LLM</span>
+          <span class="badge green">GitHub Copilot SpecKit</span>
+          <span class="badge purple">Artifactory</span>
         </div>
         <a class="project-link" href="projects/pro-toolbox.html">→ View Case Study</a>
       </div>
@@ -385,6 +390,7 @@
         <div class="skill-group-label">Backend</div>
         <div class="skill-badges">
           <span class="badge green">FastAPI</span>
+          <span class="badge green">FastMCP</span>
           <span class="badge green">REST APIs</span>
           <span class="badge green">Microservices</span>
           <span class="badge green">Streamlit</span>
@@ -399,6 +405,7 @@
           <span class="badge purple">GitLab CI/CD</span>
           <span class="badge purple">ArgoCD</span>
           <span class="badge purple">Helm</span>
+          <span class="badge purple">Artifactory</span>
           <span class="badge purple">GitOps</span>
           <span class="badge purple">GitHub Actions</span>
           <span class="badge purple">OpenShift</span>
@@ -447,6 +454,7 @@
           <li>Shipped production multi-agent AI system (FastAPI + LangChain + GitOps) in 2 weeks · ~100 queries/day adoption</li>
           <li>Built enterprise RAG platform over 1,000+ documents · reduced search time by 96% (2hr → 5min)</li>
           <li>Fine-tuned NLP classifier for 8-class logistics clause analysis (F1=0.8) with full CI/CD pipeline</li>
+          <li>Mentored interns via structured onboarding · ran agile 2-week sprints with stakeholder demos</li>
         </ul>
       </div>
 

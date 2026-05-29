@@ -23,6 +23,10 @@ problems that had already been documented elsewhere.
 **Goal:** A RAG chatbot that lets consultants query across all process documentation
 with synthesis — not just retrieval.
 
+**Delivery:** Production-ready MVP delivered in **2 weeks** using spec-driven development
+(**GitHub Copilot SpecKit**) — from concept to deployed application with API gateway
+configuration. Knowledge sources: **ARIS, Intranet, Confluence, PRIMA**.
+
 ---
 
 ## How This Differs from ClaireGPT
@@ -202,12 +206,15 @@ This structure produces consultant-grade output, not just a literature summary.
 | Sufficiency check | SufficiencyEvaluator (custom LLM judge) |
 | Document parsing | Docling (structure-preserving headings + tables) |
 | Backend | FastAPI |
-| CI/CD | GitLab CI/CD → ArgoCD → OpenShift (experimentation: dev/staging/prod) |
+| Docker registry | Artifactory |
+| CI/CD | GitLab CI/CD → ArgoCD → OpenShift (dev/staging/prod) with Helm overlays |
+| Dev tooling | GitHub Copilot SpecKit (spec-driven development) |
 
 ---
 
 ## Outcome
 
+- Production-ready MVP deployed in **2 weeks** via spec-driven development (GitHub Copilot SpecKit)
 - Deployed for Process Consulting team
 - GitOps CI/CD pipeline explored (dev/staging/prod environments) for production-readiness
 - Covers SOPs, benchmark frameworks, and historical improvement reports
