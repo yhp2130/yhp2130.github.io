@@ -206,20 +206,20 @@
           tool permissions, search engine overrides).
         </p>
         <div class="arch-box">User Query
-    
-    
-Planner Agent LLM routing ARIS Agent          Checker Agent 
-                              IFX Process Mgmt    Checker Agent 
-                                                                       
-                             phase routing                    Planner consolidate
-                                                                       
-                                      Final Cited Response
-                         Initiation/Planning 
-                         Execution/Stabilize 
-                         Project Management  
-                         Change/Communicate  
-                         Monitoring/Control  │
-                        </div>
+    |
+    v
+Planner Agent --[LLM route]--> ARIS Agent        --> Checker Agent --+
+                           --> IFX Process Mgmt  --> Checker Agent --+
+                                    |                                 |
+                             [phase routing]             Planner (consolidate)
+                                    v                                 |
+                         +---------------------+         Final Cited Response
+                         | Initiation/Planning |
+                         | Execution/Stabilize |
+                         | Project Management  |
+                         | Change/Communicate  |
+                         | Monitoring/Control  |
+                         +---------------------+</div>
         <ul>
           <li><strong>Planner Agent:</strong> LLM routing  classifies query as <code>aris</code>, <code>ifx_process_mgmt</code>, or <code>direct</code>; expands process abbreviations; reconstructs vague queries into precise search phrases</li>
           <li><strong>ARIS Agent:</strong> fuzzy + exact search on the local CSV  phrase matching, acronym detection, token coverage scoring, hierarchy-depth weighting; top-10 results</li>
