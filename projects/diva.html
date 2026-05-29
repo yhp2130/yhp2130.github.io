@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DIVA — Yap Hong Ping</title>
+  <title>DIVA — Distributor Invoice Audit · Yap Hong Ping</title>
   <style>
     :root {
       --bg: #0d1117; --surface: #161b22; --border: #30363d;
@@ -67,12 +67,50 @@
       font-family: var(--font-mono); font-size: 12px; background: var(--surface);
       border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; color: var(--orange);
     }
+    .metrics { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
+    .metric-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px 20px; flex: 1; min-width: 140px;
+    }
+    .metric-value { font-size: 28px; font-weight: 700; color: var(--green); font-family: var(--font-mono); }
+    .metric-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    /* Phase timeline */
+    .phases { position: relative; padding-left: 32px; margin: 24px 0; }
+    .phases::before {
+      content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+      width: 2px; background: var(--border);
+    }
+    .phase {
+      position: relative; margin-bottom: 32px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+    }
+    .phase::before {
+      content: attr(data-n); position: absolute; left: -32px; top: 18px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--bg); border: 2px solid var(--blue);
+      color: var(--blue); font-family: var(--font-mono); font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phase-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .phase-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+    .finding {
+      background: rgba(63,185,80,0.06); border-left: 3px solid var(--green);
+      padding: 8px 12px; border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 13px; color: var(--muted); margin-top: 12px;
+    }
+    .finding strong { color: var(--text); }
+    .postmortem {
+      background: rgba(255,166,87,0.06); border: 1px solid rgba(255,166,87,0.2);
+      border-radius: var(--radius); padding: 16px 20px; margin: 24px 0;
+    }
+    .postmortem h3 { font-size: 13px; font-weight: 600; color: var(--orange); margin-bottom: 8px; }
   </style>
 </head>
 <body>
   <nav>
     <a href="../index.html#projects" class="back">← back</a>
-    <span class="title">DIVA — Invoice Vouching Rule Engine</span>
+    <span class="title">DIVA — Distributor Invoice Audit</span>
     <span class="seq">3 / 5</span>
     <div class="nav-pager">
       <a href="clairegpt.html">← prev</a>
@@ -83,91 +121,142 @@
   <div class="container">
     <h1>DIVA</h1>
     <div class="meta">
-      Finance (Accounts Payable) · <span>Infineon Technologies</span> · Backend Developer
+      Finance Controller Reconciliation · <span>Lead AI Engineer</span> · ~1 year
     </div>
 
     <div class="internal-note">
-      ⚿ Internal project — proprietary code not published. Case study describes architecture and decisions.
+      ⚿ Internal project — proprietary code not published. Case study covers open-source tools, model decisions, and pipeline design only.
     </div>
 
-    <h2>$ cat problem.md</h2>
-    <p>
-      The AP team manually vouched invoices against purchase orders before releasing payment —
-      verifying amounts, supplier details, dates, line items, and tax calculations.
-      <strong>Hundreds of invoices per month.</strong> Manual, time-consuming, and a payment
-      processing bottleneck.
-    </p>
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-value">2</div>
+        <div class="metric-label">Extraction approaches evaluated (LLM, ABBYY)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">6</div>
+        <div class="metric-label">Matching flags per invoice (SMD, currency, qty, price, SAP#, date)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">100+</div>
+        <div class="metric-label">Distributor invoices processed per month</div>
+      </div>
+    </div>
 
-    <h2>$ cat rule_categories.md</h2>
-    <table>
-      <tr><th>Category</th><th>Type</th><th>Configurable?</th></tr>
-      <tr><td>Amount matching</td><td>Invoice total vs PO within tolerance</td><td>✅ threshold %</td></tr>
-      <tr><td>Line item matching</td><td>Each invoice line maps to a PO line</td><td>✅ per-category tolerance</td></tr>
-      <tr><td>Supplier validation</td><td>Supplier ID on approved vendor register</td><td>❌ hard check</td></tr>
-      <tr><td>Date validation</td><td>Invoice date within PO validity window</td><td>✅ grace period days</td></tr>
-      <tr><td>Tax validation</td><td>GST/VAT calculated correctly per jurisdiction</td><td>✅ rate per jurisdiction</td></tr>
-      <tr><td>Duplicate detection</td><td>Invoice reference not already processed</td><td>❌ hard check</td></tr>
-      <tr><td>Currency check</td><td>Invoice currency matches PO currency</td><td>❌ hard check</td></tr>
-      <tr><td>Mandatory fields</td><td>All required fields present</td><td>❌ hard check</td></tr>
-    </table>
+    <h2>$ cat phases.md</h2>
+    <div class="phases">
 
-    <h2>$ cat rule_design.md</h2>
-    <p>
-      <strong>Hard rules</strong> (supplier fraud, duplicate payment) cause immediate rejection
-      without evaluating remaining rules.
-      <strong>Soft rules</strong> (amount tolerance, date grace period) are all evaluated and
-      bundled into a single structured exception report.
-    </p>
-    <p>
-      Finance team adjusts thresholds via <code>YAML config</code> without code deployment —
-      critical for seasonal needs (e.g., higher tolerance during Q4 budget close).
-    </p>
+      <div class="phase" data-n="1">
+        <div class="phase-title">Use Case — Finance Controller Distributor Reconciliation</div>
+        <div class="phase-meta">stakeholder: finance controller · domain: distributor point-of-sale reconciliation</div>
+        <p>
+          Distributors submit monthly invoices for semiconductor products they have sold to end customers.
+          The Finance Controller needed to reconcile these invoices against the company's internal
+          <strong>Sales &amp; Marketing Data (SMD)</strong> from the ERP — verifying that quantities,
+          prices, currency, and customer identity reported by the distributor matched the company's records.
+        </p>
+        <p>
+          The process was fully manual: controllers downloaded invoice PDFs, cross-referenced each line
+          item against ERP exports, and flagged discrepancies by hand. With <strong>100+ invoices per month</strong>
+          from distributors across multiple countries and languages, this was a significant recurring burden.
+        </p>
+      </div>
 
-    <h2>$ cat llm_extraction.md</h2>
-    <p>
-      Non-standard invoices (Chinese suppliers, German language, handwritten) use an
-      <strong>LLM extraction pipeline</strong> as fallback when structured ERP/EDI data is unavailable:
-    </p>
-    <ul>
-      <li><strong>pymupdf</strong> → native page text extraction</li>
-      <li><strong>pymupdf4llm</strong> → markdown layout with table structure</li>
-      <li><strong>pytesseract</strong> → OCR with multilingual support (chi_tra+chi_sim+deu+eng)</li>
-      <li><strong>LLM Call 1</strong> → extract line-item table as CSV (Row No., SP No., PCS, Amount, Unit Price)</li>
-      <li><strong>LLM Call 2</strong> → extract header fields as JSON (bill_to, currency, invoice_number, invoice_date)</li>
-      <li><strong>LLM Call 3</strong> → JSON correction pass for malformed output</li>
-    </ul>
+      <div class="phase" data-n="2">
+        <div class="phase-title">Two-Track Exploration — LLM &amp; ABBYY in Parallel</div>
+        <div class="phase-meta">split: LLM extraction (AI engineer) · ABBYY extraction (finance developer)</div>
+        <p>
+          The project split into two independent extraction tracks running in parallel:
+        </p>
+        <table>
+          <tr><th>Track</th><th>Approach</th><th>Owner</th></tr>
+          <tr><td>LLM extraction</td><td>pymupdf + pytesseract OCR → on-prem LLM (3-call pipeline: table CSV, header JSON, JSON correction)</td><td>AI Engineer (this project)</td></tr>
+          <tr><td>ABBYY extraction</td><td>ABBYY Vantage cloud API — trained document skill for structured field extraction</td><td>Finance developer</td></tr>
+        </table>
+        <p>
+          The LLM pipeline handled multilingual invoices (Chinese, German, English) via
+          <code>pytesseract</code> with <code>chi_tra+chi_sim+deu+eng</code> language packs and
+          <code>pymupdf4llm</code> for layout-aware text extraction. The LLM was called three times
+          per invoice: once for line-item table extraction (semicolon-delimited CSV), once for header
+          field extraction (JSON), and once to correct malformed JSON output.
+        </p>
+      </div>
 
-    <h2>$ cat company_matching.md</h2>
-    <p>Supplier names require fuzzy matching — abbreviations, legal suffixes (Ltd/Co./GmbH), and romanisation of Chinese names all cause exact-match failures:</p>
-    <table>
-      <tr><th>Name Type</th><th>Method</th><th>Threshold Logic</th></tr>
-      <tr><td>ASCII company names</td><td>thefuzz <code>partial_ratio</code></td><td>≥80 = MATCH · 30–79 = PARTIAL (human review) · &lt;30 = MISMATCH</td></tr>
-      <tr><td>Chinese company names</td><td>LLM semantic comparison</td><td>Fuzzy fails on Traditional/Simplified/mixed scripts — LLM handles reliably</td></tr>
-    </table>
+      <div class="phase" data-n="3">
+        <div class="phase-title">LLM vs ABBYY — Extraction Quality Comparison</div>
+        <div class="phase-meta">decision: ABBYY chosen for production · LLM track discontinued</div>
+        <p>
+          The on-prem LLM produced <strong>inconsistent extraction results</strong> — field hallucination,
+          variable JSON structure, and poor handling of scanned invoices with low OCR confidence.
+          Consistency degraded further for multi-page invoices and non-standard layouts.
+        </p>
+        <p>
+          ABBYY Vantage — using a trained document skill (<code>combined_plank3</code>) — produced
+          structured, consistent field extraction across invoice formats. The pre-trained skill handled
+          layout variation without requiring prompt engineering or retry logic.
+        </p>
+        <div class="finding"><strong>Decision:</strong> ABBYY chosen as the production extraction engine. LLM approach retained as fallback reference but not deployed. Both codebases maintained in the repository.</div>
+      </div>
 
-    <h2>$ cat why_rule_based.md</h2>
-    <ul>
-      <li><strong>Auditability:</strong> Finance auditors require explainable decisions — "rule X failed with value Y" vs. "model confidence 0.73"</li>
-      <li><strong>Data volume:</strong> Limited labeled invoice-PO pairs at launch — insufficient for reliable ML classifier</li>
-      <li><strong>Configurability:</strong> Finance can adjust tolerances without ML retraining</li>
-      <li><strong>Early ML baseline underperformed</strong> the rule engine by 15 percentage points</li>
-      <li><strong>Future ML ready:</strong> rule abstraction layer designed so ML could replace line-item matching later</li>
-    </ul>
+      <div class="phase" data-n="4">
+        <div class="phase-title">Rule Engine — Matching Logic &amp; ABBYY Integration</div>
+        <div class="phase-meta">built: diva_rules.py · 6 matching flags · fuzzy + LLM company matching</div>
+        <p>
+          Designed and implemented the rule matching engine (<code>apply_rules()</code>) that compares
+          ABBYY-extracted invoice data against ERP sales data. Each invoice produces a structured flag set:
+        </p>
+        <table>
+          <tr><th>Flag</th><th>Logic</th></tr>
+          <tr><td><code>smd_flag</code></td><td>Invoice line item found / not found in ERP sales data</td></tr>
+          <tr><td><code>currency_flag</code></td><td>Invoice currency matches ERP reference currency</td></tr>
+          <tr><td><code>quantity_flag</code></td><td>Per-line quantity deviation check (invoice vs ERP)</td></tr>
+          <tr><td><code>price_flag</code></td><td>Per-line price comparison — mean / max / min</td></tr>
+          <tr><td><code>sap_number_flag</code></td><td>4-state: -1 not found · 0 no match · 1 exact · 2 found in list</td></tr>
+          <tr><td><code>date_flag</code></td><td>Invoice date matches ERP expected date</td></tr>
+        </table>
+        <p>
+          Company name matching required a two-strategy approach — distributor names vary by abbreviation,
+          legal suffix (Ltd/Co./GmbH), and romanization of CJK characters:
+        </p>
+        <ul>
+          <li><strong>ASCII names:</strong> <code>thefuzz.partial_ratio</code> — ≥80 match · 30–79 partial (human review) · &lt;30 mismatch</li>
+          <li><strong>CJK names:</strong> LLM semantic comparison — fuzzy matching fails on Traditional/Simplified/mixed scripts</li>
+        </ul>
+        <div class="finding"><strong>Design choice:</strong> Rule-based over ML — finance audit requires explainable decisions ("field X mismatched by Y%") not model confidence scores. Rules are also configurable without retraining.</div>
+      </div>
+
+      <div class="phase" data-n="5">
+        <div class="phase-title">Production Deployment</div>
+        <div class="phase-meta">stack: ABBYY API + FastAPI + Elasticsearch · containerised on Docker</div>
+        <p>
+          The production pipeline (<code>main_abbyy.py</code>) runs on a schedule: scans the invoice
+          drop folder, calls the ABBYY Vantage API for each PDF, passes extracted data through
+          <code>apply_rules()</code>, and posts structured match results to <strong>Elasticsearch</strong>
+          via Logstash for the Finance Controller's review dashboard.
+        </p>
+        <p>
+          A <strong>Vue.js frontend</strong> surfaces exceptions — invoices with flag mismatches — for
+          human review. Fully matched invoices are auto-approved and routed for payment processing.
+          The system is containerised with <strong>Docker</strong> and served via FastAPI.
+        </p>
+        <div class="finding"><strong>Outcome:</strong> Finance Controller reconciliation automated for standard invoices. Exception reports replace manual cross-referencing. Full audit trail stored in Elasticsearch for compliance.</div>
+      </div>
+
+    </div>
 
     <h2>$ cat stack.txt</h2>
     <div>
       <span class="badge blue">Python</span>
       <span class="badge green">FastAPI</span>
-      <span class="badge blue">React.js</span>
-      <span class="badge orange">Streamlit</span>
-      <span class="badge muted">ERP REST API</span>
-      <span class="badge muted">thefuzz (fuzzy matching)</span>
-      <span class="badge muted">pymupdf / pymupdf4llm</span>
+      <span class="badge blue">Vue.js</span>
+      <span class="badge muted">ABBYY Vantage (cloud API)</span>
+      <span class="badge muted">On-prem LLM (experimental)</span>
+      <span class="badge muted">pymupdf · pymupdf4llm</span>
       <span class="badge muted">pytesseract (multilingual OCR)</span>
-      <span class="badge muted">On-prem LLM (extraction + JSON correction)</span>
-      <span class="badge muted">YAML config</span>
+      <span class="badge muted">thefuzz (fuzzy matching)</span>
+      <span class="badge muted">ERP REST API (SMD)</span>
+      <span class="badge orange">Elasticsearch · Logstash</span>
       <span class="badge blue">Docker</span>
-      <span class="badge muted">Nginx</span>
     </div>
   </div>
 </body>
