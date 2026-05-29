@@ -20,8 +20,8 @@
 | 1 | **CODEC → ClaireGPT** | CLM | LangChain · Elasticsearch · On-prem LLM | 2hr → 5min (96% ↓) · 100 queries/day | [→ clairegpt.md](projects/clairegpt.md) |
 | 2 | **ICC → BART** | CLM | HuggingFace · BART · FastAPI · OpenShift | F1=0.8 · 8-class logistics · 100+ contracts/cycle | [→ bart.md](projects/bart.md) |
 | 3 | **AI4Concur** | Finance | PyTorch · EasyOCR · SAP Concur API | Full pipeline built · SaaS adopted by org | [→ ai4concur.md](projects/ai4concur.md) |
-| 4 | **DIVA** | Finance | Python · Rule Engine · FastAPI | Rule-based AP vouching · production | [→ diva.md](projects/diva.md) |
-| 5 | **Pro-Toolbox** | Process Consulting | LangChain · Vector Store · FastAPI | RAG chatbot for process consultants | [→ pro-toolbox.md](projects/pro-toolbox.md) |
+| 4 | **DIVA** | Finance | Python · Rule Engine · FastAPI · LLM | 8-category rule engine · LLM extraction for multilingual invoices | [→ diva.md](projects/diva.md) |
+| 5 | **Pro-Toolbox** | Process Consulting | Custom asyncio ReAct · Docling · FastAPI | Cross-document process RAG · agentic tool-use loop | [→ pro-toolbox.md](projects/pro-toolbox.md) |
 
 > **Architecture thread:** ICC/BART clause extraction (Project 2) was later integrated as an agent tool inside ClaireGPT (Project 1).
 
@@ -32,11 +32,12 @@
 | Domain | Skills | Level |
 |--------|--------|-------|
 | **NLP / LLM** | RAG, Agentic AI (multi-agent), Prompt Engineering, Fine-tuning | Advanced |
-| **AI / ML** | PyTorch, Scikit-learn, HuggingFace, LangChain | Advanced |
+| **AI / ML** | PyTorch, TensorFlow, Scikit-learn, HuggingFace, LangChain | Advanced |
 | **MLOps** | GitLab CI/CD, Docker, Kubernetes, ArgoCD, Helm, OpenShift | Advanced |
 | **Search** | Elasticsearch (pure kNN dense_vector HNSW), TF-IDF+SBERT hybrid (CODEC) | Advanced |
 | **Backend** | FastAPI, REST APIs, Microservices | Intermediate |
 | **Cloud** | AWS SageMaker (portfolio), Azure (portfolio), OpenShift (production) | Intermediate |
+| **AI Platforms** | Datarobot, Dataiku, Dify, SAP Joule | Intermediate |
 | **CV / OCR** | EasyOCR, Image Classification, Object Detection | Intermediate |
 
 ---
