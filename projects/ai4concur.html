@@ -248,7 +248,7 @@
           <tr><th>Model</th><th>Approach</th><th>Outcome</th></tr>
           <tr><td>LayoutLM</td><td>Layout-aware transformer for key-value extraction</td><td>Did not meet expected performance — hotel formats too wide and varied</td></tr>
           <tr><td>Donut</td><td>End-to-end document understanding (no OCR stage)</td><td>Training converged but generalisation poor — format variability too high</td></tr>
-          <tr><td>DETR + SetFit</td><td>DETR for table region detection + SetFit for few-shot line-item classification</td><td>Better than LayoutLM/Donut but still limited — 70% overall POC accuracy</td></tr>
+          <tr><td>DETR + SetFit</td><td>DETR (<code>detr-doc-table-detection</code>) to detect table row boundaries in folio images + SetFit for few-shot line-item classification</td><td>Better than LayoutLM/Donut but still limited — 70% overall POC accuracy</td></tr>
         </table>
         <div class="finding"><strong>Root cause:</strong> Hotel invoice layouts differ significantly across hotel chains — column widths, item naming, multi-currency rows, page count. All fine-tuned specialist models struggled to generalise without sufficient per-format training data.</div>
 
