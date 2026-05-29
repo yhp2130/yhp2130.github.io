@@ -36,6 +36,7 @@
 | **MLOps** | GitLab CI/CD, Docker, Kubernetes, ArgoCD, Helm, Artifactory, OpenShift | Advanced |
 | **Search** | Elasticsearch (pure kNN dense_vector HNSW), TF-IDF+SBERT hybrid (CODEC) | Advanced |
 | **Backend** | FastAPI, FastMCP, REST APIs, Microservices | Intermediate |
+| **Frontend** | React.js, Vue.js, TypeScript, Vite, Streamlit, Nginx | Intermediate |
 | **Cloud** | AWS SageMaker (portfolio), Azure (portfolio), OpenShift (production) | Intermediate |
 | **AI Platforms** | Datarobot, Dataiku, Dify, SAP Joule | Intermediate |
 | **CV / OCR** | EasyOCR, Image Classification, Object Detection | Intermediate |
