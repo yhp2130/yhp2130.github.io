@@ -1,4 +1,4 @@
-# CODEC  ClaireGPT: Logistics Knowledge Retrieval System
+# Document Retrieval & Agentic RAG Chatbot (CODEC → ClaireGPT)
 
 **Role:** AI Engineer / Data Scientist  
 **Duration:** ~3 years (3 generations)  

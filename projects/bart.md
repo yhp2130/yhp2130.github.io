@@ -1,4 +1,4 @@
-# BART — Contract Clause Extraction
+# NLP Contract Clause Extraction (BART)
 
  [Back to Portfolio](../README.md)  [See also: ClaireGPT](clairegpt.md)
 

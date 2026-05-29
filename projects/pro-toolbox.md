@@ -1,4 +1,4 @@
-# Pro-Toolbox: Virtual Process Consultant
+# Agentic Process Knowledge RAG (Pro-Toolbox)
 
 **Role:** AI Engineer / Data Scientist  
 **Duration:** <2 weeks to production  

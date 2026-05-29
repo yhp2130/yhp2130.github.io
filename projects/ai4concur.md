@@ -1,4 +1,4 @@
-# AI4Concur — Finance Receipt Intelligence
+# Travel Expense Receipt Intelligence (AI4Concur)
 
 ← [Back to Portfolio](../README.md)
 

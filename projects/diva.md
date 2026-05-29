@@ -1,4 +1,4 @@
-# DIVA — Distributor Invoice Audit
+# Distributor Invoice Audit Automation (DIVA)
 
 ← [Back to Portfolio](../README.md)
 
