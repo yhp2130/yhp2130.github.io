@@ -84,6 +84,25 @@
     .evolution-name { font-family: var(--font-mono); font-size: 13px; color: var(--blue); font-weight: 600; }
     .evolution-desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
     .arrow { display: flex; align-items: center; padding: 0 8px; color: var(--green); font-size: 16px; flex-shrink: 0; }
+    .phase { border-left: 2px solid var(--border); padding: 0 0 28px 20px; position: relative; margin-top: 8px; }
+    .phase:last-child { padding-bottom: 0; border-left-color: transparent; }
+    .phase::before {
+      content: attr(data-n); position: absolute; left: -13px; top: 0;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--surface); border: 2px solid var(--blue);
+      font-family: var(--font-mono); font-size: 10px; color: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phase-title { font-family: var(--font-mono); font-size: 13px; color: var(--blue); font-weight: 600; margin-bottom: 6px; }
+    .phase-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .finding { background: rgba(63,185,80,0.06); border: 1px solid rgba(63,185,80,0.2);
+               border-radius: var(--radius); padding: 8px 12px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .finding strong { color: var(--green); }
+    .postmortem {
+      background: rgba(255,166,87,0.06); border: 1px solid rgba(255,166,87,0.2);
+      border-radius: var(--radius); padding: 16px; margin: 20px 0;
+    }
+    .postmortem h3 { font-size: 13px; color: var(--orange); font-family: var(--font-mono); margin-bottom: 10px; }
     @media (max-width: 640px) {
       .metrics-grid { grid-template-columns: 1fr 1fr; }
       .evolution-row { flex-direction: column; }
@@ -106,18 +125,19 @@
   <div class="container">
     <h1>ICC → BART</h1>
     <div class="meta">
-      Customer Logistics Management · <span>Infineon Technologies</span> · ~3 years · Lead AI Engineer
+      Logistics Contract Management · <span>Lead AI Engineer</span> · ~3 years
     </div>
 
     <div class="internal-note">
-      ⚿ Internal project — proprietary code not published. Case study describes architecture and decisions.
+      ⚿ Internal project — proprietary code not published. Case study covers open-source tools, model decisions, and pipeline design only.
     </div>
 
     <h2>$ cat problem.md</h2>
     <p>
-      CLM manages hundreds of logistics contracts per cycle. Each contract contains dozens of
-      clauses covering liability caps, penalty terms, SLA obligations, and payment conditions.
-      <strong>Manual review took days per contract cycle</strong> and required legal/ops expertise.
+      Logistics contracts are reviewed per cycle — each containing dozens of clauses covering
+      liability caps, penalty terms, SLA obligations, and payment conditions.
+      <strong>Manual review took days per cycle</strong> and required specialist knowledge.
+      The goal: automatically classify and extract key clause content from scanned PDF contracts.
     </p>
 
     <h2>$ cat metrics.json</h2>
@@ -127,12 +147,12 @@
         <div class="metric-label">Weighted clause classification (8 logistics topics)</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">100+</div>
-        <div class="metric-label">Contracts processed per cycle</div>
+        <div class="metric-value">200</div>
+        <div class="metric-label">Contracts manually labelled (BSA + CAA)</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">&lt;30s</div>
-        <div class="metric-label">On-demand latency per contract</div>
+        <div class="metric-value">100+</div>
+        <div class="metric-label">Contracts processed per cycle</div>
       </div>
       <div class="metric-card">
         <div class="metric-value">0</div>
@@ -140,73 +160,174 @@
       </div>
     </div>
 
-    <h2>$ git log --oneline evolution</h2>
-    <div class="evolution-row">
-      <div class="evolution-item">
-        <div class="evolution-name">ICC Phase 1</div>
-        <div class="evolution-desc">Rule-based keyword classifier + Streamlit UI</div>
+    <h2>$ git log --oneline — chronological</h2>
+
+    <div style="margin-top: 20px;">
+
+      <div class="phase" data-n="1">
+        <div class="phase-title">ICC Takeover — Regex + LDA Predecessor</div>
+        <div class="phase-meta">predecessor: regex rules + Latent Dirichlet Allocation</div>
+        <p>
+          Took over from a colleague. The existing system used <strong>regex pattern matching</strong> combined
+          with <strong>Latent Dirichlet Allocation (LDA)</strong> for topic modelling on OCR-converted contract text.
+        </p>
+        <p>Results were poor due to two compounding issues:</p>
+        <ul>
+          <li>OCR noise from scanned copies — spotted pages, skewed text, poor contrast — degraded input quality</li>
+          <li>Legal clause complexity — clauses are long, nested, cross-referencing; LDA topic coherence broke down</li>
+        </ul>
+        <div class="finding"><strong>Decision:</strong> Abandon LDA. Move to supervised transformer-based classification with clean text extraction.</div>
       </div>
-      <div class="arrow">→</div>
-      <div class="evolution-item">
-        <div class="evolution-name">BART</div>
-        <div class="evolution-desc">Fine-tuned seq2seq transformer · F1=0.8</div>
+
+      <div class="phase" data-n="2">
+        <div class="phase-title">Model Experimentation — BERT, RoBERTa ± CUAD</div>
+        <div class="phase-meta">experiments: bert-base-uncased · roberta-large · roberta-large-mnli · CUAD domain pre-training</div>
+        <p>
+          Explored encoder-only transformers for clause classification. Tested four configurations:
+        </p>
+        <table>
+          <tr><th>Model</th><th>Training</th><th>Observation</th></tr>
+          <tr><td>BERT base</td><td>Fine-tuned on labelled contracts</td><td>Baseline — reasonable but lower F1</td></tr>
+          <tr><td>RoBERTa large</td><td>Fine-tuned on labelled contracts</td><td>Better generalisation across clause styles</td></tr>
+          <tr><td>RoBERTa + CUAD</td><td>Domain pre-trained on Contract Understanding Atticus Dataset</td><td>Marginal improvement — logistics contracts differ from CUAD's US legal style</td></tr>
+          <tr><td>RoBERTa-large-MNLI</td><td>Zero-shot + fine-tuned (natural language inference head)</td><td>Best overall — <strong>selected for production</strong></td></tr>
+        </table>
+        <div class="finding"><strong>Insight:</strong> MNLI pre-training gave RoBERTa strong entailment reasoning useful for matching clause text to topic labels — even before fine-tuning.</div>
       </div>
-      <div class="arrow">→</div>
-      <div class="evolution-item">
-        <div class="evolution-name">BART Pipeline</div>
-        <div class="evolution-desc">Production CI/CD · batch + on-demand</div>
+
+      <div class="phase" data-n="3">
+        <div class="phase-title">Data Labelling — 200 Contracts (BSA + CAA)</div>
+        <div class="phase-meta">tool: Label Studio · 8 topics · two contract types</div>
+        <p>
+          Manually labelled <strong>200 contracts</strong> using Label Studio. Two contract types required separate handling:
+        </p>
+        <table>
+          <tr><th>Type</th><th>Description</th><th>Challenge</th></tr>
+          <tr><td>BSA (Basic Supply Agreement)</td><td>Full standalone logistics contract</td><td>Long documents, all 8 topics present</td></tr>
+          <tr><td>CAA (Contract Amendment Agreement)</td><td>Amendment that overwrites specific clauses in a prior BSA</td><td>Not all topics present — only amended clauses appear; sparse labels per document</td></tr>
+        </table>
+        <p>8 topics extracted across contracts:</p>
+        <table>
+          <tr><th>Topic</th><th>Clause Scope</th></tr>
+          <tr><td>qty_tolerance</td><td>Acceptable quantity variance before rejection</td></tr>
+          <tr><td>delivery_term</td><td>Incoterms and delivery responsibility</td></tr>
+          <tr><td>incoming_inspection</td><td>Acceptance testing obligations and timelines</td></tr>
+          <tr><td>liability_cap</td><td>Maximum financial exposure per party</td></tr>
+          <tr><td>order_response</td><td>Acknowledgment and lead time obligations</td></tr>
+          <tr><td>payment_term</td><td>Payment due dates and late payment conditions</td></tr>
+          <tr><td>product_change_notification</td><td>Notice period for part/process changes</td></tr>
+          <tr><td>warranty_period</td><td>Defect coverage duration and remediation terms</td></tr>
+        </table>
       </div>
-      <div class="arrow">→</div>
-      <div class="evolution-item">
-        <div class="evolution-name">ClaireGPT Tool</div>
-        <div class="evolution-desc">LangChain tool wrapper for agent use</div>
+
+      <div class="phase" data-n="4">
+        <div class="phase-title">Transcription — Nougat over OCR</div>
+        <div class="phase-meta">model: Nougat (Meta) · replaces: EasyOCR / pytesseract</div>
+        <p>
+          Contract PDFs are structurally similar to academic papers — dense paragraphs, numbered clauses,
+          multi-column layouts, embedded tables. Standard OCR (EasyOCR, pytesseract) was sensitive to
+          scanning noise: spots, skew, low contrast.
+        </p>
+        <p>
+          Switched to <strong>Nougat</strong> (Meta's neural optical understanding for academic documents),
+          which treats the page as an image and generates clean text without a separate OCR step.
+          Nougat's post-processors cleaned LaTeX artefacts, repeated lines, and headers/footers.
+        </p>
+        <div class="finding"><strong>Pipeline pre-processors:</strong> Chinese character removal (for bilingual contracts), table extraction via DETR (tables overpainted white before Nougat to prevent misread), header/footer removal, repetition deduplication.</div>
       </div>
+
+      <div class="phase" data-n="5">
+        <div class="phase-title">SetFit vs Supervised Fine-tuning — Complexity Trade-off</div>
+        <div class="phase-meta">experiment: SetFit (few-shot) vs standard fine-tuning</div>
+        <p>
+          Tested <strong>SetFit</strong> (sentence-transformer + few-shot contrastive fine-tuning using
+          <code>all-mpnet-base-v2</code>) against standard supervised fine-tuning of RoBERTa.
+          Both approaches produced comparable F1 on the multilabel multiclass classification task.
+        </p>
+        <div class="finding"><strong>Decision:</strong> Chose standard supervised fine-tuning — simpler training pipeline, no contrastive pair generation, easier to maintain in production. SetFit offers an advantage mainly when labelled data is scarce; with 200 labelled contracts the benefit did not justify the added complexity.</div>
+      </div>
+
+      <div class="phase" data-n="6">
+        <div class="phase-title">Pipeline Design — Parallel Transcribe + Classify + Extract</div>
+        <div class="phase-meta">stack: DETR → Nougat → RoBERTa → BART → Oracle DB</div>
+        <p>Pipeline processes contracts in page batches to reduce GPU idle time:</p>
+        <table>
+          <tr><th>Stage</th><th>Component</th><th>Role</th></tr>
+          <tr><td>1. Table detection</td><td>DETR (<code>detr-doc-table-detection</code>)</td><td>Detect &amp; extract table images; overpaint white in document so Nougat reads text only</td></tr>
+          <tr><td>2. Transcription</td><td>Nougat</td><td>Convert page images → clean paragraph text; post-process: dedup, LaTeX removal, line filtering</td></tr>
+          <tr><td>3. Classification</td><td>RoBERTa-large-MNLI (fine-tuned)</td><td>Multilabel multiclass: assign each sentence to one or more of 8 clause topics</td></tr>
+          <tr><td>4. Extraction</td><td>BART (seq2seq)</td><td>Summarise classified clause text into structured key-value output per topic</td></tr>
+          <tr><td>5. Storage</td><td>Oracle DB</td><td>Persist extracted clauses with contract ID, topic, sentence, and confidence score</td></tr>
+        </table>
+        <p>CAA handling: amendment contracts overwrite prior BSA clauses — only amended topics are present, so missing topics fall back to BSA values stored from the previous cycle.</p>
+      </div>
+
+      <div class="phase" data-n="7">
+        <div class="phase-title">Production Deployment — Human-in-the-Loop</div>
+        <div class="phase-meta">renamed ICC → BART · GitOps: GitLab CI → Artifactory → ArgoCD → OpenShift</div>
+        <p>
+          Results shared with business users. Deployed to production with a
+          <strong>human-in-the-loop admin interface</strong> (Vue.js + Django REST):
+          admins can review, amend, and approve AI-extracted clause data before it is used downstream.
+        </p>
+        <p>
+          Full GitOps CI/CD: every merge to <code>main</code> triggers unit tests → linting →
+          Docker build → push to Artifactory. ArgoCD detects the new image tag and syncs the
+          Helm chart through dev → staging → prod on OpenShift. Manual approval gate at staging → prod.
+          Zero manual deployments.
+        </p>
+        <div class="finding"><strong>Outcome:</strong> F1 = 0.8 weighted across 8 topics. Contract review cycle reduced from days to minutes. Project renamed from ICC to BART to reflect the core model.</div>
+      </div>
+
+      <div class="phase" data-n="8">
+        <div class="phase-title">Tool Conversion — ClaireGPT Integration</div>
+        <div class="phase-meta">wrapped as LangChain tool for agentic use</div>
+        <p>
+          BART was later wrapped as a <strong>LangChain tool</strong> within the ClaireGPT agent,
+          enabling contract clause queries through natural language. Users could ask
+          "What is the warranty period for supplier X?" and the agent would invoke the BART tool
+          to retrieve and summarise the relevant clause.
+        </p>
+      </div>
+
+      <div class="phase" data-n="9">
+        <div class="phase-title">GPT-4.1 Retrospective</div>
+        <div class="phase-meta">experiment post-deployment</div>
+        <p>
+          After deployment, ran a comparative experiment using <strong>GPT-4.1</strong> for clause
+          extraction on the same contract set. Results were comparable to the fine-tuned pipeline.
+        </p>
+        <div class="postmortem" style="margin-top:12px;">
+          <h3>💡 Retrospective Learning</h3>
+          <p style="font-size:13px;color:var(--muted);">
+            GPT-4.1 achieved comparable extraction quality without the labelling, training, and pipeline
+            infrastructure effort. Key takeaway: <strong style="color:var(--text);">for low-volume structured
+            extraction from varied document formats, multimodal LLMs are now the pragmatic first choice</strong>.
+            The fine-tuned pipeline remains valuable for high-volume, latency-sensitive, on-prem deployments
+            where API cost and data privacy are constraints.
+          </p>
+        </div>
+      </div>
+
     </div>
-
-    <h2>$ cat why_bart.md</h2>
-    <p>
-      BART is an encoder-decoder seq2seq transformer. Clause extraction was framed as
-      <strong>conditional generation</strong>: input a tagged clause, output structured JSON fields.
-    </p>
-    <table>
-      <tr><th>Approach</th><th>Mechanism</th><th>Limitation</th></tr>
-      <tr><td>BERT QA (span extraction)</td><td>Finds answer span in source text</td><td>Fails when answer requires inference — not a literal span</td></tr>
-      <tr><td><strong>BART seq2seq</strong></td><td>Generates structured output from encoder</td><td>Handles paraphrase, inference, multi-sentence clauses</td></tr>
-    </table>
-
-    <h2>$ cat taxonomy.md — 8 Logistics Contract Topics</h2>
-    <p>Topics map directly to CLM team's operational queries on logistics supply agreements (BSA/CAA):</p>
-    <table>
-      <tr><th>Topic</th><th>Operational Question</th></tr>
-      <tr><td>qty_tolerance</td><td>What quantity variance is acceptable before rejection?</td></tr>
-      <tr><td>delivery_term</td><td>Incoterms and delivery responsibility</td></tr>
-      <tr><td>incoming_inspection</td><td>Acceptance testing obligations and timelines</td></tr>
-      <tr><td>liability_cap</td><td>Maximum financial exposure per party</td></tr>
-      <tr><td>order_response</td><td>Acknowledgment and lead time obligations</td></tr>
-      <tr><td>payment_term</td><td>Payment due dates and late payment conditions</td></tr>
-      <tr><td>product_change_notification</td><td>Notice period for part/process changes</td></tr>
-      <tr><td>warranty_period</td><td>Defect coverage duration and remediation terms</td></tr>
-    </table>
-
-    <h2>$ cat mlops.md</h2>
-    <p>Every merge to <code>main</code>: unit tests → linting → Docker build → push to Artifactory.
-    ArgoCD detects new image tag → syncs Helm chart to OpenShift (dev → staging → prod).
-    Manual approval gate at staging → prod. Zero manual deployments.</p>
 
     <h2>$ cat stack.txt</h2>
     <div>
-      <span class="badge orange">HuggingFace BART</span>
+      <span class="badge muted">Label Studio</span>
+      <span class="badge blue">BERT · RoBERTa (experiments)</span>
+      <span class="badge orange">RoBERTa-large-MNLI (classifier)</span>
+      <span class="badge orange">HuggingFace BART (extractor)</span>
+      <span class="badge blue">Nougat (transcription)</span>
+      <span class="badge blue">DETR (table detection)</span>
+      <span class="badge muted">SetFit · CUAD (experiments)</span>
       <span class="badge blue">PyTorch</span>
       <span class="badge green">FastAPI</span>
-      <span class="badge green">Streamlit</span>
       <span class="badge blue">Vue.js</span>
       <span class="badge purple">LangChain</span>
-      <span class="badge purple">ArgoCD</span>
-      <span class="badge purple">Helm</span>
-      <span class="badge purple">OpenShift</span>
-      <span class="badge muted">GitLab CI/CD</span>
+      <span class="badge purple">ArgoCD · Helm · OpenShift</span>
+      <span class="badge muted">GitLab CI/CD · Artifactory</span>
       <span class="badge blue">Docker</span>
-      <span class="badge muted">EasyOCR</span>
+      <span class="badge green">Oracle DB</span>
     </div>
   </div>
 </body>
