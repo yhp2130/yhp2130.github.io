@@ -37,7 +37,7 @@
 | **Search** | Elasticsearch (pure kNN dense_vector HNSW), TF-IDF+SBERT hybrid (CODEC) | Advanced |
 | **Backend** | FastAPI, FastMCP, REST APIs, Microservices | Intermediate |
 | **Frontend** | React.js, Vue.js, TypeScript, Vite, Streamlit, Nginx | Intermediate |
-| **Cloud** | AWS SageMaker (portfolio), Azure (portfolio), OpenShift (production) | Intermediate |
+| **Database & Data** | Oracle SQL, MySQL, Denodo, Elasticsearch, PostgreSQL, Hadoop | Intermediate |
 | **AI Platforms** | Datarobot, Dataiku, Dify, SAP Joule | Intermediate |
 | **CV / OCR** | EasyOCR, Image Classification, Object Detection | Intermediate |
 
