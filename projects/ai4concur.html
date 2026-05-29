@@ -75,6 +75,20 @@
          color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
     td { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid rgba(48,54,61,0.5); }
     td:first-child { color: var(--text); }
+    .phase { border-left: 2px solid var(--border); padding: 0 0 28px 20px; position: relative; margin-top: 8px; }
+    .phase:last-child { padding-bottom: 0; border-left-color: transparent; }
+    .phase::before {
+      content: attr(data-n); position: absolute; left: -13px; top: 0;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--surface); border: 2px solid var(--blue);
+      font-family: var(--font-mono); font-size: 10px; color: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phase-title { font-family: var(--font-mono); font-size: 13px; color: var(--blue); font-weight: 600; margin-bottom: 6px; }
+    .phase-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .finding { background: rgba(63,185,80,0.06); border: 1px solid rgba(63,185,80,0.2);
+               border-radius: var(--radius); padding: 8px 12px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .finding strong { color: var(--green); }
     @media (max-width: 640px) { .metrics-grid { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
@@ -91,11 +105,11 @@
   <div class="container">
     <h1>AI4Concur</h1>
     <div class="meta">
-      Finance · <span>Infineon Technologies</span> · ~6 months · AI Engineer
+      Finance · <span>AI Engineer</span> · ~6 months · POC
     </div>
 
     <div class="internal-note">
-      ⚿ Internal project — proprietary code not published. Case study describes architecture and decisions.
+      ⚿ Internal project — proprietary code not published. Case study covers open-source tools, model decisions, and pipeline design only.
     </div>
 
     <h2>$ cat problem.md</h2>
@@ -104,75 +118,172 @@
       Each receipt required <strong>manual reading, category assignment, and field entry</strong>
       (date, amount, merchant, tax, currency). High volume, repetitive, error-prone.
     </p>
-    <p><strong>Goal:</strong> Automate receipt → SAP Concur data entry end-to-end.</p>
+    <p><strong>Goal:</strong> Automate receipt → SAP Concur data entry end-to-end via event-driven pipeline.</p>
 
     <h2>$ cat metrics.json</h2>
     <div class="metrics-grid">
       <div class="metric-card">
         <div class="metric-value">70%</div>
-        <div class="metric-label">Accuracy on test samples (POC)</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-value">~1 hr</div>
-        <div class="metric-label">Estimated manual validation effort saved</div>
+        <div class="metric-label">Overall accuracy on test samples (POC)</div>
       </div>
       <div class="metric-card">
         <div class="metric-value">7</div>
         <div class="metric-label">Rule-based validation flags</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">0</div>
-        <div class="metric-label">Manual entry for auto-approved receipts</div>
+        <div class="metric-value">7</div>
+        <div class="metric-label">Document classes labelled in Label Studio</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">2</div>
+        <div class="metric-label">Hotel extraction models attempted (Donut, Nougat)</div>
       </div>
     </div>
 
-    <h2>$ cat pipeline.md</h2>
-    <p>The pipeline has 4 stages in sequence:</p>
-    <ul>
-      <li><strong>Stage 1 — CNN Classifier + Faster RCNN Detection:</strong> lightweight CNN classifies receipt image as <code>travel</code> / <code>hotel</code> / <code>unknown</code>; Faster RCNN used for receipt region detection. ~1,000 labelled images, augmented for real-world photo conditions.</li>
-      <li><strong>Stage 2 — OCR + NER (EasyOCR):</strong> text detection + recognition; NER entity extraction for key fields (date, amount, merchant, currency).</li>
-      <li><strong>Stage 3 — Type-specific Extraction:</strong> travel → regex + spatial rules; hotel → bounding-box table reconstruction to aggregate itemized rows.</li>
-      <li><strong>Stage 4 — Validator (7 flags):</strong> business rules (amount threshold, date validity, currency support, mandatory fields, OCR confidence, duplicate check, tax check). Failures → manual review queue.</li>
-    </ul>
+    <h2>$ git log --oneline  # project phases</h2>
+    <div style="margin-top: 20px;">
 
-    <h2>$ cat why_classify_first.md</h2>
-    <p>
-      Hotel folios and travel receipts have <strong>fundamentally different layouts</strong>.
-      A single model trained on mixed data achieved ~45% on hotel folios — it confused
-      itemized room rate lines with the total. Separating by type first and using
-      type-specific extraction logic pushed hotel accuracy to ~85%.
-    </p>
+      <div class="phase" data-n="1">
+        <div class="phase-title">Ideation — Scoped to Singapore Travel Receipts</div>
+        <div class="phase-meta">tool: domain analysis · data: local transport + meal receipts (Singapore)</div>
+        <p>
+          Scoped the POC to <strong>Singapore travel receipts</strong> (taxi, grab, meal) to bound
+          the labeling effort. Singapore receipts share common format patterns — date top-right,
+          merchant name top, total bottom — making them a tractable starting point before extending to
+          hotel folios.
+        </p>
+      </div>
 
-    <h2>$ cat iterations.md</h2>
-    <table>
-      <tr><th>Version</th><th>Change</th><th>Result</th></tr>
-      <tr><td>v1</td><td>Single model for all receipt types</td><td>Hotel folio accuracy ~45%</td></tr>
-      <tr><td>v2</td><td>Added CNN type classifier</td><td>Hotel → ~70%; travel maintained</td></tr>
-      <tr><td>v3</td><td>Spatial table reconstruction for hotel</td><td>Hotel → ~85%</td></tr>
-      <tr><td>v4</td><td>OCR confidence threshold + manual queue</td><td>Removed low-confidence auto-submissions</td></tr>
-      <tr><td>v5</td><td>Hotel multi-page folio handling</td><td>Edge case fix for long folios</td></tr>
-    </table>
+      <div class="phase" data-n="2">
+        <div class="phase-title">Label Studio — Document Classification Labels</div>
+        <div class="phase-meta">tool: Label Studio · task: image classification labeling</div>
+        <p>
+          Used <strong>Label Studio</strong> to label receipt images into 7 document classes,
+          separating scanned physical receipts from digital/e-receipts and handling multi-receipt
+          scans (multiple receipts on one page):
+        </p>
+        <table>
+          <tr><th>Class</th><th>Meaning</th></tr>
+          <tr><td>digital_need</td><td>Digital e-receipt with required fields visible</td></tr>
+          <tr><td>digital_no_need</td><td>Digital doc, no expense-relevant fields</td></tr>
+          <tr><td>receipt_single</td><td>Single scanned physical receipt</td></tr>
+          <tr><td>receipt_2</td><td>2 receipts on one scanned page</td></tr>
+          <tr><td>receipt_3</td><td>3 receipts on one scanned page</td></tr>
+          <tr><td>receipt_multiple</td><td>4+ receipts on one page</td></tr>
+          <tr><td>vaccination</td><td>Vaccination cert (out-of-scope, exclude)</td></tr>
+        </table>
+        <div class="finding"><strong>Key decision:</strong> Separating digital from scanned early avoids running OCR on already-structured digital PDFs unnecessarily.</div>
+      </div>
+
+      <div class="phase" data-n="3">
+        <div class="phase-title">Label Studio — Bounding Box Annotation for Receipt Segmentation</div>
+        <div class="phase-meta">tool: Label Studio · task: object detection labeling</div>
+        <p>
+          For scanned images containing multiple receipts on one page (<code>receipt_2</code>,
+          <code>receipt_3</code>, <code>receipt_multiple</code>), used Label Studio's
+          <strong>bounding box drawing tool</strong> to annotate individual receipt regions.
+          These annotations trained the Faster RCNN model to segment multiple receipts from a
+          single scan before OCR processing.
+        </p>
+      </div>
+
+      <div class="phase" data-n="4">
+        <div class="phase-title">Model Training — CNN Classifier + Faster RCNN</div>
+        <div class="phase-meta">framework: PyTorch · models: DenseNet → SqueezeNet (classifier), Faster RCNN ResNet50 (detector)</div>
+        <p>
+          Trained two models in parallel:
+        </p>
+        <ul>
+          <li><strong>Document classifier:</strong> Started with DenseNet; final model used <strong>SqueezeNet</strong> (lighter, faster inference, sufficient accuracy for 7-class task). Input 224×3px, normalized with ImageNet stats.</li>
+          <li><strong>Receipt detector:</strong> <strong>Faster RCNN with ResNet50 backbone</strong> — detects individual receipt regions within a multi-receipt scan. Outputs bounding boxes per receipt.</li>
+        </ul>
+        <p>
+          <strong>Image augmentation</strong> used to expand the training pool: rotation (±15°),
+          brightness/contrast variation, random crop — simulating real-world mobile photo conditions
+          (angle, glare, partial crops).
+        </p>
+        <div class="finding"><strong>Verified from codebase:</strong> Config confirms <code>squeezenet1_0_Adam_Aug1</code> (SqueezeNet + Adam optimizer + augmentation round 1) and <code>resnet50_070822</code> (ResNet50 Faster RCNN).</div>
+      </div>
+
+      <div class="phase" data-n="5">
+        <div class="phase-title">Pipeline Design — Image → OCR → Rules</div>
+        <div class="phase-meta">tools: EasyOCR (custom weights) · regex NER · rule engine</div>
+        <p>The full processing pipeline:</p>
+        <ul>
+          <li><strong>Step 1 — Classify:</strong> CNN classifier routes image to <code>digital</code> or <code>scanned</code> path. Scanned → Faster RCNN crops individual receipt regions.</li>
+          <li><strong>Step 2 — Rotate:</strong> Auto-rotation correction by running EasyOCR at 0°/90°/-90°/180° and selecting the angle with highest OCR confidence score.</li>
+          <li><strong>Step 3 — OCR:</strong> Custom fine-tuned <strong>EasyOCR</strong> weights for English receipt text.</li>
+          <li><strong>Step 4 — NER Extraction:</strong> Regex-based date extraction (handles 50+ date format permutations across separators and month formats). Amount extraction via regex + combinator (handles itemized subtotals summing to total).</li>
+          <li><strong>Step 5 — Validator (7 flags):</strong> Receipt missing · amount &gt;SGD30 threshold · amount mismatch · date mismatch · expired receipt (&gt;90 days) · non-working day · policy timing (OT window check).</li>
+        </ul>
+        <div class="finding"><strong>Key design:</strong> Receipts failing any flag route to a manual review queue — the system degrades gracefully rather than silently submitting wrong data.</div>
+      </div>
+
+      <div class="phase" data-n="6">
+        <div class="phase-title">SAP Concur API — Event-Driven Webhook Integration</div>
+        <div class="phase-meta">tools: SAP Concur v4 REST API · FastAPI webhook · OAuth2</div>
+        <p>
+          Original design processed receipts in batch (CSV export → run pipeline → upload).
+          Redesigned to <strong>event-driven</strong>: SAP Concur fires a webhook on expense
+          report submission; a <strong>FastAPI endpoint</strong> (<code>/event_trigger</code>)
+          receives the event, extracts the report ID and user ID, fetches receipt images via
+          <strong>SAP Concur v4 REST API</strong> (OAuth2 refresh token), and triggers the
+          pipeline immediately.
+        </p>
+        <p>
+          This eliminated the batch delay and enabled near-real-time validation feedback to employees
+          before the expense report went to a manager for approval.
+        </p>
+      </div>
+
+      <div class="phase" data-n="7">
+        <div class="phase-title">Hotel Invoice Extension — Information Extraction Models</div>
+        <div class="phase-meta">attempted: LayoutLM · Donut · Nougat · final: DETR + SetFit</div>
+        <p>
+          Hotel folios are structurally different — multi-row itemized charges, table layouts,
+          multi-page — requiring a document understanding model, not just OCR + regex.
+        </p>
+        <p>Repeated the Label Studio annotation process (document-level bounding boxes for table regions) and evaluated three approaches:</p>
+        <table>
+          <tr><th>Model</th><th>Approach</th><th>Outcome</th></tr>
+          <tr><td>LayoutLM</td><td>Layout-aware transformer for key-value extraction</td><td>Struggled with wide multi-column hotel formats</td></tr>
+          <tr><td>Donut</td><td>End-to-end document understanding (no OCR)</td><td>Training converged but generalisation poor — hotel format too varied</td></tr>
+          <tr><td>Nougat</td><td>Document parsing model for structured docs</td><td>Did not converge on training data</td></tr>
+        </table>
+        <p>
+          Final approach: <strong>DETR</strong> (<code>detr-doc-table-detection</code>) for table region
+          detection + <strong>SetFit</strong> for few-shot classification of extracted line items.
+          POC overall accuracy settled at <strong>70%</strong> — hotel folios remained the hard case
+          due to wide format variability across hotel chains.
+        </p>
+        <div class="finding"><strong>Root cause:</strong> Hotel invoice formats vary significantly across hotel chains — column widths, item naming, multi-currency rows. A rule-based approach would require per-vendor templates, which didn't scale.</div>
+      </div>
+
+    </div>
 
     <div class="postmortem">
       <h3>⚡ Build-vs-Buy Post-Mortem</h3>
       <p style="font-size:13px;color:var(--muted);">
-        Finance chose a commercial SaaS for receipt processing. Our POC had tangible value:
-        we defined the accuracy benchmarks used to evaluate SaaS vendors, and the eventual
-        vendor selection was informed by our field extraction tests.
-        <strong style="color:var(--text);">The technical work shaped the buy decision.</strong>
+        Finance chose a commercial SaaS for receipt processing after the POC. Tangible value:
+        the POC <strong style="color:var(--text);">defined the accuracy benchmarks used to evaluate SaaS vendors</strong>,
+        and the vendor selection was informed directly by our field extraction tests. The technical work shaped the buy decision.
       </p>
     </div>
 
     <h2>$ cat stack.txt</h2>
     <div>
-      <span class="badge blue">PyTorch CNN</span>
-      <span class="badge blue">Faster RCNN</span>
+      <span class="badge muted">Label Studio</span>
+      <span class="badge blue">PyTorch</span>
+      <span class="badge blue">SqueezeNet (CNN)</span>
+      <span class="badge blue">Faster RCNN (ResNet50)</span>
       <span class="badge green">EasyOCR</span>
-      <span class="badge green">NER</span>
-      <span class="badge orange">SAP Concur API</span>
-      <span class="badge orange">SAP BTP</span>
-      <span class="badge green">FastAPI</span>
-      <span class="badge muted">Python (regex, spatial rules)</span>
+      <span class="badge green">Regex NER</span>
+      <span class="badge orange">DETR (table detection)</span>
+      <span class="badge orange">SetFit</span>
+      <span class="badge muted">LayoutLM · Donut · Nougat (evaluated)</span>
+      <span class="badge purple">SAP Concur v4 API</span>
+      <span class="badge purple">FastAPI webhook</span>
+      <span class="badge purple">SAP BTP</span>
     </div>
   </div>
 </body>
