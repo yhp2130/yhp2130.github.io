@@ -266,86 +266,7 @@
     <div class="section-cmd">$ ls projects/ <span># 5 items</span></div>
     <div class="projects-grid">
 
-      <!-- 1. AI4Concur -->
-      <div class="project-card">
-        <div class="project-name">Receipt OCR & Expense Automation</div>
-        <div class="project-desc">Computer vision pipeline for automated expense processing</div>
-        <ul class="project-points">
-          <li>CNN classifier + Faster RCNN detection + EasyOCR + NER entity extraction</li>
-          <li>70% accuracy on test samples (POC)</li>
-          <li>Rule-based validation (7 flags) + manual review fallback queue</li>
-          <li>Auto-populated SAP Concur expense entries via SAP BTP</li>
-        </ul>
-        <div class="project-badges">
-          <span class="badge blue">PyTorch CNN</span>
-          <span class="badge blue">Faster RCNN</span>
-          <span class="badge green">EasyOCR</span>
-          <span class="badge orange">SAP Concur API</span>
-          <span class="badge orange">SAP BTP</span>
-          <span class="badge muted">FastAPI</span>
-        </div>
-        <a class="project-link" href="projects/ai4concur.html">→ View Case Study</a>
-      </div>
-
-      <!-- 2. BART -->
-      <div class="project-card">
-        <div class="project-name">NLP Contract Clause Extraction</div>
-        <div class="project-desc">Fine-tuned BART seq2seq pipeline &mdash; 8-class logistics clause analysis</div>
-        <ul class="project-points">
-          <li>Fine-tuned BART seq2seq · 8-class logistics · weighted F1 = 0.8</li>
-          <li>100+ contracts/cycle · &lt;30s on-demand latency</li>
-          <li>Evolved rule-based → transformer → LangChain agent tool</li>
-          <li>Full MLOps: GitLab CI/CD · Docker · ArgoCD · OpenShift</li>
-        </ul>
-        <div class="project-badges">
-          <span class="badge orange">HuggingFace BART</span>
-          <span class="badge blue">PyTorch</span>
-          <span class="badge green">FastAPI</span>
-          <span class="badge purple">GitOps</span>
-        </div>
-        <a class="project-link" href="projects/bart.html">→ View Case Study</a>
-      </div>
-
-      <!-- 3. ClaireGPT / CODEC -->
-      <div class="project-card">
-        <div class="project-name">Agentic RAG Knowledge System</div>
-        <div class="project-desc">Multi-agent enterprise knowledge retrieval (LangChain ReAct)</div>
-        <ul class="project-points">
-          <li>Multi-agent ReAct pipeline (Planner + Checker)</li>
-          <li>1,000+ docs · 5 formats · pure kNN (Elasticsearch dense vector)</li>
-          <li>96% query time reduction: 2hr → 5min · ~100 queries/day</li>
-          <li>On-prem LLM + GitOps (GitLab → ArgoCD → OpenShift)</li>
-        </ul>
-        <div class="project-badges">
-          <span class="badge purple">LangChain</span>
-          <span class="badge blue">Elasticsearch</span>
-          <span class="badge green">FastAPI</span>
-          <span class="badge orange">GitOps</span>
-        </div>
-        <a class="project-link" href="projects/clairegpt.html">→ View Case Study</a>
-      </div>
-
-      <!-- 4. DIVA -->
-      <div class="project-card">
-        <div class="project-name">Invoice Vouching Automation</div>
-        <div class="project-desc">Configurable rule engine for AP invoice processing & compliance</div>
-        <ul class="project-points">
-          <li>8-category rule engine: amount · tax · supplier · duplicate detection</li>
-          <li>Hard/soft rule separation with structured exception reports</li>
-          <li>LLM extraction for multilingual invoices (Chinese/German)</li>
-          <li>YAML-configurable thresholds · full audit trail</li>
-          <li>Auto-approve standard invoices → payment queue</li>
-        </ul>
-        <div class="project-badges">
-          <span class="badge blue">Python</span>
-          <span class="badge green">FastAPI</span>
-          <span class="badge orange">Streamlit</span>
-          <span class="badge muted">ERP Integration</span>
-        </div>
-        <a class="project-link" href="projects/diva.html">→ View Case Study</a>
-      </div>
-
-      <!-- 5. Pro-Toolbox -->
+      <!-- 1. Pro-Toolbox -->
       <div class="project-card">
         <div class="project-name">Process Knowledge RAG Chatbot</div>
         <div class="project-desc">Synthesis-focused RAG for cross-document process intelligence</div>
@@ -365,6 +286,85 @@
           <span class="badge purple">Artifactory</span>
         </div>
         <a class="project-link" href="projects/pro-toolbox.html">→ View Case Study</a>
+      </div>
+
+      <!-- 2. ClaireGPT / CODEC -->
+      <div class="project-card">
+        <div class="project-name">Agentic RAG Knowledge System</div>
+        <div class="project-desc">Multi-agent enterprise knowledge retrieval (LangChain ReAct)</div>
+        <ul class="project-points">
+          <li>Multi-agent ReAct pipeline (Planner + Checker)</li>
+          <li>1,000+ docs · 5 formats · pure kNN (Elasticsearch dense vector)</li>
+          <li>96% query time reduction: 2hr → 5min · ~100 queries/day</li>
+          <li>On-prem LLM + GitOps (GitLab → ArgoCD → OpenShift)</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge purple">LangChain</span>
+          <span class="badge blue">Elasticsearch</span>
+          <span class="badge green">FastAPI</span>
+          <span class="badge orange">GitOps</span>
+        </div>
+        <a class="project-link" href="projects/clairegpt.html">→ View Case Study</a>
+      </div>
+
+      <!-- 3. DIVA -->
+      <div class="project-card">
+        <div class="project-name">Invoice Vouching Automation</div>
+        <div class="project-desc">Configurable rule engine for AP invoice processing & compliance</div>
+        <ul class="project-points">
+          <li>8-category rule engine: amount · tax · supplier · duplicate detection</li>
+          <li>Hard/soft rule separation with structured exception reports</li>
+          <li>LLM extraction for multilingual invoices (Chinese/German)</li>
+          <li>YAML-configurable thresholds · full audit trail</li>
+          <li>Auto-approve standard invoices → payment queue</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge blue">Python</span>
+          <span class="badge green">FastAPI</span>
+          <span class="badge orange">Streamlit</span>
+          <span class="badge muted">ERP Integration</span>
+        </div>
+        <a class="project-link" href="projects/diva.html">→ View Case Study</a>
+      </div>
+
+      <!-- 4. BART -->
+      <div class="project-card">
+        <div class="project-name">NLP Contract Clause Extraction</div>
+        <div class="project-desc">Fine-tuned BART seq2seq pipeline &mdash; 8-class logistics clause analysis</div>
+        <ul class="project-points">
+          <li>Fine-tuned BART seq2seq · 8-class logistics · weighted F1 = 0.8</li>
+          <li>100+ contracts/cycle · &lt;30s on-demand latency</li>
+          <li>Evolved rule-based → transformer → LangChain agent tool</li>
+          <li>Full MLOps: GitLab CI/CD · Docker · ArgoCD · OpenShift</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge orange">HuggingFace BART</span>
+          <span class="badge blue">PyTorch</span>
+          <span class="badge green">FastAPI</span>
+          <span class="badge purple">GitOps</span>
+        </div>
+        <a class="project-link" href="projects/bart.html">→ View Case Study</a>
+      </div>
+
+      <!-- 5. AI4Concur -->
+      <div class="project-card">
+        <div class="project-name">Receipt OCR & Expense Automation</div>
+        <div class="project-desc">Computer vision pipeline for automated expense processing</div>
+        <ul class="project-points">
+          <li>CNN classifier + Faster RCNN detection + EasyOCR + NER entity extraction</li>
+          <li>70% accuracy on test samples (POC)</li>
+          <li>Rule-based validation (7 flags) + manual review fallback queue</li>
+          <li>Auto-populated SAP Concur expense entries via SAP BTP</li>
+        </ul>
+        <div class="project-badges">
+          <span class="badge blue">PyTorch CNN</span>
+          <span class="badge blue">Faster RCNN</span>
+          <span class="badge green">EasyOCR</span>
+          <span class="badge orange">SAP Concur API</span>
+          <span class="badge orange">SAP BTP</span>
+          <span class="badge muted">FastAPI</span>
+        </div>
+        <a class="project-link" href="projects/ai4concur.html">→ View Case Study</a>
       </div>
 
     </div>

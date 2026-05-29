@@ -17,11 +17,11 @@
 
 | # | Project | Description | Stack | Key Result | Deep Dive |
 |---|---------|-------------|-------|------------|-----------|
-| 1 | **Receipt OCR & Expense Automation** | Computer vision pipeline for automated expense processing | PyTorch CNN · Faster RCNN · EasyOCR · NER · SAP Concur API · SAP BTP | 70% accuracy on test samples (POC) · 7-flag rule validator · SAP BTP integration | [→ ai4concur.md](projects/ai4concur.md) |
-| 2 | **NLP Contract Clause Extraction** | Fine-tuned BART seq2seq pipeline — 8-class logistics clause analysis | HuggingFace BART · PyTorch · FastAPI · GitOps | weighted F1=0.8 · 8 logistics clauses · 100+ contracts/cycle | [→ bart.md](projects/bart.md) |
-| 3 | **Agentic RAG Knowledge System** | Multi-agent enterprise knowledge retrieval (LangChain ReAct) | LangChain · Elasticsearch · On-prem LLM · GitOps | 96% query time reduction: 2hr → 5min · ~100 queries/day | [→ clairegpt.md](projects/clairegpt.md) |
-| 4 | **Invoice Vouching Automation** | Configurable rule engine for AP invoice processing & compliance | Python · FastAPI · Streamlit · ERP Integration | 8-category rules · LLM extraction for multilingual invoices (Chinese/German) | [→ diva.md](projects/diva.md) |
-| 5 | **Process Knowledge RAG Chatbot** | Synthesis-focused RAG for cross-document process intelligence | Custom asyncio ReAct · Docling · FastAPI · On-prem LLM · Artifactory | MVP in 2 weeks via GitHub Copilot SpecKit · 4 knowledge sources (ARIS, Intranet, Confluence, PRIMA) | [→ pro-toolbox.md](projects/pro-toolbox.md) |
+| 1 | **Process Knowledge RAG Chatbot** | Synthesis-focused RAG for cross-document process intelligence | Custom asyncio ReAct · Docling · FastAPI · On-prem LLM · Artifactory | MVP in 2 weeks via GitHub Copilot SpecKit · 4 knowledge sources (ARIS, Intranet, Confluence, PRIMA) | [→ pro-toolbox.md](projects/pro-toolbox.md) |
+| 2 | **Agentic RAG Knowledge System** | Multi-agent enterprise knowledge retrieval (LangChain ReAct) | LangChain · Elasticsearch · On-prem LLM · GitOps | 96% query time reduction: 2hr → 5min · ~100 queries/day | [→ clairegpt.md](projects/clairegpt.md) |
+| 3 | **Invoice Vouching Automation** | Configurable rule engine for AP invoice processing & compliance | Python · FastAPI · Streamlit · ERP Integration | 8-category rules · LLM extraction for multilingual invoices (Chinese/German) | [→ diva.md](projects/diva.md) |
+| 4 | **NLP Contract Clause Extraction** | Fine-tuned BART seq2seq pipeline — 8-class logistics clause analysis | HuggingFace BART · PyTorch · FastAPI · GitOps | weighted F1=0.8 · 8 logistics clauses · 100+ contracts/cycle | [→ bart.md](projects/bart.md) |
+| 5 | **Receipt OCR & Expense Automation** | Computer vision pipeline for automated expense processing | PyTorch CNN · Faster RCNN · EasyOCR · NER · SAP Concur API · SAP BTP | 70% accuracy on test samples (POC) · 7-flag rule validator · SAP BTP integration | [→ ai4concur.md](projects/ai4concur.md) |
 
 > **Architecture thread:** NLP Contract Clause Extraction (Project 2) was later integrated as an agent tool inside the Agentic RAG Knowledge System (Project 1).
 
