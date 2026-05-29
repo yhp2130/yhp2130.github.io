@@ -135,8 +135,8 @@
         <div class="metric-label">Document classes labelled in Label Studio</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">3</div>
-        <div class="metric-label">Hotel extraction experiments (LayoutLM, Donut, DETR)</div>
+        <div class="metric-value">2</div>
+        <div class="metric-label">Hotel extraction models evaluated (LayoutLM, Donut)</div>
       </div>
     </div>
 
@@ -238,18 +238,18 @@
 
       <div class="phase" data-n="7">
         <div class="phase-title">Hotel Invoice Extension — Information Extraction Models</div>
-        <div class="phase-meta">experiments: LayoutLM · Donut · DETR</div>
+        <div class="phase-meta">experiments: LayoutLM · Donut — project concluded</div>
         <p>
           Hotel folios are structurally different — multi-row itemized charges, table layouts,
           multi-page — requiring a document understanding model beyond OCR + regex.
         </p>
-        <p>Repeated the Label Studio annotation process (bounding boxes for table regions) and ran a series of experiments:</p>
+        <p>Repeated the Label Studio annotation process (bounding boxes for table regions) and evaluated two document understanding models:</p>
         <table>
           <tr><th>Model</th><th>Approach</th><th>Outcome</th></tr>
           <tr><td>LayoutLM</td><td>Layout-aware transformer for key-value extraction</td><td>Did not meet expected performance — hotel formats too wide and varied</td></tr>
           <tr><td>Donut</td><td>End-to-end document understanding (no OCR stage)</td><td>Training converged but generalisation poor — format variability too high</td></tr>
-          <tr><td>DETR</td><td>DETR (<code>detr-doc-table-detection</code>) to detect table row boundaries in folio images</td><td>Better structural detection but overall extraction still limited — 70% POC accuracy</td></tr>
         </table>
+        <p>Neither model achieved the extraction quality needed. <strong>Project concluded at this stage</strong> — POC overall accuracy settled at <strong>70%</strong> (travel receipts performed better; hotel folios remained the hard case due to wide format variability across hotel chains).</p>
         <div class="finding"><strong>Root cause:</strong> Hotel invoice layouts differ significantly across hotel chains — column widths, item naming, multi-currency rows, page count. All fine-tuned specialist models struggled to generalise without sufficient per-format training data.</div>
 
         <div class="postmortem" style="margin-top:16px;">
@@ -285,7 +285,7 @@
       <span class="badge blue">Faster RCNN (ResNet50)</span>
       <span class="badge green">EasyOCR</span>
       <span class="badge green">Regex NER</span>
-      <span class="badge muted">LayoutLM · Donut · DETR (hotel experiments)</span>
+      <span class="badge muted">LayoutLM · Donut (evaluated)</span>
       <span class="badge purple">SAP Concur v4 API</span>
       <span class="badge purple">FastAPI webhook</span>
       <span class="badge purple">SAP BTP</span>

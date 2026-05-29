@@ -127,9 +127,8 @@ Ran a series of experiments on hotel invoice extraction:
 |-------|---------|---------|
 | LayoutLM | Layout-aware transformer for key-value extraction | Did not meet expected performance — hotel formats too wide and varied |
 | Donut | End-to-end document understanding (no OCR stage) | Training converged but generalisation poor — format variability too high |
-| DETR + SetFit | DETR (`detr-doc-table-detection`) to detect table row boundaries in folio images | Better structural detection but overall extraction still limited — 70% POC accuracy |
 
-**Root cause:** Hotel invoice layouts differ significantly across hotel chains — column widths, item naming conventions, multi-currency rows, page count. All fine-tuned specialist models struggled to generalise without sufficient per-format training data.
+Neither model achieved the extraction quality needed. **Project concluded at this stage** — POC overall accuracy settled at **70%**.
 
 ---
 
@@ -150,7 +149,7 @@ Key takeaway: **multimodal LLMs are the pragmatic first choice for structured do
 | Receipt segmentation | PyTorch Faster RCNN (ResNet50) |
 | OCR | EasyOCR (custom fine-tuned weights) |
 | Field extraction | Regex NER (date + amount) |
-| Evaluated (hotel) | LayoutLM · Donut · DETR (experiments) |
+| Evaluated (hotel) | LayoutLM · Donut |
 | Webhook/API | FastAPI · SAP Concur v4 REST API (OAuth2) |
 | Deployment | SAP BTP |
 | Training | On-prem GPU · Image augmentation |
