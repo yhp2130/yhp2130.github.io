@@ -10,11 +10,12 @@
 
 | Dimension | Detail |
 |-----------|--------|
-| Generations | CODEC (FYP)  CODEC 2.0 (Linux/GPU)  ClaireGPT (RAG agent) |
+| Generations | CODEC (FYP) → CODEC 2.0 (Linux/GPU) → ClaireGPT (RAG agent) |
 | Chunking strategies | 5 evaluated; Agentic chosen |
-| Agent tools | 3: abbreviation  knowledge search · contract clauses |
+| Agent tools | 3: abbreviation · knowledge search · contract clauses |
 | Embedding | SFT-Mistral (selected via RAGAS) vs SentenceBERT |
-| Deployment | Nginx  OpenShift  React.js frontend |
+| ClaireGPT delivery | <1 month, GitHub Copilot AI-assisted coding |
+| Deployment | Nginx · OpenShift · React.js frontend |
 
 ---
 
@@ -53,11 +54,14 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 ---
 
-## Phase 3  ClaireGPT Use Case: RAG Chatbot Evolution
+## Phase 3 — ClaireGPT Use Case: RAG Chatbot Evolution
 
-**Pivot:** From search snippets to conversational knowledge agent
+**Pivot:** From search snippets to conversational knowledge agent  
+**Delivery:** <1 month · GitHub Copilot AI-assisted coding
 
-CODEC returned page snippets  users still had to read and synthesise across multiple results manually. The evolution: a full RAG chatbot that retrieves relevant knowledge and synthesises cited answers in natural language.
+CODEC returned page snippets — users still had to read and synthesise across multiple results manually. The evolution: a full RAG chatbot that retrieves relevant knowledge and synthesises cited answers in natural language.
+
+**Dify** was evaluated as a low-code RAG platform to accelerate delivery, but was not available in the on-prem environment. A custom build was chosen instead, developed with **GitHub Copilot AI-assisted coding** — shipped in under 1 month.
 
 Three knowledge domains required:
 - Process documentation (SOPs, policies, guidelines)

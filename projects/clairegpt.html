@@ -128,6 +128,10 @@
         <div class="metric-label">Generations: CODEC &#8594; CODEC 2.0 &#8594; ClaireGPT</div>
       </div>
       <div class="metric-card">
+        <div class="metric-value">&lt;1mo</div>
+        <div class="metric-label">ClaireGPT shipped (GitHub Copilot AI-assisted)</div>
+      </div>
+      <div class="metric-card">
         <div class="metric-value">5</div>
         <div class="metric-label">Chunking strategies evaluated</div>
       </div>
@@ -185,11 +189,17 @@
 
       <div class="phase" data-n="3">
         <div class="phase-title">ClaireGPT Use Case &#8212; RAG Chatbot Evolution</div>
-        <div class="phase-meta">pivot: from search snippets to conversational knowledge agent</div>
+        <div class="phase-meta">pivot: from search snippets to conversational knowledge agent &#183; shipped &lt;1 month &#183; GitHub Copilot AI-assisted</div>
         <p>
           CODEC returned page snippets &#8212; users still had to read and synthesise across multiple
           results manually. The next evolution: a full <strong>RAG chatbot</strong> that retrieves
           relevant knowledge and synthesises a cited answer in natural language.
+        </p>
+        <p>
+          <strong>Dify</strong> was evaluated as a low-code RAG platform to accelerate delivery, but
+          was not available in the on-prem environment. A <strong>custom build</strong> was chosen instead,
+          developed with <strong>GitHub Copilot AI-assisted coding</strong> &#8212; the system went from
+          concept to production-ready in <strong>under 1 month</strong>.
         </p>
         <p>The system needed to cover three knowledge domains:</p>
         <ul>
@@ -197,6 +207,7 @@
           <li>Domain abbreviation definitions (logistics-specific terms)</li>
           <li>Contract clause data (from the BART project &#8212; <a href="bart.html">see BART case study</a>)</li>
         </ul>
+        <div class="finding"><strong>Build approach:</strong> Dify unavailable on-prem → custom LangChain agent built with GitHub Copilot · shipped in &lt;1 month.</div>
       </div>
 
       <div class="phase" data-n="4">
