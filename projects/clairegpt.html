@@ -133,17 +133,17 @@
     <div class="evolution-row">
       <div class="evolution-item">
         <div class="evolution-name">CODEC</div>
-        <div class="evolution-desc">Keyword search (BM25 / Elasticsearch)</div>
+        <div class="evolution-desc">Custom in-memory hybrid: TF-IDF + SentenceBERT + click/rating boost</div>
       </div>
       <div class="arrow">→</div>
       <div class="evolution-item">
         <div class="evolution-name">CODEC 2.0</div>
-        <div class="evolution-desc">Hybrid: BM25 + dense vector embeddings</div>
+        <div class="evolution-desc">Same engine — GPU inference, PostgreSQL migration</div>
       </div>
       <div class="arrow">→</div>
       <div class="evolution-item">
         <div class="evolution-name">ClaireGPT</div>
-        <div class="evolution-desc">Agentic RAG — synthesis + multi-tool reasoning</div>
+        <div class="evolution-desc">Elasticsearch pure kNN + Agentic RAG + LLM synthesis</div>
       </div>
     </div>
 
@@ -157,9 +157,10 @@
     <table>
       <tr><th>Component</th><th>Technology</th><th>Notes</th></tr>
       <tr><td>Agent orchestration</td><td>LangChain (ReAct)</td><td>Planner + Checker agents</td></tr>
-      <tr><td>LLM</td><td>On-prem OpenAI-compatible</td><td>Data sovereignty — no external egress</td></tr>
-      <tr><td>Embedding</td><td>On-prem model</td><td>Same network boundary</td></tr>
-      <tr><td>Vector store</td><td>Elasticsearch (HNSW)</td><td>Hybrid BM25 + dense retrieval</td></tr>
+      <tr><td>LLM</td><td>On-prem OpenAI-compatible (gpt4ifx)</td><td>Data sovereignty — no external egress</td></tr>
+      <tr><td>Embedding</td><td>On-prem gpt4ifx endpoint</td><td>Same network boundary</td></tr>
+      <tr><td>Vector store</td><td>Elasticsearch HNSW kNN</td><td>dense_vector field, <strong>pure kNN</strong> (not hybrid)</td></tr>
+      <tr><td>Document parsing</td><td>Docling</td><td>Preserves headings, tables</td></tr>
       <tr><td>Backend</td><td>FastAPI</td><td>Async, streaming response</td></tr>
       <tr><td>Frontend</td><td>Streamlit</td><td>Internal user interface</td></tr>
       <tr><td>CI/CD</td><td>GitLab CI</td><td>test → lint → build → push</td></tr>
@@ -168,7 +169,8 @@
 
     <h2>$ cat key_decisions.md</h2>
     <ul>
-      <li><strong>Hybrid retrieval</strong> — dense misses exact identifiers (contract refs, product codes); BM25 misses paraphrases. Hybrid covers both.</li>
+      <li><strong>Pure kNN retrieval (not hybrid)</strong> — ClaireGPT uses Elasticsearch dense_vector HNSW pure kNN. Sophistication moved up the stack to agent orchestration and synthesis, not retrieval blending.</li>
+      <li><strong>CODEC used TF-IDF + SentenceBERT (in-memory)</strong> — original system had no Elasticsearch; all tensors were pickled in-memory. Elasticsearch was introduced only in Phase 3.</li>
       <li><strong>Semantic chunking</strong> — fixed-length split clauses mid-sentence, degrading LLM context quality. Semantic chunking was the single highest-impact change to answer quality.</li>
       <li><strong>On-prem LLM</strong> — CLM docs contain customer SLA terms and trade compliance data. Data sovereignty required: zero external API egress.</li>
       <li><strong>Planner + Checker</strong> — separates generation from validation. Checker reduced hallucination rate; claims must be traceable to retrieved source chunks.</li>

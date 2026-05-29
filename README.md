@@ -18,7 +18,7 @@
 | # | Project | Team | Stack | Key Result | Deep Dive |
 |---|---------|------|-------|------------|----------|
 | 1 | **CODEC → ClaireGPT** | CLM | LangChain · Elasticsearch · On-prem LLM | 2hr → 5min (96% ↓) · 100 queries/day | [→ clairegpt.md](projects/clairegpt.md) |
-| 2 | **ICC → BART** | CLM | HuggingFace · BART · FastAPI · OpenShift | F1=0.8 · 11-class · 100+ contracts/cycle | [→ bart.md](projects/bart.md) |
+| 2 | **ICC → BART** | CLM | HuggingFace · BART · FastAPI · OpenShift | F1=0.8 · 8-class logistics · 100+ contracts/cycle | [→ bart.md](projects/bart.md) |
 | 3 | **AI4Concur** | Finance | PyTorch · EasyOCR · SAP Concur API | Full pipeline built · SaaS adopted by org | [→ ai4concur.md](projects/ai4concur.md) |
 | 4 | **DIVA** | Finance | Python · Rule Engine · FastAPI | Rule-based AP vouching · production | [→ diva.md](projects/diva.md) |
 | 5 | **Pro-Toolbox** | Process Consulting | LangChain · Vector Store · FastAPI | RAG chatbot for process consultants | [→ pro-toolbox.md](projects/pro-toolbox.md) |
@@ -34,7 +34,7 @@
 | **NLP / LLM** | RAG, Agentic AI (multi-agent), Prompt Engineering, Fine-tuning | Advanced |
 | **AI / ML** | PyTorch, Scikit-learn, HuggingFace, LangChain | Advanced |
 | **MLOps** | GitLab CI/CD, Docker, Kubernetes, ArgoCD, Helm, OpenShift | Advanced |
-| **Search** | Elasticsearch (hybrid BM25 + dense), Vector Retrieval | Advanced |
+| **Search** | Elasticsearch (pure kNN dense_vector HNSW), TF-IDF+SBERT hybrid (CODEC) | Advanced |
 | **Backend** | FastAPI, REST APIs, Microservices | Intermediate |
 | **Cloud** | AWS SageMaker (portfolio), Azure (portfolio), OpenShift (production) | Intermediate |
 | **CV / OCR** | EasyOCR, Image Classification, Object Detection | Intermediate |

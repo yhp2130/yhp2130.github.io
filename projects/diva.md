@@ -58,73 +58,112 @@ flowchart TD
 
 ---
 
+## System Architecture — Three Backend Variants
+
+The system uses two extraction approaches, with LLM as fallback for non-standard formats:
+
+```mermaid
+flowchart TD
+    PDF["📄 Invoice PDF"]
+    ROUTE{"Format\nselector"}
+    RULE["⚙️ Rule Matcher\nStructured data\nfrom ERP / EDI"]
+    LLM["🤖 LLM Extractor\nNon-standard formats\nMulti-language"]
+    MATCH["🔗 Invoice Matcher\ndiva_rules.apply_rules()"]
+    RESULT["📋 Match Result\nper-field flags"]
+
+    PDF --> ROUTE
+    ROUTE --> RULE
+    ROUTE --> LLM
+    RULE --> MATCH
+    LLM --> MATCH
+    MATCH --> RESULT
+
+    style LLM fill:#21262d,stroke:#ffa657,color:#e6edf3
+    style MATCH fill:#21262d,stroke:#3fb950,color:#e6edf3
+```
+
+### LLM Extraction Pipeline (`llmExtractor/extraction.py`)
+
+Handles non-standard invoice formats (Chinese suppliers, German language, handwritten):
+
+```
+1. pymupdf   → page text (native)
+2. pymupdf4llm → markdown layout (table structure)
+3. pytesseract → OCR (lang: chi_tra+chi_sim+deu+eng, psm 11)
+4. pdfalign  → multi-language PDF alignment
+
+LLM Call 1: extract line-item table as CSV (semicolon delimited)
+  columns: Row No.;SP No.;PCS;Amount;Unit Price;Product/Part No.;UoQ
+
+LLM Call 2: extract header fields as JSON
+  {bill_to, sold_to, currency_ISO_4217, invoice_number, ship_date, invoice_date, invoice_company}
+
+LLM Call 3: JSON correction (secondary call to fix malformed JSON)
+
+Currency fallback: search full PDF text for USD/CNY if LLM extracts wrong currency
+```
+
+---
+
 ## Rule Engine Design
 
-### Rule Categories
+### Matching Flags (per invoice line)
 
-| Category | Rules | Configurable? |
-|----------|-------|--------------|
-| **Amount matching** | Invoice total vs PO total within tolerance threshold | ✅ threshold % |
-| **Line item matching** | Each invoice line maps to a PO line; quantities and unit prices within tolerance | ✅ per-category tolerance |
-| **Supplier validation** | Supplier ID + bank account on approved vendor register | ❌ hard check |
-| **Date validation** | Invoice date within PO validity window; not post-expiry | ✅ grace period days |
-| **Tax validation** | GST/VAT calculated correctly based on jurisdiction rules | ✅ rate per jurisdiction |
-| **Duplicate detection** | Invoice reference not already processed (prevent double payment) | ❌ hard check |
-| **Currency check** | Invoice currency matches PO currency | ❌ hard check |
-| **Mandatory fields** | All required fields present (invoice no., supplier, date, amount) | ❌ hard check |
+| Flag | Type | Logic |
+|------|------|-------|
+| `smd_flag` | Binary | Invoice line found/not found in purchasing reference data |
+| `currency_flag` | Binary | Invoice currency matches reference currency |
+| `quantity_flag` | Per line | Quantity deviation check |
+| `price_flag` | Per line (3 values) | Mean / max / min price comparison |
+| `sap_number_flag` | 4-state | -1 not found, 0 no match, 1 exact, 2 found in list |
+| `date_flag` | Binary | Invoice date matches expected |
+| `pos_mismatch` | Count | Position-level differences between invoice and purchasing data |
 
-### Rule Execution Pattern
+### Company Name Matching Strategy
+
+Supplier names require fuzzy matching — abbreviations, legal suffixes (Ltd/Co./GmbH),
+and romanization of Chinese names all cause exact-match failures.
 
 ```python
-# Conceptual rule engine pattern (not production code)
-class RuleEngine:
-    def __init__(self, config: RuleConfig):
-        self.rules = [
-            DuplicateCheckRule(),           # hard — immediate fail
-            SupplierValidationRule(),       # hard — immediate fail
-            MandatoryFieldsRule(),          # hard — immediate fail
-            AmountMatchRule(config.amount_tolerance),
-            LineItemMatchRule(config.line_tolerance),
-            DateValidationRule(config.grace_period_days),
-            TaxValidationRule(config.tax_rates),
-            CurrencyCheckRule(),
-        ]
+# ASCII company names: thefuzz fuzzy matching
+score = fuzz.partial_ratio(invoice_name, ref_name)
+if score >= 80:    result = "MATCH"
+elif score >= 30:  result = "PARTIAL_MATCH"
+else:              result = "MISMATCH"
 
-    def evaluate(self, invoice: Invoice, po: PurchaseOrder) -> RuleResult:
-        failures = []
-        for rule in self.rules:
-            result = rule.check(invoice, po)
-            if not result.passed:
-                failures.append(result)
-                if rule.is_hard:
-                    break  # hard rules short-circuit
-        return RuleResult(passed=len(failures) == 0, failures=failures)
+# Non-ASCII (Chinese company names): LLM-assisted
+result = match_chinese_company_gpt(invoice_name, ref_name)
 ```
 
-**Hard rules** (supplier fraud, duplicate payment) cause immediate rejection without
-evaluating remaining rules. **Soft rules** (amount tolerance, date grace period)
-are all evaluated and bundled into a single exception report.
+**Threshold rationale:**
+- `>= 80` catches abbreviations and legal suffix variants (Infineon Technologies Ltd ≈ Infineon Technologies)
+- `30-80` flags for human review — could be a trading name or subsidiary
+- `< 30` hard mismatch — different company
 
-### Exception Report Format
+**LLM fallback for Chinese names:** Chinese company names have no standardized romanization,
+and the same company may appear with Traditional/Simplified characters or mixed scripts.
+Rule-based fuzzy matching fails here; LLM semantic comparison handles it reliably.
 
-When a vouching fails, AP reviewers receive a structured exception report:
+### Match Result Format
+
+Each invoice comparison produces a structured flag set:
 
 ```
-Invoice: INV-XXXX-XXXX
-Supplier: [Supplier Name]
-PO: PO-XXXX-XXXX
+Invoice: INV-XXXX    Supplier: [Supplier Name]
 
-FAILED RULES:
-[SOFT] amount_match — Invoice total SGD X,XXX deviates from PO total SGD X,XXX
-       Variance: SGD XXX (3.75%) — threshold: 2.0%
-       → Review if additional charges are authorized
+Company Match: MATCH (score=92, method=fuzzy)    [or: PARTIAL_MATCH / MISMATCH / LLM]
+Currency:      MATCH
+SAP Number:    FOUND (exact match = 1)
+Date:          MATCH
 
-[SOFT] line_item_match — Line 3: "Handling Fee" not mapped to any PO line item
-       → Confirm if ad-hoc charge is approved
+Line Items:
+  Row 1  Qty: MATCH  Price: mean=MATCH max=MATCH min=MATCH
+  Row 2  Qty: MISMATCH (+5%)  Price: mean=MATCH
+  
+Position Mismatch:  invoice_side=0  smd_side=1
 ```
 
-This format lets reviewers immediately understand what to check rather than re-reading
-the full invoice from scratch.
+Partial matches (company score 30-80) and position mismatches route to human review.
 
 ---
 
@@ -152,12 +191,14 @@ structured to become ML training data once volume was sufficient.
 
 | Component | Technology |
 |-----------|-----------|
-| Invoice parser | Python (pdfplumber, custom field extractors) |
-| Rule engine | Python (configurable rule classes) |
-| PO / Vendor data | ERP system integration (REST API) |
-| Config management | YAML-based rule configuration |
+| Invoice parser (structured) | pandas + custom field extractors |
+| Invoice parser (LLM) | pymupdf, pymupdf4llm, pytesseract, pdfalign |
+| LLM extraction | On-prem LLM (table extraction + header fields + JSON correction) |
+| Company matching | thefuzz (partial_ratio), LLM fallback for Chinese names |
+| Rule engine | Python (diva_rules.apply_rules) |
+| Reference data | ERP integration (purchasing/vendor records) |
 | Backend | FastAPI |
-| Audit log | Database (append-only) |
+| Audit log | Database (append-only match decisions) |
 | Frontend | Streamlit (exception review UI) |
 
 ---
@@ -176,37 +217,40 @@ structured to become ML training data once volume was sufficient.
 <details>
 <summary>💬 "Why not use ML for invoice matching?"</summary>
 
-> "Three reasons. First, data volume — at launch we had limited labeled invoice-PO pairs,
+> "Three reasons. First, data volume — at launch we had limited labeled invoice-reference pairs,
 > which isn't enough for a reliable classifier on a problem with diverse invoice formats
-> from dozens of counterparties. Second, auditability — finance auditors need to see
-> exactly which rule was violated and why. 'Model predicted non-match with confidence 0.73'
-> doesn't satisfy an audit. Third, our early ML baseline actually underperformed the rule
-> engine by 15 percentage points — the rules captured the structured, deterministic nature
-> of the problem better than a model trained on limited data. We designed the system so
-> a ML layer could be added later to handle the ambiguous cases that rules couldn't resolve."
+> from dozens of counterparties. Second, auditability — the Finance team needs to explain
+> exactly which field was mismatched and why. 'Model predicted non-match' doesn't satisfy
+> a finance audit. Third, the problem is fundamentally deterministic — either the quantity
+> matches or it doesn't. Rules capture that precisely. We designed the system with an
+> abstraction so an ML matcher could replace the fuzzy company matching later once we
+> had enough labeled examples."
 
 </details>
 
 <details>
-<summary>💬 "How did you handle configurability for Finance?"</summary>
+<summary>💬 "How did you handle company name matching across languages?"</summary>
 
-> "The rule engine reads from a YAML config file that Finance can update without a code
-> deployment. Thresholds like amount tolerance percentage, grace period days for date
-> validation, and per-jurisdiction tax rates are all config values. Hard rules — supplier
-> fraud checks, duplicate detection — are non-configurable. This was important because
-> Finance has seasonal needs: during Q4 budget close, they might raise the amount tolerance
-> threshold temporarily. That's a config change, not a deployment."
+> "Two strategies. For ASCII names, we used fuzzy matching with thefuzz.partial_ratio —
+> a score above 80 is a match, 30 to 80 routes to human review, below 30 is a mismatch.
+> This handles abbreviations and legal suffix variants like 'Infineon Technologies Ltd'
+> vs 'Infineon Technologies'. For Chinese company names it's a completely different
+> problem — no standardized romanization, Traditional vs Simplified characters, mixed
+> scripts. Fuzzy string matching completely fails here. We added an LLM-assisted comparison
+> as a fallback specifically for non-ASCII names, which handled it reliably. This was
+> something we only discovered after deploying to Finance teams working with Chinese
+> distributors."
 
 </details>
 
 <details>
 <summary>💬 "What was your specific contribution?"</summary>
 
-> "I designed and implemented the rule engine backend — the rule class hierarchy, the
-> evaluation loop with hard/soft rule separation, the exception report generator,
-> and the ERP API integration for fetching PO and vendor data. The frontend and
-> database layer were built by other team members. I also designed the abstraction
-> interface so the line-item matching rule could be replaced with an ML model
-> in future without changing the surrounding rule engine."
+> "I designed and implemented the rule matching backend — the per-field flag logic,
+> the fuzzy company name matching with the LLM Chinese name fallback, and the LLM
+> extraction pipeline for non-standard invoice formats using pymupdf and pytesseract.
+> The system supports two extraction approaches: rule-based for structured EDI data,
+> and LLM extraction for complex/multilingual invoices. Choosing the right approach
+> per document type was a key design decision."
 
 </details>

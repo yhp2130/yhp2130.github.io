@@ -110,21 +110,45 @@
       <li><strong>process_area</strong> — order-to-cash / procure-to-pay / etc.</li>
     </ul>
 
-    <h2>$ cat synthesis_design.md</h2>
+    <h2>$ cat architecture.md — ExecutionPlan ReAct</h2>
     <p>
-      Synthesis prompts explicitly ask the LLM to: group findings by approach type,
-      include measurable results where available, note applicability conditions,
-      and cite source documents per finding.
-      This produces <strong>consultant-grade output</strong>, not just a literature summary.
+      Pro-Toolbox uses a <strong>plan-then-execute ReAct loop</strong> rather than step-by-step chain-of-thought.
+      The planner produces a complete <code>ExecutionPlan</code> (list of <code>SubGoal</code> objects with dependency graph)
+      before any tool is called — enabling parallel sub-goal execution via asyncio.
+    </p>
+    <ul>
+      <li><strong>Planner</strong> → LLM function-calling generates full <code>ExecutionPlan</code> with dependencies</li>
+      <li><strong>ReactLoop</strong> → asyncio executes independent sub-goals in parallel; <code>WorkingMemory</code> tracks observations</li>
+      <li><strong>SufficiencyEvaluator</strong> → custom LLM judge: enough context? yes → finalize / no → re-plan</li>
+      <li><strong>CheckerAgent</strong> → post-generation citation gate before response returned</li>
+    </ul>
+
+    <h2>$ cat sub_agents.md — IFXProcessMgmtAgent</h2>
+    <p>For process improvement queries, the <strong>IFXProcessMgmtAgent</strong> dispatches to 5 domain sub-agents:</p>
+    <table>
+      <tr><th>Sub-Agent</th><th>Covers</th></tr>
+      <tr><td>change_communication_agent</td><td>Stakeholder communication for process changes</td></tr>
+      <tr><td>execution_stabilization_agent</td><td>Stabilizing processes in execution phase</td></tr>
+      <tr><td>initiation_planning_agent</td><td>Project initiation and planning activities</td></tr>
+      <tr><td>monitoring_control_agent</td><td>KPI tracking, performance gates</td></tr>
+      <tr><td>project_mgmt_agent</td><td>General project management guidance</td></tr>
+    </table>
+    <p>
+      The <strong>ARISAgent</strong> handles process model lookup with abbreviation expansion:
+      queries like "who owns the DTC process" are pre-processed to "demand to cash" before
+      searching ARIS — covering 12 Infineon process abbreviations (DTC, OTC, MTB, STP, P2P, RTR…).
     </p>
 
     <h2>$ cat stack.txt</h2>
     <div>
-      <span class="badge purple">LangChain</span>
+      <span class="badge purple">Custom ReAct loop (asyncio)</span>
+      <span class="badge purple">OpenAI function-calling</span>
       <span class="badge blue">Docling</span>
       <span class="badge green">FastAPI</span>
-      <span class="badge muted">On-prem LLM</span>
+      <span class="badge muted">ARIS REST API</span>
+      <span class="badge muted">On-prem LLM (gpt4ifx)</span>
       <span class="badge muted">On-prem Embedding</span>
+      <span class="badge blue">Elasticsearch kNN HNSW</span>
       <span class="badge purple">ArgoCD</span>
       <span class="badge purple">OpenShift</span>
       <span class="badge muted">GitLab CI/CD</span>

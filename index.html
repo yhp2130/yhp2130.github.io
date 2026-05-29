@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Yap Hong Ping — Applied AI Engineer. Agentic AI, RAG, Production LLM Systems, MLOps. Singapore.">
+  <meta name="description" content="Yap Hong Ping � Applied AI Engineer. Agentic AI, RAG, Production LLM Systems, MLOps. Singapore.">
   <title>Yap Hong Ping | Applied AI Engineer</title>
   <style>
-    /* ── Design Tokens ── */
+    /* -- Design Tokens -- */
     :root {
       --bg:        #0d1117;
       --surface:   #161b22;
@@ -23,14 +23,14 @@
       --section-pad: 72px 24px;
     }
 
-    /* ── Reset ── */
+    /* -- Reset -- */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; }
     a { color: var(--blue); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* ── Navbar ── */
+    /* -- Navbar -- */
     nav {
       position: sticky; top: 0; z-index: 100;
       background: var(--surface); border-bottom: 1px solid var(--border);
@@ -43,7 +43,7 @@
     nav ul li a:hover,
     nav ul li a.active { color: var(--blue); text-decoration: none; }
 
-    /* ── Section base ── */
+    /* -- Section base -- */
     section { padding: var(--section-pad); max-width: 900px; margin: 0 auto; }
     .section-cmd {
       font-family: var(--font-mono); font-size: 12px; color: var(--muted);
@@ -51,7 +51,7 @@
     }
     .section-cmd span { color: var(--green); }
 
-    /* ── Terminal Hero ── */
+    /* -- Terminal Hero -- */
     #hero {
       padding: 60px 24px; max-width: 900px; margin: 0 auto;
       display: flex; flex-direction: column; gap: 32px;
@@ -103,7 +103,7 @@
     }
     .btn-outline:hover { border-color: var(--blue); background: rgba(88,166,255,0.06); text-decoration: none; color: var(--text); }
 
-    /* ── About ── */
+    /* -- About -- */
     .about-bio { font-size: 15px; line-height: 1.8; color: var(--text); max-width: 680px; }
     .about-links { display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
     .about-links a {
@@ -122,7 +122,7 @@
     .badge.orange { color: var(--orange); background: rgba(255,166,87,0.1);  border-color: rgba(255,166,87,0.3); }
     .badge.muted  { color: var(--muted);  background: rgba(139,148,158,0.1); border-color: rgba(139,148,158,0.3); }
 
-    /* ── Projects ── */
+    /* -- Projects -- */
     .projects-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
     }
@@ -136,14 +136,14 @@
     .project-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
     .project-points { list-style: none; padding: 0; }
     .project-points li { font-size: 12px; color: var(--text); padding: 2px 0; }
-    .project-points li::before { content: "▸ "; color: var(--green); }
+    .project-points li::before { content: "? "; color: var(--green); }
     .project-badges { display: flex; gap: 5px; flex-wrap: wrap; }
     .project-link {
       margin-top: auto; font-size: 12px; color: var(--blue);
       font-family: var(--font-mono);
     }
 
-    /* ── Skills ── */
+    /* -- Skills -- */
     .skills-groups { display: flex; flex-direction: column; gap: 20px; }
     .skill-group-label {
       font-family: var(--font-mono); font-size: 11px; color: var(--muted);
@@ -151,7 +151,7 @@
     }
     .skill-badges { display: flex; flex-wrap: wrap; gap: 7px; }
 
-    /* ── Experience Timeline ── */
+    /* -- Experience Timeline -- */
     .timeline { position: relative; padding-left: 24px; }
     .timeline::before {
       content: ''; position: absolute; left: 6px; top: 8px;
@@ -168,9 +168,9 @@
     .timeline-period { font-size: 11px; color: var(--muted); font-family: var(--font-mono); margin-top: 2px; }
     .timeline-points { list-style: none; padding: 0; margin-top: 10px; }
     .timeline-points li { font-size: 13px; color: var(--muted); padding: 3px 0; }
-    .timeline-points li::before { content: "▸ "; color: var(--green); }
+    .timeline-points li::before { content: "? "; color: var(--green); }
 
-    /* ── Learning ── */
+    /* -- Learning -- */
     .learning-items { display: flex; flex-direction: column; gap: 16px; max-width: 560px; }
     .learning-item { display: flex; align-items: center; gap: 16px; }
     .learning-label { font-family: var(--font-mono); font-size: 13px; color: var(--text); min-width: 160px; }
@@ -179,7 +179,7 @@
     .learning-status { font-size: 11px; color: var(--muted); font-family: var(--font-mono); min-width: 110px; }
     .learning-note { margin-top: 20px; font-size: 13px; color: var(--muted); font-style: italic; }
 
-    /* ── Contact ── */
+    /* -- Contact -- */
     #contact { border-top: 1px solid var(--border); }
     .contact-status {
       display: inline-flex; align-items: center; gap: 8px;
@@ -187,7 +187,7 @@
       padding: 6px 14px; border-radius: 20px; font-size: 13px; color: var(--green);
       margin-bottom: 20px;
     }
-    .contact-status::before { content: '●'; font-size: 8px; }
+    .contact-status::before { content: '?'; font-size: 8px; }
     .contact-links { display: flex; gap: 14px; flex-wrap: wrap; }
     .contact-links a {
       font-size: 13px; color: var(--muted); border: 1px solid var(--border);
@@ -196,7 +196,7 @@
     .contact-links a:hover { border-color: var(--blue); color: var(--blue); text-decoration: none; }
     .copyright { margin-top: 32px; font-size: 11px; color: var(--muted); font-family: var(--font-mono); }
 
-    /* ── Responsive ── */
+    /* -- Responsive -- */
     @media (max-width: 640px) {
       nav ul { gap: 10px; }
       nav ul li a { font-size: 11px; }
@@ -228,7 +228,7 @@
         <div class="terminal-dot red"></div>
         <div class="terminal-dot yellow"></div>
         <div class="terminal-dot green"></div>
-        <span class="terminal-title">bash — portfolio</span>
+        <span class="terminal-title">bash � portfolio</span>
       </div>
       <div class="terminal-body" id="terminal-body">
         <!-- Typewriter JS fills this -->
@@ -244,19 +244,19 @@
   <section id="about">
     <div class="section-cmd">$ cat about.md <span># applied ai engineer</span></div>
     <p class="about-bio">
-      Applied AI Engineer with 10+ years building and shipping production-grade AI systems end-to-end —
+      Applied AI Engineer with 10+ years building and shipping production-grade AI systems end-to-end �
       from agentic pipelines and RAG systems to full-stack deployment with CI/CD and GitOps.
       Currently at Infineon Technologies, delivering LLM-powered tools that serve real users daily.
-      Singapore PR — open to AI Engineer and Data Scientist roles in Singapore.
+      Singapore PR � open to AI Engineer and Data Scientist roles in Singapore.
     </p>
     <div class="about-links">
-      <a href="https://github.com/yhp2130" target="_blank">⌥ github.com/yhp2130</a>
+      <a href="https://github.com/yhp2130" target="_blank">? github.com/yhp2130</a>
       <a href="https://www.linkedin.com/in/yaphongping/" target="_blank">in LinkedIn</a>
-      <a href="mailto:your-email@example.com">✉ Email</a>
+      <a href="mailto:your-email@example.com">? Email</a>
     </div>
     <div class="about-badges">
-      <span class="badge blue">Master of Technology, Knowledge Engineering · National University of Singapore (NUS-ISS) · Information Technology</span>
-      <span class="badge muted">Bachelor of Engineering, Mechatronics · Nanyang Technological University (NTU) · Engineering · 2nd Class Upper</span>
+      <span class="badge blue">Master of Technology, Knowledge Engineering � National University of Singapore (NUS-ISS) � Information Technology</span>
+      <span class="badge muted">Bachelor of Engineering, Mechatronics � Nanyang Technological University (NTU) � Engineering � 2nd Class Upper</span>
       <span class="badge green">Singapore PR</span>
     </div>
   </section>
@@ -267,13 +267,13 @@
     <div class="projects-grid">
 
       <div class="project-card">
-        <div class="project-name">🤖 Agentic RAG Knowledge System</div>
-        <div class="project-desc">Multi-agent enterprise knowledge retrieval (LangChain · ReAct)</div>
+        <div class="project-name">?? Agentic RAG Knowledge System</div>
+        <div class="project-desc">Multi-agent enterprise knowledge retrieval (LangChain � ReAct)</div>
         <ul class="project-points">
           <li>Multi-agent ReAct pipeline (Planner + Checker)</li>
-          <li>1,000+ docs · 5 formats · hybrid BM25 + dense retrieval</li>
-          <li>96% query time reduction: 2hr → 5min · ~100 queries/day</li>
-          <li>On-prem LLM + GitOps (GitLab → ArgoCD → OpenShift)</li>
+          <li>1,000+ docs � 5 formats � hybrid BM25 + dense retrieval</li>
+          <li>96% query time reduction: 2hr ? 5min � ~100 queries/day</li>
+          <li>On-prem LLM + GitOps (GitLab ? ArgoCD ? OpenShift)</li>
         </ul>
         <div class="project-badges">
           <span class="badge purple">LangChain</span>
@@ -281,17 +281,17 @@
           <span class="badge green">FastAPI</span>
           <span class="badge orange">GitOps</span>
         </div>
-        <a class="project-link" href="projects/clairegpt.html">→ View Case Study</a>
+        <a class="project-link" href="projects/clairegpt.html">? View Case Study</a>
       </div>
 
       <div class="project-card">
-        <div class="project-name">📋 NLP Contract Clause Extraction</div>
-        <div class="project-desc">Fine-tuned BART seq2seq pipeline · 11-class contract analysis</div>
+        <div class="project-name">?? NLP Contract Clause Extraction</div>
+        <div class="project-desc">Fine-tuned BART seq2seq pipeline � 8-class logistics clause analysis</div>
         <ul class="project-points">
-          <li>Fine-tuned BART seq2seq · 11-class · weighted F1 = 0.8</li>
-          <li>100+ contracts/cycle · &lt;30s on-demand latency</li>
-          <li>Evolved rule-based → transformer → LangChain agent tool</li>
-          <li>Full MLOps: GitLab CI/CD · Docker · ArgoCD · OpenShift</li>
+          <li>Fine-tuned BART seq2seq � 8-class logistics � weighted F1 = 0.8</li>
+          <li>100+ contracts/cycle � &lt;30s on-demand latency</li>
+          <li>Evolved rule-based ? transformer ? LangChain agent tool</li>
+          <li>Full MLOps: GitLab CI/CD � Docker � ArgoCD � OpenShift</li>
         </ul>
         <div class="project-badges">
           <span class="badge orange">HuggingFace BART</span>
@@ -299,14 +299,14 @@
           <span class="badge green">FastAPI</span>
           <span class="badge purple">GitOps</span>
         </div>
-        <a class="project-link" href="projects/bart.html">→ View Case Study</a>
+        <a class="project-link" href="projects/bart.html">? View Case Study</a>
       </div>
 
       <div class="project-card">
-        <div class="project-name">📸 Receipt OCR & Expense Automation</div>
+        <div class="project-name">?? Receipt OCR & Expense Automation</div>
         <div class="project-desc">Computer vision pipeline for automated expense processing</div>
         <ul class="project-points">
-          <li>CNN classifier (travel vs hotel) → type-specific OCR extraction</li>
+          <li>CNN classifier (travel vs hotel) ? type-specific OCR extraction</li>
           <li>~90% travel / ~85% hotel folio accuracy</li>
           <li>Auto-populated SAP Concur expense entries</li>
           <li>Validator + manual review fallback queue</li>
@@ -317,16 +317,16 @@
           <span class="badge orange">SAP Concur API</span>
           <span class="badge muted">FastAPI</span>
         </div>
-        <a class="project-link" href="projects/ai4concur.html">→ View Case Study</a>
+        <a class="project-link" href="projects/ai4concur.html">? View Case Study</a>
       </div>
 
       <div class="project-card">
-        <div class="project-name">🔧 Process Knowledge RAG Chatbot</div>
+        <div class="project-name">?? Process Knowledge RAG Chatbot</div>
         <div class="project-desc">Synthesis-focused RAG for cross-document process intelligence</div>
         <ul class="project-points">
           <li>RAG over SOPs, benchmarks, improvement reports</li>
           <li>Semantic + type-aware chunking per document type</li>
-          <li>Metadata-filtered retrieval (dept · date · process area)</li>
+          <li>Metadata-filtered retrieval (dept � date � process area)</li>
           <li>Consultant-grade synthesis: recommendation + rationale + citations</li>
         </ul>
         <div class="project-badges">
@@ -335,17 +335,17 @@
           <span class="badge green">FastAPI</span>
           <span class="badge muted">On-prem LLM</span>
         </div>
-        <a class="project-link" href="projects/pro-toolbox.html">→ View Case Study</a>
+        <a class="project-link" href="projects/pro-toolbox.html">? View Case Study</a>
       </div>
 
       <div class="project-card">
-        <div class="project-name">💼 Invoice Vouching Automation</div>
+        <div class="project-name">?? Invoice Vouching Automation</div>
         <div class="project-desc">Configurable rule engine for AP invoice processing & compliance</div>
         <ul class="project-points">
-          <li>8-category rule engine: amount · tax · supplier · duplicate detection</li>
+          <li>8-category rule engine: amount � tax � supplier � duplicate detection</li>
           <li>Hard/soft rule separation with structured exception reports</li>
-          <li>YAML-configurable thresholds · full audit trail</li>
-          <li>Auto-approve standard invoices → payment queue</li>
+          <li>YAML-configurable thresholds � full audit trail</li>
+          <li>Auto-approve standard invoices ? payment queue</li>
         </ul>
         <div class="project-badges">
           <span class="badge blue">Python</span>
@@ -353,7 +353,7 @@
           <span class="badge orange">Streamlit</span>
           <span class="badge muted">ERP Integration</span>
         </div>
-        <a class="project-link" href="projects/diva.html">→ View Case Study</a>
+        <a class="project-link" href="projects/diva.html">? View Case Study</a>
       </div>
 
     </div>
@@ -436,20 +436,20 @@
       <div class="timeline-item">
         <div class="timeline-company">Infineon Technologies Asia Pacific</div>
         <div class="timeline-role">Staff Analyst, Data Scientist</div>
-        <div class="timeline-period">Nov 2021 – Present · Singapore</div>
+        <div class="timeline-period">Nov 2021 � Present � Singapore</div>
         <ul class="timeline-points">
-          <li>Shipped production multi-agent AI system (FastAPI + LangChain + GitOps) in 2 weeks — ~100 queries/day adoption</li>
-          <li>Built enterprise RAG platform over 1,000+ documents — reduced search time by 96% (2hr → 5min)</li>
-          <li>Fine-tuned NLP classifier for 11-class contract analysis (F1=0.8) with full CI/CD pipeline</li>
+          <li>Shipped production multi-agent AI system (FastAPI + LangChain + GitOps) in 2 weeks � ~100 queries/day adoption</li>
+          <li>Built enterprise RAG platform over 1,000+ documents � reduced search time by 96% (2hr ? 5min)</li>
+          <li>Fine-tuned NLP classifier for 8-class logistics clause analysis (F1=0.8) with full CI/CD pipeline</li>
         </ul>
       </div>
 
       <div class="timeline-item">
         <div class="timeline-company">PSA Corporation</div>
         <div class="timeline-role">Principal Engineer, Smart Systems Solutions</div>
-        <div class="timeline-period">Jul 2018 – Nov 2021 · Singapore</div>
+        <div class="timeline-period">Jul 2018 � Nov 2021 � Singapore</div>
         <ul class="timeline-points">
-          <li>Deployed predictive maintenance ML system for 20+ machines (0.5s sampling) — saved 8 man-hours/week</li>
+          <li>Deployed predictive maintenance ML system for 20+ machines (0.5s sampling) � saved 8 man-hours/week</li>
           <li>Built object detection pipelines (YOLO) for equipment monitoring, production deployment on edge</li>
           <li>Designed Cloudera Hadoop data pipelines for large-scale industrial sensor processing</li>
         </ul>
@@ -458,7 +458,7 @@
       <div class="timeline-item">
         <div class="timeline-company">PSA Corporation</div>
         <div class="timeline-role">Senior Mechanical Engineer</div>
-        <div class="timeline-period">Jul 2013 – Jul 2018 · Singapore</div>
+        <div class="timeline-period">Jul 2013 � Jul 2018 � Singapore</div>
         <ul class="timeline-points">
           <li>Developed automated component life tracking systems</li>
           <li>Translated mechanical failure patterns into rule-based predictive monitoring criteria</li>
@@ -476,7 +476,7 @@
       <div class="learning-item">
         <span class="learning-label">GitHub Copilot</span>
         <div class="learning-bar-wrap"><div class="learning-bar" style="width:100%;background:var(--green);"></div></div>
-        <span class="learning-status" style="color:var(--green);">Daily use ✓</span>
+        <span class="learning-status" style="color:var(--green);">Daily use ?</span>
       </div>
 
       <div class="learning-item">
@@ -504,24 +504,24 @@
       </div>
 
     </div>
-    <p class="learning-note">Converting YouTube knowledge to hands-on projects — AWS + GCP sprint underway.</p>
+    <p class="learning-note">Converting YouTube knowledge to hands-on projects � AWS + GCP sprint underway.</p>
   </section>
 
   <!-- Contact -->
   <section id="contact">
     <div class="section-cmd">$ echo $CONTACT</div>
-    <div class="contact-status">Open to AI Engineer roles · Singapore</div>
+    <div class="contact-status">Open to AI Engineer roles � Singapore</div>
     <div class="contact-links">
-      <a href="https://github.com/yhp2130" target="_blank">⌥ GitHub</a>
+      <a href="https://github.com/yhp2130" target="_blank">? GitHub</a>
       <a href="https://www.linkedin.com/in/yaphongping/" target="_blank">in LinkedIn</a>
-      <a href="mailto:your-email@example.com">✉ Email</a>
-      <a href="assets/resume.pdf" download>↓ Resume PDF</a>
+      <a href="mailto:your-email@example.com">? Email</a>
+      <a href="assets/resume.pdf" download>? Resume PDF</a>
     </div>
-    <p class="copyright">© 2026 Yap Hong Ping · yhp2130.github.io</p>
+    <p class="copyright">� 2026 Yap Hong Ping � yhp2130.github.io</p>
   </section>
 
   <script>
-    // ── Typewriter Animation ──
+    // -- Typewriter Animation --
     const lines = [
       { prompt: true,  text: 'whoami' },
       { prompt: false, text: 'Yap Hong Ping \u2014 Applied AI Engineer', cls: '' },
@@ -569,7 +569,7 @@
       body.appendChild(finalDiv);
     }
 
-    // ── Active Nav Highlight ──
+    // -- Active Nav Highlight --
     function initActiveNav() {
       const sections = document.querySelectorAll('section[id]');
       const navLinks = document.querySelectorAll('nav ul li a');
@@ -587,7 +587,7 @@
       sections.forEach(s => observer.observe(s));
     }
 
-    // ── Init ──
+    // -- Init --
     window.addEventListener('DOMContentLoaded', () => {
       typeWriter();
       initActiveNav();
@@ -595,3 +595,4 @@
   </script>
 </body>
 </html>
+

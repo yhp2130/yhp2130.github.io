@@ -112,7 +112,7 @@
     <div class="metrics-grid">
       <div class="metric-card">
         <div class="metric-value">F1 = 0.8</div>
-        <div class="metric-label">Weighted clause classification (11 classes)</div>
+        <div class="metric-label">Weighted clause classification (8 logistics topics)</div>
       </div>
       <div class="metric-card">
         <div class="metric-value">100+</div>
@@ -162,20 +162,18 @@
       <tr><td><strong>BART seq2seq</strong></td><td>Generates structured output from encoder</td><td>Handles paraphrase, inference, multi-sentence clauses</td></tr>
     </table>
 
-    <h2>$ cat taxonomy.md — 11 Clause Classes</h2>
+    <h2>$ cat taxonomy.md — 8 Logistics Contract Topics</h2>
+    <p>Topics map directly to CLM team's operational queries on logistics supply agreements (BSA/CAA):</p>
     <table>
-      <tr><th>Class</th><th>Example Signal</th></tr>
-      <tr><td>liability</td><td>"shall not exceed", "aggregate liability cap"</td></tr>
-      <tr><td>payment</td><td>"net 30", "invoice", "overdue interest"</td></tr>
-      <tr><td>sla</td><td>"uptime", "response time", "service level"</td></tr>
-      <tr><td>penalty</td><td>"liquidated damages", "surcharge", "delay penalty"</td></tr>
-      <tr><td>termination</td><td>"termination for cause", "right to terminate"</td></tr>
-      <tr><td>force_majeure</td><td>"acts of God", "beyond reasonable control"</td></tr>
-      <tr><td>indemnity</td><td>"hold harmless", "defend and indemnify"</td></tr>
-      <tr><td>ip</td><td>"intellectual property", "work product"</td></tr>
-      <tr><td>confidentiality</td><td>"non-disclosure", "confidential information"</td></tr>
-      <tr><td>governing_law</td><td>"jurisdiction", "arbitration"</td></tr>
-      <tr><td>amendment</td><td>"modification", "change order"</td></tr>
+      <tr><th>Topic</th><th>Operational Question</th></tr>
+      <tr><td>qty_tolerance</td><td>What quantity variance is acceptable before rejection?</td></tr>
+      <tr><td>delivery_term</td><td>Incoterms and delivery responsibility</td></tr>
+      <tr><td>incoming_inspection</td><td>Acceptance testing obligations and timelines</td></tr>
+      <tr><td>liability_cap</td><td>Maximum financial exposure per party</td></tr>
+      <tr><td>order_response</td><td>Acknowledgment and lead time obligations</td></tr>
+      <tr><td>payment_term</td><td>Payment due dates and late payment conditions</td></tr>
+      <tr><td>product_change_notification</td><td>Notice period for part/process changes</td></tr>
+      <tr><td>warranty_period</td><td>Defect coverage duration and remediation terms</td></tr>
     </table>
 
     <h2>$ cat mlops.md</h2>

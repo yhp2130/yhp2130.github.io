@@ -111,6 +111,28 @@
       critical for seasonal needs (e.g., higher tolerance during Q4 budget close).
     </p>
 
+    <h2>$ cat llm_extraction.md</h2>
+    <p>
+      Non-standard invoices (Chinese suppliers, German language, handwritten) use an
+      <strong>LLM extraction pipeline</strong> as fallback when structured ERP/EDI data is unavailable:
+    </p>
+    <ul>
+      <li><strong>pymupdf</strong> → native page text extraction</li>
+      <li><strong>pymupdf4llm</strong> → markdown layout with table structure</li>
+      <li><strong>pytesseract</strong> → OCR with multilingual support (chi_tra+chi_sim+deu+eng)</li>
+      <li><strong>LLM Call 1</strong> → extract line-item table as CSV (Row No., SP No., PCS, Amount, Unit Price)</li>
+      <li><strong>LLM Call 2</strong> → extract header fields as JSON (bill_to, currency, invoice_number, invoice_date)</li>
+      <li><strong>LLM Call 3</strong> → JSON correction pass for malformed output</li>
+    </ul>
+
+    <h2>$ cat company_matching.md</h2>
+    <p>Supplier names require fuzzy matching — abbreviations, legal suffixes (Ltd/Co./GmbH), and romanisation of Chinese names all cause exact-match failures:</p>
+    <table>
+      <tr><th>Name Type</th><th>Method</th><th>Threshold Logic</th></tr>
+      <tr><td>ASCII company names</td><td>thefuzz <code>partial_ratio</code></td><td>≥80 = MATCH · 30–79 = PARTIAL (human review) · &lt;30 = MISMATCH</td></tr>
+      <tr><td>Chinese company names</td><td>LLM semantic comparison</td><td>Fuzzy fails on Traditional/Simplified/mixed scripts — LLM handles reliably</td></tr>
+    </table>
+
     <h2>$ cat why_rule_based.md</h2>
     <ul>
       <li><strong>Auditability:</strong> Finance auditors require explainable decisions — "rule X failed with value Y" vs. "model confidence 0.73"</li>
@@ -126,8 +148,11 @@
       <span class="badge green">FastAPI</span>
       <span class="badge orange">Streamlit</span>
       <span class="badge muted">ERP REST API</span>
+      <span class="badge muted">thefuzz (fuzzy matching)</span>
+      <span class="badge muted">pymupdf / pymupdf4llm</span>
+      <span class="badge muted">pytesseract (multilingual OCR)</span>
+      <span class="badge muted">On-prem LLM (extraction + JSON correction)</span>
       <span class="badge muted">YAML config</span>
-      <span class="badge muted">pdfplumber</span>
     </div>
   </div>
 </body>

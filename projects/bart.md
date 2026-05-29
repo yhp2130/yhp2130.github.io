@@ -103,27 +103,32 @@ cannot generate tokens not present in the source.
 | Aspect | Detail |
 |--------|--------|
 | Base model | `facebook/bart-large` |
-| Fine-tuning data | Internal annotated contract corpus (clause text + structured JSON labels) |
+| Fine-tuning data | CUAD-format annotated contract corpus (JSON with `label` field per clause) |
 | Task framing | Seq2seq: `[CLAUSE_TYPE] {clause_text}` → structured JSON string |
-| Clause classes | 11 classes covering major contract clause types |
-| Evaluation | Per-class F1; overall weighted F1=0.8 |
-| Training infra | On-prem GPU node |
+| Contract types | BSA (Base Supply Agreement) and CAA (Contract Addendum/Amendment) |
+| Clause topics | 8 logistics-specific topics (see below) |
+| Evaluation | Per-class F1; stratified train/test split |
+| Training infra | On-prem GPU node (CUDA 11.6, TensorRT 8.5) |
 
-### 11-Class Taxonomy
+The project also explored a second track: **RoBERTa + custom adapter layers** for
+parameter-efficient fine-tuning. Adapters allow fine-tuning only a small number of
+injected parameters while the base model weights remain frozen — useful for low-data
+contract topics.
 
-| Class | Example Signal |
-|-------|---------------|
-| `liability` | "shall not exceed", "aggregate liability", "indemnify" |
-| `payment` | "net 30", "invoice", "overdue interest" |
-| `sla` | "uptime", "response time", "service level" |
-| `penalty` | "liquidated damages", "surcharge", "delay penalty" |
-| `termination` | "termination for cause", "notice period", "right to terminate" |
-| `force_majeure` | "acts of God", "beyond reasonable control", "epidemic" |
-| `indemnity` | "hold harmless", "defend and indemnify" |
-| `ip` | "intellectual property", "ownership", "work product" |
-| `confidentiality` | "non-disclosure", "confidential information" |
-| `governing_law` | "laws of Singapore", "jurisdiction", "arbitration" |
-| `amendment` | "modification", "amendment", "change order" |
+### 8 Logistics Contract Topics
+
+These topics map directly to the ICC team's operational queries:
+
+| Topic | Operational Question |
+|-------|---------------------|
+| `qty_tolerance` | What quantity variance is acceptable before rejection? |
+| `delivery_term` | Incoterms and delivery responsibility |
+| `incoming_inspection` | Acceptance testing obligations and timelines |
+| `liability_cap` | Maximum financial exposure per party |
+| `order_response` | Acknowledgment and lead time obligations |
+| `payment_term` | Payment due dates and late payment conditions |
+| `product_change_notification` | Notice period for part/process changes |
+| `warranty_period` | Defect coverage duration and remediation terms |
 
 ---
 
@@ -136,7 +141,7 @@ flowchart TD
     DOC["📄 Contract\nPDF / DOCX"]
     OCR["👁️ OCR + Layout Parser\nEasyOCR\npage structure preserved"]
     SEG["✂️ Clause Segmenter\nML-based boundary detection\nreplaces regex phase 1"]
-    CLS["🏷️ Clause Classifier\nfine-tuned transformer\n11-class F1=0.8"]
+    CLS["🏷️ Clause Classifier\nfine-tuned transformer\n8-class logistics F1=0.8"]
     BART["🤗 BART Extractor\nseq2seq\nclause → structured fields"]
     VAL["✅ Post-processor\nJSON validation\nconfidence threshold"]
     DB["🗄️ Clause Store\nstructured output DB"]
@@ -243,13 +248,14 @@ BART tool first, then the retrieval tool for surrounding context.
 <details>
 <summary>💬 "How did you build the training dataset?"</summary>
 
-> "We worked with the CLM legal and ops team to annotate a corpus of internal contracts.
-> Each contract was pre-segmented into clauses, and annotators labeled each clause with
-> its type and extracted the key fields into a structured JSON. We had several hundred
-> annotated contracts split across training and validation sets. Data quality was a bigger
-> challenge than quantity — annotators disagreed on borderline cases (e.g., an indemnity
-> clause that also contains liability terms). We resolved disagreement with majority voting
-> and flagged ambiguous cases for SME review."
+> "We used CUAD-format annotation — a JSON schema where each training example has a
+> clause text and a label. The CLM legal and ops team annotated a corpus of internal
+> logistics contracts (BSA — Base Supply Agreements, and CAA — Contract Addendum/Amendments).
+> The 8 topics — qty tolerance, delivery terms, incoming inspection, liability cap,
+> order response, payment terms, product change notification, warranty — were chosen
+> specifically because they're the clauses the CLM team queries most frequently in
+> contract reviews. Data quality was a bigger challenge than quantity — annotators disagreed
+> on borderline cases, resolved with majority voting and SME review for ambiguous examples."
 
 </details>
 

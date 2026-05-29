@@ -40,28 +40,78 @@ Both systems use RAG, but the user objective drives different design choices:
 
 ---
 
-## Architecture
+## Architecture — ReAct with Structured Execution Planning
+
+Pro-Toolbox uses a **plan-then-execute** ReAct loop rather than step-by-step chain-of-thought.
+The planner produces a complete `ExecutionPlan` (list of `SubGoal` objects with dependencies)
+before any tool is called — this reduces back-and-forth and allows parallel sub-goal execution.
 
 ```mermaid
 flowchart TD
-    DOCS["📚 Source Documents\nSOPs · Benchmarks\nImprovement Reports\nStandards"]
-    INGEST["⚙️ Ingestion Pipeline\nsee below"]
-    VS["🗄️ Vector Store\nhybrid index\nBM25 + dense"]
-    Q["👤 Consultant Query\nnatural language"]
-    RAG["🤖 RAG Pipeline\nLangChain\nretrieval + synthesis"]
-    LLM["🤖 LLM\nresponse generation"]
-    ANS["💬 Response\nrecommendation + rationale\n+ source citations"]
+    Q["👤 Consultant Query"]
+    PLAN["🧠 Planner\nLLM function-calling\n→ ExecutionPlan"]
+    SUBGOALS["📋 SubGoal Dependency Graph\nstrategy_description\n+ list of SubGoals\n(tool, params, depends_on)"]
+    REACT["⚙️ ReactLoop\nasyncio execution\nobserve → decide → iterate"]
+    MEM["🧠 WorkingMemory\nobservation scratchpad\nacross iterations"]
+    SUFFIX["✅ SufficiencyEvaluator\nenough context?\nyes → finalize / no → re-plan"]
+    TOOLS["🔧 Tool Registry"]
+    ARIS["🗄️ ARISAgent\nprocess model lookup\nabbrev expansion"]
+    IFXPM["🏭 IFXProcessMgmtAgent\n5 process sub-agents"]
+    SEARCH["🔍 SearchEngineAgent\ndocument retrieval"]
+    CHECKER["🔍 CheckerAgent\npost-generation validation"]
+    ANS["💬 Response + Citations"]
 
-    DOCS --> INGEST --> VS
-    Q --> RAG
-    VS -->|top-K chunks| RAG
-    RAG --> LLM --> ANS
+    Q --> PLAN --> SUBGOALS --> REACT
+    REACT <--> MEM
+    REACT --> TOOLS
+    TOOLS --> ARIS
+    TOOLS --> IFXPM
+    TOOLS --> SEARCH
+    REACT --> SUFFIX
+    SUFFIX -->|sufficient| CHECKER --> ANS
+    SUFFIX -->|insufficient| REACT
 
-    style DOCS fill:#21262d,stroke:#58a6ff,color:#e6edf3
-    style RAG fill:#21262d,stroke:#d2a8ff,color:#e6edf3
-    style VS fill:#21262d,stroke:#3fb950,color:#e6edf3
-    style LLM fill:#21262d,stroke:#ffa657,color:#e6edf3
+    style PLAN fill:#21262d,stroke:#d2a8ff,color:#e6edf3
+    style REACT fill:#21262d,stroke:#ffa657,color:#e6edf3
+    style CHECKER fill:#21262d,stroke:#3fb950,color:#e6edf3
+    style ARIS fill:#21262d,stroke:#58a6ff,color:#e6edf3
+    style IFXPM fill:#21262d,stroke:#58a6ff,color:#e6edf3
 ```
+
+### Planner Intelligence — Process Abbreviation Expansion
+
+Infineon consultants use process abbreviations. The planner pre-processes queries before
+routing to ARIS:
+
+```python
+# Before ARIS search: expand known abbreviations + strip noise words
+"who is the owner of dtc process"  →  "demand to cash"
+"how to improve my p2p"            →  "purchase to pay"
+"what is plan under demand to cash" →  "plan demand to cash"
+```
+
+Known mappings (12 Infineon processes): DTC, OTC, MTB, STP, PTP/P2P, RTR, HTR, FTD, I2D, D2M, M2B
+
+### IFX Process Management Sub-Agents
+
+For process improvement queries, the IFXProcessMgmtAgent dispatches to 5 domain sub-agents:
+
+| Sub-Agent | Covers |
+|-----------|--------|
+| `change_communication_agent` | Stakeholder communication for process changes |
+| `execution_stabilization_agent` | Stabilizing processes in execution phase |
+| `initiation_planning_agent` | Project initiation and planning activities |
+| `monitoring_control_agent` | KPI tracking, performance gates |
+| `project_mgmt_agent` | General project management guidance |
+
+### Exception Handling
+
+| Error Type | Handling |
+|------------|---------|
+| Planning failure | `PlanningError` exception → fast-path fallback (direct retrieval, no planning) |
+| Tool unavailable | `ToolUnavailableError` → skip sub-goal, continue with remaining |
+| Citation gate fail | `CitationGateError` → re-query with citation requirement |
+| Timeout | `ReactResult.timed_out=True` → return partial results |
 
 ---
 
@@ -143,19 +193,23 @@ This structure produces consultant-grade output, not just a literature summary.
 
 | Component | Technology |
 |-----------|-----------|
-| Orchestration | LangChain |
-| LLM | On-prem LLM |
+| Agent orchestration | Custom ReAct loop (asyncio, OpenAI function-calling) |
+| Execution model | ExecutionPlan + SubGoal dependency graph |
+| LLM | On-prem OpenAI-compatible endpoint (gpt4ifx) |
 | Embedding | On-prem embedding model |
-| Vector store | (Hybrid BM25 + dense) |
-| Document parsing | Docling (structure-preserving) |
+| Vector store | Elasticsearch (dense_vector kNN HNSW) |
+| Process model | ARIS (process management system, REST API) |
+| Sufficiency check | SufficiencyEvaluator (custom LLM judge) |
+| Document parsing | Docling (structure-preserving headings + tables) |
 | Backend | FastAPI |
-| CI/CD | GitLab CI/CD → ArgoCD → OpenShift |
+| CI/CD | GitLab CI/CD → ArgoCD → OpenShift (experimentation: dev/staging/prod) |
 
 ---
 
 ## Outcome
 
-- Production deployment for Process Consulting team
+- Deployed for Process Consulting team
+- GitOps CI/CD pipeline explored (dev/staging/prod environments) for production-readiness
 - Covers SOPs, benchmark frameworks, and historical improvement reports
 - Consultant queries return synthesized recommendations with source attribution
 
@@ -172,34 +226,36 @@ This structure produces consultant-grade output, not just a literature summary.
 > recommendation. A CLM user asks 'what does our contract say about liability?' — one
 > right answer. A consultant asks 'what approaches have worked for reducing cycle time
 > in logistics?' — the answer needs to be assembled from 5 past project reports and
-> 2 benchmarks. The prompting strategy, chunking, and response structure are all
-> different because the output format is different: recommendation with rationale,
-> not just citation."
+> 2 benchmarks. The architecture also differs: ClaireGPT uses LangChain ReAct tools,
+> Pro-Toolbox uses a structured ExecutionPlan where the planner produces a full dependency
+> graph of sub-goals upfront — this allows parallel tool execution instead of sequential
+> step-by-step."
 
 </details>
 
 <details>
-<summary>💬 "How did you handle document types with different structures?"</summary>
+<summary>💬 "What is the ExecutionPlan pattern and why did you use it?"</summary>
 
-> "Metadata tagging and type-aware chunking at ingestion. SOPs have numbered step
-> sequences that lose meaning if split mid-procedure, so we chunk by section boundary
-> and keep all steps in a section together. Improvement reports are narrative — problem,
-> approach, result — so we use paragraph grouping with overlap to preserve the story arc.
-> Benchmark tables are kept as single chunks with the column headers attached so the
-> LLM has the full context to interpret a maturity level. The doc_type metadata field
-> at ingestion drives which chunking strategy to apply."
+> "Standard ReAct loops are step-by-step: think → act → observe → think again. This works
+> but is slow for multi-part consultant queries. Instead, our planner generates a complete
+> ExecutionPlan upfront — a list of SubGoals each with a tool, parameters, and a depends_on
+> list. Sub-goals without dependencies can execute in parallel. For a query like 'find the
+> DTC process owner and any recent improvements', the plan generates two parallel sub-goals:
+> ARIS lookup for process owner, and document retrieval for improvements. They run
+> simultaneously in the asyncio loop. The SufficiencyEvaluator then decides if the
+> observations are enough to answer, or if we need another planning round."
 
 </details>
 
 <details>
-<summary>💬 "Why use metadata filtering instead of relying purely on semantic search?"</summary>
+<summary>💬 "How did you handle Infineon-specific process abbreviations?"</summary>
 
-> "Semantic search alone has recall-vs-precision trade-offs. If a consultant asks about
-> 'Logistics cycle time improvements from the last 2 years', pure dense search might
-> surface a relevant-sounding Finance report from 5 years ago with higher similarity
-> than a recent Logistics report. Pre-filtering by doc_type and department narrows the
-> search space so the dense search operates on the right subset. It also makes the
-> system more predictable — consultants can scope their queries intentionally, which
-> matters for credibility of the output in a consulting context."
+> "Infineon has 12+ internal process abbreviations (DTC=demand-to-cash, P2P=purchase-to-pay,
+> etc.) that ARIS uses as process names. If a consultant asks 'who owns the DTC process',
+> a naive search for 'DTC' fails. We built a pre-processing step in the planner that
+> expands known abbreviations and strips question/noise words before building the ARIS
+> search query. 'who is the owner of DTC process' becomes 'demand to cash' — which
+> matches ARIS correctly. This was a simple but high-impact fix that came from watching
+> consultants use the system in user testing."
 
 </details>
