@@ -1,304 +1,161 @@
-﻿# CODEC to ClaireGPT -- CLM Knowledge Retrieval
+# CODEC  ClaireGPT: Logistics Knowledge Retrieval System
 
-[Back to Portfolio](../README.md)
-
-**Team:** Customer Logistics Management (CLM) - Infineon Technologies
-**Timeline:** ~2 years (CODEC to ClaireGPT)
-**Role:** Lead AI Engineer -- architecture, implementation, deployment, adoption
+**Role:** Lead AI Engineer  
+**Duration:** ~3 years (3 generations)  
+**Domain:** Logistics  Process Knowledge  Contract Clauses  
 
 ---
 
-## Problem
+## Summary
 
-The CLM team managed 1,000+ documents: shipping policies, trade compliance guidelines,
-customer SLA contracts, and process SOPs. Answering internal queries required manually
-searching across multiple documents.
-
-**Pain point:** Average query resolution time was ~2 hours. Results were raw snippets;
-users had to read and synthesise across multiple documents themselves.
-
----
-
-## Evolution (3 Phases)
-
-```mermaid
-flowchart LR
-    A["CODEC Phase 1\nCustom Hybrid Search\nTF-IDF + SentenceBERT\n+ user feedback loop"]
-    B["CODEC 2.0 Phase 2\nSame engine improved\nGPU inference + PostgreSQL"]
-    C["ClaireGPT Phase 3\nElasticsearch kNN\n+ Agentic RAG + LLM synthesis"]
-
-    A -->|"Snippets returned, no synthesis"| B
-    B -->|"Scale and RAG needed"| C
-
-    style A fill:#21262d,stroke:#58a6ff,color:#e6edf3
-    style B fill:#21262d,stroke:#58a6ff,color:#e6edf3
-    style C fill:#21262d,stroke:#3fb950,color:#e6edf3
-```
-
-> **Key correction from code analysis:** CODEC did NOT use Elasticsearch. It used a fully
-> custom in-memory hybrid search engine (TF-IDF + SentenceBERT). Elasticsearch was only
-> introduced in Phase 3 (ClaireGPT).
+| Dimension | Detail |
+|-----------|--------|
+| Generations | CODEC (FYP)  CODEC 2.0 (Linux/GPU)  ClaireGPT (RAG agent) |
+| Chunking strategies | 5 evaluated; Agentic chosen |
+| Agent tools | 3: abbreviation  knowledge search · contract clauses |
+| Embedding | SFT-Mistral (selected via RAGAS) vs SentenceBERT |
+| Deployment | Nginx  OpenShift  React.js frontend |
 
 ---
 
-## Phase 1 -- CODEC (Custom Hybrid In-Memory Search)
+## Phase 1  CODEC: Student FYP Takeover (Hybrid Semantic Search)
 
-**Stack:** Django + Oracle DB + SentenceBERT + TF-IDF (sklearn) + OpenShift
+**Stack:** Django  SentenceBERT  TF-IDF · python-pptx  python-docx  OpenShift
 
-### Search Algorithm
-
-No external search engine. Custom in-memory engine with two signals:
+Took over a student final year project implementing a hybrid semantic search engine for logistics knowledge documents. The system combined SentenceBERT semantic embeddings with TF-IDF keyword scoring:
 
 ```
-Query
-  |-- TF-IDF vectorise (sklearn TfidfVectorizer)
-  |     +-- cosine similarity vs tfidf_matrix.sav  --> tfidf_score
-  |
-  +-- SentenceBERT encode (sentence-transformers)
-        +-- cosine similarity vs corpus_embeddings.sav  --> sbert_score
-
-combined_score = k_coeff x sbert_score + (1 - k_coeff) x tfidf_score
+combined_score = k_coeff  sbert_score + (1 - k_coeff)  tfidf_score
 ```
 
-`k_coeff` stored in DB (SearchSetting model), tunable per query-length tier (short/long).
+Documents were extracted from PowerPoint (pptx) and Word (docx) using python-pptx / python-docx. Computer vision built a parallel image corpus  slide diagrams were separately embedded and searchable alongside text.
 
-### Supervised Learning from User Behaviour
+A **supervised click and rating boost** applied score adjustments based on past user interactions, providing lightweight personalisation without model retraining.
 
-CODEC added a **click and rating boost** on top of the hybrid score:
+**Limitation:** All tensors loaded in-memory at startup (pickled embedder, corpus_embeddings, tfidf_matrix). Did not scale past ~1,000 documents. No LLM synthesis  returned raw page snippets.
+
+---
+
+## Phase 2  CODEC 2.0: Linux Refactor + GPU Acceleration
+
+**Trigger:** OpenShift has no Windows container support  
+**Change:** Linux refactor + CUDA inference
+
+OpenShift does not support Windows containers. The original Django app used Windows-specific paths and dependencies. Refactored the entire codebase to be Linux-compatible: path handling, file encoding, model loading, and service startup updated for container-native environments.
+
+Added GPU acceleration for SentenceBERT inference:
 
 ```python
-# services.py
-combined_scores = combined_scores + supv_coeffr * supv_score_rate   # user ratings
-combined_scores = combined_scores + supv_coeffc * supv_score_click  # user clicks
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 ```
 
-- Past queries similar to the new query (by TF-IDF) were retrieved
-- Documents clicked or rated on similar past queries got a score boost
-- Lightweight collaborative filtering -- no model retraining required
-
-### Corpus Coverage
-- **Text search:** documents indexed per-page into PostgreSQL (`TextPerPage` table)
-- **Image search:** parallel corpus for slide/diagram content (`corpus_embeddings_im.sav`)
-- **Query history:** stored in `QueryView` to power the supervised boost
-
-**Limitation:** All pickled tensors loaded in-memory at startup. Slow startup, did not
-scale past ~1,000 docs. No LLM synthesis -- returned raw snippets.
-
-### Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Web framework | Django 4.0 |
-| Keyword scoring | sklearn TF-IDF (cosine similarity) |
-| Semantic scoring | sentence-transformers 2.2 (SentenceBERT) |
-| Hybrid blend | Weighted sum, configurable k_coeff |
-| Storage | Oracle DB (prod) / PostgreSQL / SQLite (dev) |
-| Deployment | OpenShift |
+**Outcome:** Production-deployed on OpenShift. Same search quality with stable Linux container and GPU-accelerated inference.
 
 ---
 
-## Phase 2 -- CODEC 2.0
+## Phase 3  ClaireGPT Use Case: RAG Chatbot Evolution
 
-Same core algorithm. Key improvements over Phase 1:
+**Pivot:** From search snippets to conversational knowledge agent
 
-- **GPU inference:** `torch.device("cuda:0" if cuda else "cpu")` -- SentenceBERT on GPU
-- **PostgreSQL migration:** away from Oracle, cloud-native
-- **Better code separation:** `SearchEngine.py` extracted from Django views
-- **Parameters unchanged:** still TF-IDF + SBERT hybrid with supervised boost
+CODEC returned page snippets  users still had to read and synthesise across multiple results manually. The evolution: a full RAG chatbot that retrieves relevant knowledge and synthesises cited answers in natural language.
 
----
-
-## Phase 3 -- ClaireGPT (Elasticsearch kNN + Agentic RAG)
-
-**Goal:** Synthesise answers, not just return snippets. Multi-doc reasoning with tools.
-
-### Why Move to Elasticsearch?
-
-| Problem with in-memory | Solution |
-|------------------------|----------|
-| Tensors in memory do not scale past ~1K docs | Elasticsearch as persistent vector store |
-| Corpus reload on every pod restart | Elasticsearch handles persistence and uptime |
-| No synthesis -- users read raw snippets | LLM RAG synthesis layer |
-| Custom engine hard to maintain | Standard Elasticsearch Python client |
-
-### Retrieval: Elasticsearch Pure kNN
-
-ClaireGPT uses **pure kNN** (dense vector search) -- no BM25 text hybrid:
-
-```python
-# tools/elk.py and backend/main.py
-knn = {
-    "field": "vector",
-    "query_vector": openai_embeddings([query_text])[0],   # on-prem embedding endpoint
-    "k": topN,
-    "num_candidates": num_candidates
-}
-search_result = elastic.search(index=elk_indexname, knn=knn)
-```
-
-- **Embeddings:** on-prem OpenAI-compatible endpoint (`gpt4ifx`) -- zero external egress
-- **Index field:** `vector` (Elasticsearch dense_vector type, HNSW approximate kNN)
-- **Ingestion:** separate cron pipeline via Logstash (`indexing_processor.py`)
-
-### Agent Architecture
-
-```mermaid
-flowchart TD
-    U["User Query"]
-    P["Planner Agent\nLangChain ReAct\ntool selection + routing"]
-
-    RT["Retrieval Tool\nElasticsearch kNN\non-prem embeddings"]
-    BT["BART Clause Tool\ncontract clause extraction\nsee bart.md"]
-    ST["Summarize Tool\nmulti-doc compression"]
-
-    ES["Elasticsearch\ndense_vector HNSW kNN\non-prem cluster"]
-    LLM["On-prem LLM\nOpenAI-compatible\ndata sovereignty"]
-
-    CHK["Checker Agent\ncoherence + citation check"]
-    OUT["Response + Citations"]
-
-    U --> P
-    P -->|tool call| RT
-    P -->|tool call| BT
-    P -->|tool call| ST
-    RT --> ES
-    ES --> LLM
-    BT --> LLM
-    ST --> LLM
-    LLM --> CHK
-    CHK --> OUT
-
-    style U fill:#21262d,stroke:#58a6ff,color:#e6edf3
-    style P fill:#21262d,stroke:#3fb950,color:#e6edf3
-    style LLM fill:#21262d,stroke:#ffa657,color:#e6edf3
-    style CHK fill:#21262d,stroke:#ffa657,color:#e6edf3
-    style ES fill:#21262d,stroke:#d2a8ff,color:#e6edf3
-```
-
-### Ingestion Pipeline
-
-```mermaid
-flowchart LR
-    RAW["Raw Documents\nPDF / DOCX / HTML / XLSX"]
-    PARSE["Docling Parser\nstructure-preserving"]
-    CHUNK["Chunker\nsemantic chunking\n+ metadata injection"]
-    EMBED["On-prem Embedding\ngpt4ifx endpoint"]
-    LOGSTASH["Logstash\ndoc + embedding payload"]
-    IDX["Elasticsearch\ndense_vector HNSW index"]
-
-    RAW --> PARSE --> CHUNK --> EMBED --> LOGSTASH --> IDX
-```
-
-Metadata injected per chunk: `doc_id`, `title`, `url`, `text`, `vector`, `filepath`
-Ingestion is idempotent: checks if `doc_id` exists before re-indexing.
-
-### Tech Stack
-
-| Component | Technology | Notes |
-|-----------|-----------|-------|
-| Orchestration | LangChain | ReAct agent, tool registry |
-| LLM | On-prem OpenAI-compatible (gpt4ifx) | Data sovereignty, no external egress |
-| Embedding | On-prem gpt4ifx endpoint | Same network boundary |
-| Vector store | Elasticsearch HNSW kNN | dense_vector field, pure kNN |
-| Ingestion | Logstash + cron processor | Idempotent, doc-change triggered |
-| Document parsing | Docling | Preserves headings, tables |
-| Backend | FastAPI | Async, streaming |
-| MCP server | FastMCP | MCP protocol for tool integration |
-| Frontend | Streamlit | Internal UI |
-| CI/CD | GitLab CI | test -> lint -> build -> push |
-| Deployment | ArgoCD + Helm + OpenShift | GitOps, env-specific Helm overlays |
+Three knowledge domains required:
+- Process documentation (SOPs, policies, guidelines)
+- Domain abbreviation definitions (logistics-specific terms)
+- Contract clause data (from the BART contract extraction pipeline)
 
 ---
 
-## CODEC vs ClaireGPT: What Changed
+## Phase 4  Document Ingestion: Docling + EasyOCR + Multi-Source
 
-| Dimension | CODEC / CODEC 2.0 | ClaireGPT |
-|-----------|------------------|-----------|
-| Retrieval | TF-IDF + SentenceBERT hybrid (in-memory pickle) | Elasticsearch pure kNN (HNSW) |
-| Embedding model | sentence-transformers (self-hosted) | On-prem OpenAI-compatible endpoint |
-| Ranking signal | Hybrid score + click/rating boost | Dense cosine (kNN) |
-| Synthesis | None -- raw snippets returned | LLM RAG synthesis |
-| Agent reasoning | None | ReAct Planner -> Tools -> Checker |
-| External tools | None | BART clause tool, abbreviation finder |
-| Storage | Oracle/PostgreSQL + pickle files | Elasticsearch persistent vector index |
-| Scale | ~1K docs (in-memory) | Scales with Elasticsearch cluster |
+**Sources:** Confluence  SharePoint  network folder  
+**Fallback:** PDF + EasyOCR for older formats
+
+Built a cron-based ingestion pipeline pulling from three sources, each with a dedicated processor. Docling converts each document to structured markdown, preserving headings, tables, and layout for cleaner downstream chunking.
+
+For older or unsupported file formats, a fallback pipeline converts to PDF first, then runs Docling with EasyOCR (`force_full_page_ocr=True`) to handle scanned or image-heavy pages.
+
+**Why Docling:** Preserves document structure as markdown  gives the chunker and embedder richer context than plain text dumps from raw PDF extraction.
 
 ---
 
-## Metrics & Outcome
+## Phase 5  Chunking and Embedding Experimentation
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Average query time | ~2 hours | ~5 minutes |
-| Reduction | -- | 96% |
-| Daily active queries | 0 | ~100/day |
-| Documents indexed | -- | 1,000+ |
-| Formats supported | -- | PDF, DOCX, HTML, XLSX, PPT |
+**Strategies evaluated:** Fixed-size  Sentence  Semantic  Recursive  **Agentic (chosen)**  
+**Embedding comparison:** SFT-Mistral vs SentenceBERT, evaluated via RAGAS
+
+Documents vary widely  structured SOPs, slides, scanned PDFs, and unstructured text  so no single fixed strategy fits all:
+
+| Strategy | Behaviour | Trade-off |
+|----------|-----------|-----------|
+| Fixed-size | Splits by token/character count | Fast but cuts mid-sentence |
+| Sentence | Splits on sentence boundaries | Better coherence, ignores topic shifts |
+| Semantic | Splits on embedding similarity drops | Topic-aware, computationally expensive |
+| Recursive | Hierarchical split with fallback delimiters | Reasonable default, misses semantic shifts |
+| **Agentic** | LLM identifies topic boundaries, assigns chunk title + summary | Best retrieval quality; slower; some boundary information loss |
+
+**Agentic chunking chosen** (AgenticChunker)  the LLM generates a chunk title and summary per chunk, improving both retrieval precision and answer synthesis.
+
+**RAGAS evaluation:** SFT-Mistral (fine-tuned Mistral embedder) outperformed SentenceBERT on the domain corpus and was selected for production.
+
+Each chunk is pushed to Elasticsearch via Logstash with fields: `vector` (dense embedding), `summary`, `title`.
+
+**Key finding:** Agentic chunking improved retrieval relevance most significantly. LLM-generated chunk titles give the retriever richer signal than raw chunk text.
 
 ---
 
-## Interview Talking Points
+## Phase 6  Agentic RAG: Single Agent with 3 Tools
 
-<details>
-<summary>Walk me through the ClaireGPT architecture.</summary>
+**Framework:** LangChain tool-calling agent  
+**Tools:** 3 specialised tools connecting to different backends
 
-> "ClaireGPT is the third generation. The first two versions used a custom in-memory hybrid
-> search: TF-IDF cosine similarity (sklearn) plus SentenceBERT semantic embeddings, blended
-> with a configurable k-coefficient. It also had a supervised boost from user clicks and
-> ratings. That was effective at the scale, but it didn't scale past ~1,000 docs and returned
-> raw snippets without synthesis.
->
-> ClaireGPT moved retrieval to Elasticsearch kNN -- dense_vector field, HNSW index, on-prem
-> OpenAI-compatible embeddings. On top I added an agentic RAG layer: a Planner agent using
-> LangChain ReAct routes queries to tools -- Elasticsearch retrieval, BART contract clause
-> extraction, or a summarisation tool. An on-prem LLM synthesises the answer, and a Checker
-> agent validates it against source chunks before returning."
+| Tool | Function | Backend |
+|------|----------|---------|
+| `fetch_abbrev_explanation` | Abbreviation finder | Domain abbreviation API (NTLM auth) |
+| `fetch_clm_document_chunks` | Knowledge search | Elasticsearch kNN on vector field |
+| `fetch_customer_clauses` | Contract clause search | LLM  SQL  Oracle DB (BART tables) |
 
-</details>
+The agent receives the user query and conversation history, selects and calls tools (single or multi-turn), then synthesises a cited response.
 
-<details>
-<summary>What is the difference between CODEC and ClaireGPT retrieval?</summary>
+**Role-based access control:** `TOOL_PERMISSIONS` dict gates which tools each user role may invoke.
 
-> "CODEC used a custom hybrid: TF-IDF cosine for lexical matching plus SentenceBERT cosine
-> for semantic matching, blended with a configurable k-coefficient. It also had a supervised
-> component -- when a user clicked on or rated a result for a similar past query, that
-> document got a score boost on future similar queries. It was reasonably sophisticated but
-> built entirely from scratch. The limitation was all tensors were pickled in memory, so
-> startup was slow and it didn't scale.
->
-> ClaireGPT simplified retrieval to pure kNN in Elasticsearch -- dense vectors with HNSW,
-> on-prem embeddings. Simpler retrieval, but scalable and persistent. The sophistication
-> moved up the stack into agent orchestration and synthesis."
+**BART integration:** `fetch_customer_clauses` uses LLM-to-SQL generation  the agent passes the natural language query to an LLM which outputs an Oracle SQL statement, executed against the BART-extracted clause database, connecting two independent systems through the agent layer.
 
-</details>
+---
 
-<details>
-<summary>Why Elasticsearch over a dedicated vector DB?</summary>
+## Phase 7  Production: Nginx  React.js  Chat History
 
-> "Practical reasons. The team already ran an ELK stack for log monitoring. Operations was
-> comfortable with it, it was on the approved infra list, and using Elasticsearch for
-> vector search meant no new procurement cycle. The kNN support in Elasticsearch 8 was
-> sufficient for our scale."
+**Frontend:** React.js  **Reverse proxy:** Nginx  **Platform:** OpenShift
 
-</details>
+**Two usage patterns:**
 
-<details>
-<summary>How did you handle hallucination?</summary>
+- **Client loading (per-user chat history cache):** each user's conversation history is cached client-side and sent with each request  giving the agent full multi-turn context without server-side session management
+- **Server loading (QnA collection):** every queryresponse pair with user feedback (via `FeedbackRequest`) is stored server-side in `chat_history/` for future fine-tuning and evaluation
 
-> "Two approaches. First, the LLM only synthesises from retrieved chunks -- no open-ended
-> generation without source context. Second, the Checker agent does a post-generation
-> validation pass: it checks that key claims trace back to retrieved chunks. If not, it
-> flags the response as low-confidence. Every response includes source citations."
+**Outcome:** Production-deployed knowledge chatbot with multi-turn dialogue, role-gated tool access, and structured QnA data collection for continuous improvement.
 
-</details>
+---
 
-<details>
-<summary>What was the supervised learning in CODEC?</summary>
+## Retrospective Learning
 
-> "CODEC tracked user clicks and explicit ratings. When a new query arrived, we computed
-> TF-IDF similarity between it and all past queries. For past queries above a similarity
-> threshold, we retrieved which documents those users had clicked or rated, and added a
-> weighted boost to those document scores for the current query. Lightweight collaborative
-> filtering -- no model training needed, just score arithmetic on query history."
+- Agentic chunking is powerful but slower  for large-scale ingestion, a hybrid approach (semantic split first, then agentic refine on key sections) would balance quality and throughput
+- SFT-Mistral embedder is significantly larger than SentenceBERT  deployment cost vs quality trade-off should be re-evaluated as smaller domain-fine-tuned models improve
+- LLM-to-SQL generation works well for structured clause lookups but requires prompt engineering to constrain to safe, read-only queries
+- Per-user client-side chat history is simple to implement but grows unbounded  a session window or server-side summary would be more robust at scale
 
-</details>
+---
+
+## Stack
+
+| Category | Tools |
+|----------|-------|
+| Agentic framework | LangChain |
+| Vector store | Elasticsearch  Logstash |
+| Embedding | SFT-Mistral  SentenceBERT |
+| Chunking | AgenticChunker |
+| Document parsing | Docling  EasyOCR  python-pptx  python-docx |
+| Database | Oracle DB |
+| API | FastAPI |
+| Frontend | React.js |
+| Infrastructure | Docker  Nginx  OpenShift |
+| LLM (on-prem) | On-prem LLM endpoint |

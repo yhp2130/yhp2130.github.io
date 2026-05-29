@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClaireGPT — Yap Hong Ping</title>
+  <title>ClaireGPT  CODEC to Agentic RAG  Yap Hong Ping</title>
   <style>
     :root {
       --bg: #0d1117; --surface: #161b22; --border: #30363d;
@@ -43,14 +43,7 @@
     p strong { color: var(--text); }
     ul { padding-left: 0; list-style: none; margin-bottom: 16px; }
     ul li { font-size: 14px; color: var(--muted); padding: 3px 0; }
-    ul li::before { content: "▸ "; color: var(--green); }
-    .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; }
-    .metric-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 16px;
-    }
-    .metric-value { font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--green); }
-    .metric-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    ul li::before { content: " "; color: var(--green); }
     .badge {
       display: inline-block; font-size: 11px; font-family: var(--font-mono);
       padding: 3px 10px; border-radius: 20px; border: 1px solid; margin: 3px 3px 3px 0;
@@ -70,139 +63,250 @@
          color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
     td { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid rgba(48,54,61,0.5); }
     td:first-child { color: var(--text); }
-    .phase-label {
-      font-family: var(--font-mono); font-size: 11px; color: var(--orange);
-      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+    code {
+      font-family: var(--font-mono); font-size: 12px; background: var(--surface);
+      border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; color: var(--orange);
     }
-    .evolution-row { display: flex; gap: 0; margin: 20px 0; overflow-x: auto; }
-    .evolution-item {
+    .metrics { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
+    .metric-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px 20px; flex: 1; min-width: 140px;
+    }
+    .metric-value { font-size: 28px; font-weight: 700; color: var(--green); font-family: var(--font-mono); }
+    .metric-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .phases { position: relative; padding-left: 32px; margin: 24px 0; }
+    .phases::before {
+      content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+      width: 2px; background: var(--border);
+    }
+    .phase {
+      position: relative; margin-bottom: 32px;
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 14px 16px; flex: 1; min-width: 140px;
+      border-radius: var(--radius); padding: 18px 20px;
     }
-    .evolution-item + .evolution-item { border-left: none; border-radius: 0 var(--radius) var(--radius) 0; }
-    .evolution-item:first-child { border-radius: var(--radius) 0 0 var(--radius); }
-    .evolution-name { font-family: var(--font-mono); font-size: 13px; color: var(--blue); font-weight: 600; }
-    .evolution-desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
-    .arrow { display: flex; align-items: center; padding: 0 8px; color: var(--green); font-size: 16px; flex-shrink: 0; }
-    @media (max-width: 640px) {
-      .metrics-grid { grid-template-columns: 1fr 1fr; }
-      .evolution-row { flex-direction: column; }
-      .arrow { display: none; }
-      .evolution-item, .evolution-item + .evolution-item, .evolution-item:first-child { border-radius: var(--radius); border: 1px solid var(--border); }
+    .phase::before {
+      content: attr(data-n); position: absolute; left: -32px; top: 18px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--bg); border: 2px solid var(--blue);
+      color: var(--blue); font-family: var(--font-mono); font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
     }
+    .phase-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .phase-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+    .finding {
+      background: rgba(63,185,80,0.06); border-left: 3px solid var(--green);
+      padding: 8px 12px; border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 13px; color: var(--muted); margin-top: 12px;
+    }
+    .finding strong { color: var(--text); }
   </style>
 </head>
 <body>
   <nav>
-    <a href="../index.html#projects" class="back">← back</a>
-    <span class="title">ClaireGPT — Agentic RAG System</span>
+    <a href="../index.html#projects" class="back">&#8592; back</a>
+    <span class="title">ClaireGPT &#8212; CODEC to Agentic RAG</span>
     <span class="seq">2 / 5</span>
     <div class="nav-pager">
-      <a href="pro-toolbox.html">← prev</a>
-      <a href="diva.html">next →</a>
+      <a href="pro-toolbox.html">&#8592; prev</a>
+      <a href="diva.html">next &#8594;</a>
     </div>
   </nav>
 
   <div class="container">
-    <h1>CODEC → ClaireGPT</h1>
+    <h1>CODEC &#8594; ClaireGPT</h1>
     <div class="meta">
-      Customer Logistics Management · <span>Infineon Technologies</span> · ~2 years · Lead AI Engineer
+      Logistics Knowledge Retrieval &#183; <span>Lead AI Engineer</span> &#183; ~3 years
     </div>
 
     <div class="internal-note">
-      ⚿ Internal project — proprietary code not published. Case study describes architecture and decisions.
+      &#10239; Internal project &#8212; proprietary code not published. Case study covers open-source tools, model decisions, and pipeline design only.
     </div>
 
-    <h2>$ cat problem.md</h2>
-    <p>
-      The CLM team managed <strong>1,000+ documents</strong>: shipping policies, trade compliance guidelines,
-      customer SLA contracts, and process SOPs. Answering internal queries required manually searching
-      across multiple documents. Average query resolution time was <strong>~2 hours</strong>.
-      Questions were repetitive and the team had no unified search interface.
-    </p>
-
-    <h2>$ cat metrics.json</h2>
-    <div class="metrics-grid">
+    <div class="metrics">
       <div class="metric-card">
-        <div class="metric-value">96%</div>
-        <div class="metric-label">Query time reduction (2hr → 5min)</div>
+        <div class="metric-value">3</div>
+        <div class="metric-label">Generations: CODEC &#8594; CODEC 2.0 &#8594; ClaireGPT</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">~100</div>
-        <div class="metric-label">Daily active queries after launch</div>
+        <div class="metric-value">5</div>
+        <div class="metric-label">Chunking strategies evaluated</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">1,000+</div>
-        <div class="metric-label">Documents indexed (5 formats)</div>
+        <div class="metric-value">3</div>
+        <div class="metric-label">Agent tools (abbreviation &#183; knowledge &#183; contract clauses)</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">0</div>
-        <div class="metric-label">Manual deployments (full GitOps)</div>
+        <div class="metric-value">1000+</div>
+        <div class="metric-label">Documents indexed (Confluence &#183; SharePoint &#183; network)</div>
       </div>
     </div>
 
-    <h2>$ git log --oneline evolution</h2>
-    <div class="evolution-row">
-      <div class="evolution-item">
-        <div class="evolution-name">CODEC</div>
-        <div class="evolution-desc">Custom in-memory hybrid: TF-IDF + SentenceBERT + click/rating boost</div>
+    <h2>$ cat phases.md</h2>
+    <div class="phases">
+
+      <div class="phase" data-n="1">
+        <div class="phase-title">CODEC &#8212; Student FYP Takeover: Hybrid Semantic Search</div>
+        <div class="phase-meta">stack: Django &#183; SentenceBERT &#183; TF-IDF &#183; image corpus &#183; OpenShift</div>
+        <p>
+          Took over a <strong>student final year project</strong> implementing a hybrid semantic search
+          engine for logistics knowledge documents. The system combined <strong>SentenceBERT</strong>
+          semantic embeddings with <strong>TF-IDF</strong> keyword scoring:
+        </p>
+        <p style="font-family:var(--font-mono);font-size:12px;background:var(--bg);padding:10px 12px;border-radius:var(--radius);color:var(--orange);">
+          combined_score = k_coeff x sbert_score + (1 - k_coeff) x tfidf_score
+        </p>
+        <p>
+          Documents extracted from <strong>PowerPoint (pptx)</strong> and <strong>Word (docx)</strong>
+          using python-pptx / python-docx. <strong>Computer vision</strong> built a parallel image
+          corpus &#8212; slide diagrams and images were separately embedded and searchable alongside text.
+          A <strong>supervised click and rating boost</strong> applied score adjustments based on past
+          user interactions with similar queries (lightweight collaborative filtering without retraining).
+        </p>
+        <div class="finding"><strong>Limitation:</strong> All tensors loaded in-memory at startup (pickled embedder, corpus_embeddings, tfidf_matrix). Did not scale past ~1,000 docs. No LLM synthesis &#8212; returned raw page snippets.</div>
       </div>
-      <div class="arrow">→</div>
-      <div class="evolution-item">
-        <div class="evolution-name">CODEC 2.0</div>
-        <div class="evolution-desc">Same engine — GPU inference, PostgreSQL migration</div>
+
+      <div class="phase" data-n="2">
+        <div class="phase-title">CODEC 2.0 &#8212; Linux Refactor and GPU Acceleration</div>
+        <div class="phase-meta">trigger: OpenShift has no Windows container support &#183; added CUDA inference</div>
+        <p>
+          OpenShift does not support Windows containers. The original Django app was built on
+          Windows-specific paths and dependencies. Refactored the entire codebase to be
+          <strong>Linux-compatible</strong>: path handling, file encoding, model loading, and service
+          startup updated for container-native Linux environments.
+        </p>
+        <p>
+          Added <strong>GPU acceleration</strong> for SentenceBERT inference:
+          <code>torch.device("cuda:0" if torch.cuda.is_available() else "cpu")</code>.
+          Corpus embeddings and query encoding moved to GPU, reducing search latency for long queries.
+          Core hybrid algorithm unchanged.
+        </p>
+        <div class="finding"><strong>Outcome:</strong> Production-deployed on OpenShift. Same search quality with stable Linux container and GPU-accelerated inference.</div>
       </div>
-      <div class="arrow">→</div>
-      <div class="evolution-item">
-        <div class="evolution-name">ClaireGPT</div>
-        <div class="evolution-desc">Elasticsearch pure kNN + Agentic RAG + LLM synthesis</div>
+
+      <div class="phase" data-n="3">
+        <div class="phase-title">ClaireGPT Use Case &#8212; RAG Chatbot Evolution</div>
+        <div class="phase-meta">pivot: from search snippets to conversational knowledge agent</div>
+        <p>
+          CODEC returned page snippets &#8212; users still had to read and synthesise across multiple
+          results manually. The next evolution: a full <strong>RAG chatbot</strong> that retrieves
+          relevant knowledge and synthesises a cited answer in natural language.
+        </p>
+        <p>The system needed to cover three knowledge domains:</p>
+        <ul>
+          <li>Process documentation (SOPs, policies, guidelines)</li>
+          <li>Domain abbreviation definitions (logistics-specific terms)</li>
+          <li>Contract clause data (from the BART project &#8212; <a href="bart.html">see BART case study</a>)</li>
+        </ul>
       </div>
+
+      <div class="phase" data-n="4">
+        <div class="phase-title">Document Ingestion &#8212; Docling + EasyOCR + Multi-Source</div>
+        <div class="phase-meta">sources: Confluence &#183; SharePoint &#183; network folder &#183; fallback: PDF + EasyOCR</div>
+        <p>
+          Built a cron-based ingestion pipeline pulling documents from three sources:
+          <strong>Confluence</strong>, <strong>SharePoint</strong>, and a <strong>network folder</strong>
+          &#8212; each with a dedicated processor. <strong>Docling</strong> converts each document to
+          structured <strong>markdown</strong>, preserving headings, tables, and layout for cleaner
+          downstream chunking.
+        </p>
+        <p>
+          For <strong>older or unsupported file formats</strong>, a fallback pipeline converts them to
+          PDF first, then runs <strong>Docling with EasyOCR</strong>
+          (<code>EasyOcrOptions(force_full_page_ocr=True)</code>) to handle scanned or image-heavy pages.
+        </p>
+        <div class="finding"><strong>Why Docling:</strong> Preserves document structure (headings, table layout) as markdown &#8212; gives the chunker and embedder richer context than plain text dumps from raw PDF extraction.</div>
+      </div>
+
+      <div class="phase" data-n="5">
+        <div class="phase-title">Chunking and Embedding Experimentation</div>
+        <div class="phase-meta">5 strategies evaluated &#183; agentic chosen &#183; SFT-Mistral vs SentenceBERT (RAGAS) &#183; indexed via Logstash to ELK</div>
+        <p>
+          Experimented with all <strong>5 chunking strategies</strong>. Documents vary widely &#8212;
+          structured SOPs, slides, scanned PDFs, and unstructured text &#8212; so no single fixed
+          strategy fits all:
+        </p>
+        <table>
+          <tr><th>Strategy</th><th>Behaviour</th><th>Trade-off</th></tr>
+          <tr><td>Fixed-size</td><td>Splits by token/character count</td><td>Fast but cuts mid-sentence</td></tr>
+          <tr><td>Sentence</td><td>Splits on sentence boundaries</td><td>Better coherence, ignores topic shifts</td></tr>
+          <tr><td>Semantic</td><td>Splits on embedding similarity drops</td><td>Topic-aware, computationally expensive</td></tr>
+          <tr><td>Recursive</td><td>Hierarchical split with fallback delimiters</td><td>Reasonable default, misses semantic shifts</td></tr>
+          <tr><td><strong>Agentic</strong></td><td>LLM identifies topic boundaries, assigns chunk title + summary</td><td>Best retrieval quality; slower; some boundary information loss</td></tr>
+        </table>
+        <p>
+          <strong>Agentic chunking chosen</strong> (<code>AgenticChunker</code>) &#8212; the LLM generates
+          a <strong>chunk title</strong> and <strong>summary</strong> per chunk, improving both retrieval
+          precision and answer synthesis. Trade-off: slower ingestion and some information loss at chunk
+          boundaries when the LLM abstracts content.
+        </p>
+        <p>
+          <strong>Embedding comparison via RAGAS:</strong> <strong>SFT-Mistral</strong> (fine-tuned
+          Mistral embedder) vs <strong>SentenceBERT</strong>. SFT-Mistral yielded better RAGAS scores
+          on the domain corpus and was selected for production. Each chunk is pushed to
+          <strong>Elasticsearch</strong> via <strong>Logstash</strong> with three fields:
+          <code>vector</code> (dense embedding), <code>summary</code>, <code>title</code>.
+        </p>
+        <div class="finding"><strong>Key finding:</strong> Agentic chunking improved retrieval relevance most significantly. The LLM-generated chunk title gives the retriever richer signal than raw chunk text alone.</div>
+      </div>
+
+      <div class="phase" data-n="6">
+        <div class="phase-title">Agentic RAG &#8212; Single Agent with 3 Tools</div>
+        <div class="phase-meta">framework: LangChain tool-calling agent &#183; 3 tools: abbreviation &#183; knowledge search &#183; BART contract clauses</div>
+        <p>
+          Built a single <strong>LangChain tool-calling agent</strong> with three specialised tools,
+          each connecting to a different backend system:
+        </p>
+        <table>
+          <tr><th>Tool</th><th>Function</th><th>Backend</th></tr>
+          <tr><td><code>fetch_abbrev_explanation</code></td><td>Abbreviation finder</td><td>Domain abbreviation API (NTLM auth) &#8212; returns markdown table of matches</td></tr>
+          <tr><td><code>fetch_clm_document_chunks</code></td><td>Knowledge search</td><td>Elasticsearch kNN search on <code>vector</code> field &#8212; returns top-N chunk title + text + URL</td></tr>
+          <tr><td><code>fetch_customer_clauses</code></td><td>Contract clause search</td><td>LLM generates Oracle SQL from query &#8212; executes against BART contract clause database</td></tr>
+        </table>
+        <p>
+          The agent receives the user query and conversation history, selects and calls tools
+          (single or multi-turn), then synthesises a cited response. Role-based access control
+          (<code>TOOL_PERMISSIONS</code>) gates which tools each user role may invoke.
+        </p>
+        <div class="finding"><strong>BART integration:</strong> <code>fetch_customer_clauses</code> uses LLM-to-SQL generation: the agent passes the natural language query to an LLM which outputs an Oracle SQL statement, executed against the BART-extracted clause database &#8212; connecting two independent systems through the agent layer.</div>
+      </div>
+
+      <div class="phase" data-n="7">
+        <div class="phase-title">Production Deployment &#8212; Nginx &#183; React.js &#183; Chat History</div>
+        <div class="phase-meta">frontend: React.js &#183; reverse proxy: Nginx &#183; OpenShift &#183; per-user chat cache + QnA collection</div>
+        <p>
+          Deployed with a <strong>React.js frontend</strong> served via <strong>Nginx</strong> reverse
+          proxy, FastAPI backend in a separate pod on OpenShift. Two usage patterns:
+        </p>
+        <ul>
+          <li><strong>Client loading (per-user chat history cache):</strong> each user's conversation
+              history is cached client-side and sent with each request &#8212; giving the agent full
+              multi-turn context without server-side session management</li>
+          <li><strong>Server loading (QnA collection):</strong> every query&#8211;response pair with
+              user feedback (like/dislike via <code>FeedbackRequest</code>) is stored server-side
+              in <code>chat_history/</code> for future fine-tuning and evaluation</li>
+        </ul>
+        <div class="finding"><strong>Outcome:</strong> Production-deployed knowledge chatbot with multi-turn dialogue, role-gated tool access, and structured QnA data collection for continuous improvement.</div>
+      </div>
+
     </div>
-
-    <h2>$ cat architecture.md</h2>
-    <p><strong>Agent pattern: ReAct (Reason + Act)</strong></p>
-    <p>
-      A Planner agent receives the user query, reasons about which tools to call,
-      and makes sequential tool calls. A Checker agent validates coherence before returning
-      the response. On-prem LLM and embeddings — zero external API egress (data sovereignty).
-    </p>
-    <table>
-      <tr><th>Component</th><th>Technology</th><th>Notes</th></tr>
-      <tr><td>Agent orchestration</td><td>LangChain (ReAct)</td><td>Planner + Checker agents</td></tr>
-      <tr><td>LLM</td><td>On-prem OpenAI-compatible (gpt4ifx)</td><td>Data sovereignty — no external egress</td></tr>
-      <tr><td>Embedding</td><td>On-prem gpt4ifx endpoint</td><td>Same network boundary</td></tr>
-      <tr><td>Vector store</td><td>Elasticsearch HNSW kNN</td><td>dense_vector field, <strong>pure kNN</strong> (not hybrid)</td></tr>
-      <tr><td>Document parsing</td><td>Docling</td><td>Preserves headings, tables</td></tr>
-      <tr><td>Backend</td><td>FastAPI</td><td>Async, streaming response</td></tr>
-      <tr><td>Frontend</td><td>Streamlit</td><td>Internal user interface</td></tr>
-      <tr><td>CI/CD</td><td>GitLab CI</td><td>test → lint → build → push</td></tr>
-      <tr><td>Deploy</td><td>ArgoCD + Helm + OpenShift</td><td>GitOps, env-specific overlays</td></tr>
-    </table>
-
-    <h2>$ cat key_decisions.md</h2>
-    <ul>
-      <li><strong>Pure kNN retrieval (not hybrid)</strong> — ClaireGPT uses Elasticsearch dense_vector HNSW pure kNN. Sophistication moved up the stack to agent orchestration and synthesis, not retrieval blending.</li>
-      <li><strong>CODEC used TF-IDF + SentenceBERT (in-memory)</strong> — original system had no Elasticsearch; all tensors were pickled in-memory. Elasticsearch was introduced only in Phase 3.</li>
-      <li><strong>Semantic chunking</strong> — fixed-length split clauses mid-sentence, degrading LLM context quality. Semantic chunking was the single highest-impact change to answer quality.</li>
-      <li><strong>On-prem LLM</strong> — CLM docs contain customer SLA terms and trade compliance data. Data sovereignty required: zero external API egress.</li>
-      <li><strong>Planner + Checker</strong> — separates generation from validation. Checker reduced hallucination rate; claims must be traceable to retrieved source chunks.</li>
-      <li><strong>BART as a tool</strong> — loose coupling. BART runs as an independent FastAPI service wrapped as a LangChain tool, deployable independently.</li>
-    </ul>
 
     <h2>$ cat stack.txt</h2>
     <div>
       <span class="badge purple">LangChain</span>
       <span class="badge blue">Elasticsearch</span>
       <span class="badge green">FastAPI</span>
-      <span class="badge green">FastMCP</span>
-      <span class="badge green">Streamlit</span>
-      <span class="badge orange">GitOps</span>
-      <span class="badge purple">ArgoCD</span>
-      <span class="badge purple">Helm</span>
-      <span class="badge purple">OpenShift</span>
+      <span class="badge blue">React.js</span>
+      <span class="badge muted">Docling</span>
+      <span class="badge muted">EasyOCR</span>
+      <span class="badge muted">SentenceBERT</span>
+      <span class="badge muted">SFT-Mistral (embedder)</span>
+      <span class="badge muted">AgenticChunker</span>
+      <span class="badge orange">Logstash</span>
+      <span class="badge muted">Oracle DB</span>
       <span class="badge muted">On-prem LLM</span>
-      <span class="badge muted">GitLab CI/CD</span>
       <span class="badge blue">Docker</span>
+      <span class="badge muted">Nginx</span>
+      <span class="badge muted">OpenShift</span>
     </div>
   </div>
 </body>
