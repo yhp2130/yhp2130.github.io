@@ -107,7 +107,7 @@ replace manual cross-referencing. Full audit trail stored in Elasticsearch for c
 | Extraction (experimental) | On-prem LLM — pymupdf, pymupdf4llm, pytesseract |
 | Rule engine | Python (`diva_rules.apply_rules`) |
 | Company matching | thefuzz.partial_ratio · LLM fallback (CJK) |
-| Reference data | ERP REST API (SMD) |
+| Reference data | Excel export (SMD) |
 | Backend | FastAPI |
 | Frontend | Vue.js |
 | Output | Elasticsearch · Logstash · CSV |
