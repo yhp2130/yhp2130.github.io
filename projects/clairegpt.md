@@ -1,8 +1,8 @@
 # Document Retrieval & Agentic RAG Chatbot (CODEC → ClaireGPT)
 
 **Role:** AI Engineer / Data Scientist  
-**Duration:** ~3 years (3 generations)  
-**Domain:** Logistics  Process Knowledge  Contract Clauses  
+**Duration:** ~3 years (3 iterative enhancements)  
+**Domain:** Logistics · Process Knowledge · Contract Clauses  
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Dimension | Detail |
 |-----------|--------|
-| Generations | CODEC (FYP) → CODEC 2.0 (Linux/GPU) → ClaireGPT (RAG agent) |
+| Enhancements | CODEC (FYP) → CODEC 2.0 (Linux/GPU) → ClaireGPT (RAG agent) |
 | Chunking strategies | 5 evaluated; Agentic chosen |
 | Agent tools | 3: abbreviation · knowledge search · contract clauses |
 | Embedding | SFT-Mistral (selected via RAGAS) vs SentenceBERT |
@@ -19,7 +19,7 @@
 
 ---
 
-## Phase 1  CODEC: Student FYP Takeover (Hybrid Semantic Search)
+## Enhancement 1 — CODEC: Student FYP Takeover (Hybrid Semantic Search)
 
 **Stack:** Django  SentenceBERT  TF-IDF · python-pptx  python-docx  OpenShift
 
@@ -37,7 +37,7 @@ A **supervised click and rating boost** applied score adjustments based on past 
 
 ---
 
-## Phase 2  CODEC 2.0: Linux Refactor + GPU Acceleration
+## Enhancement 2 — CODEC 2.0: Linux Refactor + GPU Acceleration
 
 **Trigger:** OpenShift has no Windows container support  
 **Change:** Linux refactor + CUDA inference
@@ -54,7 +54,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 ---
 
-## Phase 3 — ClaireGPT Use Case: RAG Chatbot Evolution
+## Enhancement 3 — ClaireGPT: RAG Chatbot with Agentic Tools
 
 **Pivot:** From search snippets to conversational knowledge agent  
 **Delivery:** <1 month · GitHub Copilot AI-assisted coding
@@ -70,7 +70,7 @@ Three knowledge domains required:
 
 ---
 
-## Phase 4  Document Ingestion: Docling + EasyOCR + Multi-Source
+## Implementation: Document Ingestion (Docling + EasyOCR + Multi-Source)
 
 **Sources:** Confluence  SharePoint  network folder  
 **Fallback:** PDF + EasyOCR for older formats
@@ -83,7 +83,7 @@ For older or unsupported file formats, a fallback pipeline converts to PDF first
 
 ---
 
-## Phase 5  Chunking and Embedding Experimentation
+## Implementation: Chunking and Embedding Experimentation
 
 **Strategies evaluated:** Fixed-size  Sentence  Semantic  Recursive  **Agentic (chosen)**  
 **Embedding comparison:** SFT-Mistral vs SentenceBERT, evaluated via RAGAS
@@ -108,7 +108,7 @@ Each chunk is pushed to Elasticsearch via Logstash with fields: `vector` (dense 
 
 ---
 
-## Phase 6  Agentic RAG: Single Agent with 3 Tools
+## Implementation: Agentic RAG with 3 Tools
 
 **Framework:** LangChain tool-calling agent  
 **Tools:** 3 specialised tools connecting to different backends
@@ -127,7 +127,7 @@ The agent receives the user query and conversation history, selects and calls to
 
 ---
 
-## Phase 7  Production: Nginx  React.js  Chat History
+## Production: Nginx + React.js + Chat History
 
 **Frontend:** React.js  **Reverse proxy:** Nginx  **Platform:** OpenShift
 
