@@ -17,7 +17,7 @@
 
 | # | Project | Description | Stack | Key Result | Deep Dive |
 |---|---------|-------------|-------|------------|-----------|
-| 1 | **Process Knowledge RAG Chatbot** | Synthesis-focused RAG for cross-document process intelligence | Custom asyncio ReAct · Docling · FastAPI · On-prem LLM · Artifactory | MVP in 2 weeks via GitHub Copilot SpecKit · 4 knowledge sources (ARIS, Intranet, Confluence, PRIMA) | [→ pro-toolbox.md](projects/pro-toolbox.md) |
+| 1 | **Process Knowledge RAG Chatbot** | Synthesis-focused RAG for cross-document process intelligence | Custom asyncio ReAct · Docling · FastAPI · On-prem LLM · Artifactory | MVP in 2 weeks via GitHub Copilot SpecKit · 2 knowledge sources (Confluence, ARIS) | [→ pro-toolbox.md](projects/pro-toolbox.md) |
 | 2 | **Agentic RAG Knowledge System** | Multi-agent enterprise knowledge retrieval (LangChain ReAct) | LangChain · Elasticsearch · On-prem LLM · GitOps | 96% query time reduction: 2hr → 5min · ~100 queries/day | [→ clairegpt.md](projects/clairegpt.md) |
 | 3 | **Invoice Vouching Automation** | Configurable rule engine for AP invoice processing & compliance | Python · FastAPI · Streamlit · ERP Integration | 8-category rules · LLM extraction for multilingual invoices (Chinese/German) | [→ diva.md](projects/diva.md) |
 | 4 | **NLP Contract Clause Extraction** | Fine-tuned BART seq2seq pipeline — 8-class logistics clause analysis | HuggingFace BART · PyTorch · FastAPI · GitOps | weighted F1=0.8 · 8 logistics clauses · 100+ contracts/cycle | [→ bart.md](projects/bart.md) |
